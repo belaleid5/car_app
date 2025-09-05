@@ -1,6 +1,6 @@
 
+import 'package:car_app/features/auth/presentation/pages/login_screen.dart';
 import 'package:car_app/features/splash/presentation/pages/splash_page_view_screen.dart';
-import 'package:car_app/features/splash/presentation/pages/splash_screen.dart';
 import 'package:flutter/material.dart';
 
 class AppRouter {
@@ -20,7 +20,8 @@ class AppRouter {
       case splashRoute:
       
         return MaterialPageRoute(builder: (_) => SplashPageView());
-
+     case loginRoute:
+        return MaterialPageRoute(builder: (_) => LoginScreen());
       default:
         return MaterialPageRoute(builder: (_) => const Scaffold());
     }

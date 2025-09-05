@@ -48,8 +48,8 @@ class _SplashPageViewState extends State<SplashPageView> {
                   decoration: BoxDecoration(
                     color:
                         _currentPage == index
-                            ? AppColor.insideColor
-                            : AppColor.whiteColor,
+                            ? AppColors.black
+                            : AppColors.neutral50,
                     borderRadius: BorderRadius.circular(20),
                   ),
                 ),
@@ -73,7 +73,8 @@ class _SplashPageViewState extends State<SplashPageView> {
                 } else {
                   Navigator.pushReplacementNamed(context, "/login");
                 }
-              },
+              }, titleColor: AppColors.white, 
+              buttonColor: AppColors.neutral900, title: 'Get Started',
             ),
           ),
         ],

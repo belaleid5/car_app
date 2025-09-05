@@ -1,8 +1,7 @@
 import 'package:car_app/core/responsive/responsive_helper.dart';
 import 'package:car_app/core/utils/app_images.dart';
 import 'package:car_app/core/widget/custom_icon_car.dart';
-import 'package:car_app/core/widget/cutsom_eleveted_button.dart';
-import 'package:car_app/features/splash/presentation/widgets/custom_title_splash_screen.dart';
+import 'package:car_app/core/widget/custom_title_splash_screen.dart';
 import 'package:flutter/material.dart';
 
 class SplashScreen extends StatelessWidget {
@@ -33,7 +32,7 @@ class SplashScreen extends StatelessWidget {
               SizedBox(height: res.rh(60)),
               CustomIconCar(res: res),
               SizedBox(height: res.rh(20)),
-              CustomTitleSplashScreen(res: res, title: 'Welcome to\nQent'),
+              CustomTitleSectionScreen(res: res, title: 'Welcome to\nQent'),
               Spacer(),
             ],
           ),
@@ -42,13 +41,3 @@ class SplashScreen extends StatelessWidget {
     );
   }
 }
-
-
-
-
-
-
-
-
-
-

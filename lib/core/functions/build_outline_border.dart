@@ -5,7 +5,7 @@ OutlineInputBorder buildOutlineBorder() {
     return OutlineInputBorder(
             
               borderSide: BorderSide(
-                color: AppColor.secondary), // Color for radius border
+                color: AppColors.black), // Color for radius border
               borderRadius: BorderRadius.circular(32),
             );
   }
@@ -18,7 +18,8 @@ OutlineInputBorder buildOutlineBorder() {
 
   OutlineInputBorder buildOutlineBorderDeskTop() {
     return OutlineInputBorder(
-              borderSide: BorderSide(color: AppColor.secondary), // Color for radius border
+              borderSide: BorderSide(color: AppColors.black,
+    ), 
               borderRadius: BorderRadius.circular(6),
             );
   }

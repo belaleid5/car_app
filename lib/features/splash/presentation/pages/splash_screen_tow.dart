@@ -46,9 +46,9 @@ class SplashScreenTow extends StatelessWidget {
 
               Text(
                 "Discover your next adventure with Qent.we’re here to provide you with a seamless car rental experience.Let’s get started on your journey.",
-                style: AppTextStyles.regular16(
-                  context,
-                ).copyWith(color: AppColor.whiteColor),
+                style: AppTextStyles.bodyMedium(
+
+                ).copyWith(color: AppColors.white),
               ),
             ],
           ),

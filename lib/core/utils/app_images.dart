@@ -13,6 +13,7 @@ class AppImages {
   /// Assets for assetsIconsCarIcon
   /// assets/icons/car_icon.svg
   static const String assetsIconsCarIcon = "assets/icons/car_icon.svg";
+  static const String assetsIconsCarIconBlack = "assets/icons/iconCarBlack.svg";
 
   /// Assets for assetsIconsDollerIcon
   /// assets/icons/doller_icon.svg

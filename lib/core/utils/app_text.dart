@@ -1,113 +1,151 @@
 import 'package:car_app/core/responsive/responsive_helper.dart';
 import 'package:flutter/material.dart';
 
+
+
+
+
+
+
+
+
+
+
+
+
 abstract class AppTextStyles {
-  static TextStyle inter33(BuildContext context) {
-    final res = ResponsiveHelper(context);
-    return TextStyle(
-      fontSize: res.sp(33),
-      fontWeight: FontWeight.normal,
-    );
-  }
 
-  static TextStyle poppins58(BuildContext context) {
-    final res = ResponsiveHelper(context);
-    return TextStyle(
-      fontSize: res.sp(58),
-      fontWeight: FontWeight.w600,
-    );
-  }
+ static const String primaryFont = 'Roboto';
+  
+  // Font Weights
+  static const FontWeight thin = FontWeight.w100;
+  static const FontWeight extraLight = FontWeight.w200;
+  static const FontWeight light = FontWeight.w300;
+  static const FontWeight regular = FontWeight.w400;
+  static const FontWeight medium = FontWeight.w500;
+  static const FontWeight semiBold = FontWeight.w600;
+  static const FontWeight bold = FontWeight.w700;
+  static const FontWeight extraBold = FontWeight.w800;
+  static const FontWeight black = FontWeight.w900;
 
-  static TextStyle inter20(BuildContext context) {
-    final res = ResponsiveHelper(context);
-    return TextStyle(
-      fontSize: res.sp(20),
-      fontWeight: FontWeight.normal,
-    );
-  }
 
-  static TextStyle poppins14(BuildContext context) {
-    final res = ResponsiveHelper(context);
-    return TextStyle(fontSize: res.sp(14));
-  }
 
-  static TextStyle poppins15(BuildContext context) {
-    final res = ResponsiveHelper(context);
-    return TextStyle(
-      fontSize: res.sp(15),
-      fontWeight: FontWeight.bold,
-    );
-  }
 
-  static TextStyle poppins18(BuildContext context) {
-    final res = ResponsiveHelper(context);
-    return TextStyle(
-      fontSize: res.sp(18),
-      fontWeight: FontWeight.normal,
-    );
-  }
 
-  static TextStyle semiBold16(BuildContext context) {
-    final res = ResponsiveHelper(context);
-    return TextStyle(
-      fontWeight: FontWeight.w600,
-      fontSize: res.sp(16),
-    );
-  }
+static TextStyle h1({Color? color}) => TextStyle(
+    fontFamily: primaryFont,
+    fontSize: 72,
+    fontWeight: bold,
+    color: color,
+    height: 1.2,
+  );
+  
+  static TextStyle h2({Color? color}) => TextStyle(
+    fontFamily: primaryFont,
+    fontSize: 60,
+    fontWeight: bold,
+    color: color,
+    height: 1.2,
+  );
+  
+  static TextStyle h3({Color? color}) => TextStyle(
+    fontFamily: primaryFont,
+    fontSize: 48,
+    fontWeight: bold,
+    color: color,
+    height: 1.2,
+  );
+  
+  static TextStyle h4({Color? color}) => TextStyle(
+    fontFamily: primaryFont,
+    fontSize: 36,
+    fontWeight: bold,
+    color: color,
+    height: 1.2,
+  );
+  
+  static TextStyle h5({Color? color}) => TextStyle(
+    fontFamily: primaryFont,
+    fontSize: 30,
+    fontWeight: bold,
+    color: color,
+    height: 1.2,
+  );
+  
+  static TextStyle h6({Color? color}) => TextStyle(
+    fontFamily: primaryFont,
+    fontSize: 24,
+    fontWeight: bold,
+    color: color,
+    height: 1.2,
+  );
+  
+  // Body Text
+  static TextStyle bodyLarge({Color? color}) => TextStyle(
+    fontFamily: primaryFont,
+    fontSize: 18,
+    fontWeight: regular,
+    color: color,
+    height: 1.5,
+  );
+  
+  static TextStyle bodyMedium({Color? color}) => TextStyle(
+    fontFamily: primaryFont,
+    fontSize: 16,
+    fontWeight: regular,
+    color: color,
+    height: 1.5,
+  );
+  
+  static TextStyle bodySmall({Color? color}) => TextStyle(
+    fontFamily: primaryFont,
+    fontSize: 14,
+    fontWeight: regular,
+    color: color,
+    height: 1.5,
+  );
+  
+  // Labels
+  static TextStyle labelLarge({Color? color}) => TextStyle(
+    fontFamily: primaryFont,
+    fontSize: 16,
+    fontWeight: medium,
+    color: color,
+    height: 1.4,
+  );
+  
+  static TextStyle labelMedium({Color? color}) => TextStyle(
+    fontFamily: primaryFont,
+    fontSize: 14,
+    fontWeight: medium,
+    color: color,
+    height: 1.4,
+  );
+  
+  static TextStyle labelSmall({Color? color}) => TextStyle(
+    fontFamily: primaryFont,
+    fontSize: 12,
+    fontWeight: medium,
+    color: color,
+    height: 1.4,
+  );
+  
+  // Caption & Overline
+  static TextStyle caption({Color? color}) => TextStyle(
+    fontFamily: primaryFont,
+    fontSize: 12,
+    fontWeight: regular,
+    color: color,
+    height: 1.3,
+  );
+  
+  static TextStyle overline({Color? color}) => TextStyle(
+    fontFamily: primaryFont,
+    fontSize: 10,
+    fontWeight: medium,
+    color: color,
+    height: 1.6,
+    letterSpacing: 1.5,
+  );
 
-  static TextStyle bold28(BuildContext context) {
-    final res = ResponsiveHelper(context);
-    return TextStyle(
-      fontWeight: FontWeight.bold,
-      fontSize: res.sp(28),
-    );
-  }
-
-  static TextStyle regular22(BuildContext context) {
-    final res = ResponsiveHelper(context);
-    return TextStyle(
-      fontWeight: FontWeight.normal,
-      fontSize: res.sp(22),
-    );
-  }
-
-  static TextStyle semiBold11(BuildContext context) {
-    final res = ResponsiveHelper(context);
-    return TextStyle(
-      fontWeight: FontWeight.w600,
-      fontSize: res.sp(11),
-    );
-  }
-
-  static TextStyle medium15(BuildContext context) {
-    final res = ResponsiveHelper(context);
-    return TextStyle(
-      fontWeight: FontWeight.w500,
-      fontSize: res.sp(15),
-    );
-  }
-
-  static TextStyle regular26(BuildContext context) {
-    final res = ResponsiveHelper(context);
-    return TextStyle(
-      fontWeight: FontWeight.normal,
-      fontSize: res.sp(26),
-    );
-  }
-
-  static TextStyle regular16(BuildContext context) {
-    final res = ResponsiveHelper(context);
-    return TextStyle(
-      fontWeight: FontWeight.normal,
-      fontSize: res.sp(16),
-    );
-  }
-
-  static TextStyle regular11(BuildContext context) {
-    final res = ResponsiveHelper(context);
-    return TextStyle(
-      fontWeight: FontWeight.normal,
-      fontSize: res.sp(11),
-    );
-  }
 }
