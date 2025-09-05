@@ -6,7 +6,6 @@ import 'package:car_app/features/auth/presentation/widgets/custom_logo_car_and_q
 import 'package:car_app/features/auth/presentation/widgets/custom_title_verify_section.dart';
 import 'package:car_app/features/auth/presentation/widgets/dont_have_an_account.dart';
 import 'package:flutter/material.dart';
-import 'package:pinput/pinput.dart';
 
 class OtpScreen extends StatelessWidget {
   const OtpScreen({super.key});

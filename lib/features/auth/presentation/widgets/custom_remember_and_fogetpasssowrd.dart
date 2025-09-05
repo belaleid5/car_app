@@ -1,3 +1,4 @@
+import 'package:car_app/core/routing/app_router.dart';
 import 'package:car_app/core/utils/app_color.dart';
 import 'package:car_app/core/utils/app_text.dart';
 import 'package:car_app/features/auth/presentation/widgets/custom_checkbox.dart';
@@ -22,7 +23,9 @@ class CustomRememberAndForgetPassword extends StatelessWidget {
         ),
         Spacer(),
         TextButton(
-          onPressed: () {},
+          onPressed: () {
+            Navigator.pushNamed(context, AppRouter.setPassword);
+          },
           child: Text(
             'Forgot Password?',
             style: AppTextStyles.bodySmall(

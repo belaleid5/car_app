@@ -1,6 +1,7 @@
 
 import 'package:car_app/features/auth/presentation/pages/login_screen.dart';
 import 'package:car_app/features/auth/presentation/pages/otp_screen.dart';
+import 'package:car_app/features/auth/presentation/pages/reset_password.dart';
 import 'package:car_app/features/auth/presentation/pages/sign_up_screen.dart';
 import 'package:car_app/features/auth/presentation/pages/verfiy_phone_screen.dart';
 import 'package:car_app/features/splash/presentation/pages/splash_page_view_screen.dart';
@@ -32,6 +33,8 @@ class AppRouter {
 
         case otpRoute:
         return MaterialPageRoute(builder: (_) => OtpScreen());
+        case setPassword:
+        return MaterialPageRoute(builder: (_) => ResetPassword());
       default:
         return MaterialPageRoute(builder: (_) => const Scaffold());
     }
