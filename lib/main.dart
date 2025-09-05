@@ -12,7 +12,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
        onGenerateRoute: AppRouter.onGenerate,
-      initialRoute: AppRouter.loginRoute,
+       initialRoute: AppRouter.verifyPhoneRoute,
       
     );
   }
