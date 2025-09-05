@@ -1,5 +1,6 @@
 
 import 'package:car_app/features/auth/presentation/pages/login_screen.dart';
+import 'package:car_app/features/auth/presentation/pages/otp_screen.dart';
 import 'package:car_app/features/auth/presentation/pages/sign_up_screen.dart';
 import 'package:car_app/features/auth/presentation/pages/verfiy_phone_screen.dart';
 import 'package:car_app/features/splash/presentation/pages/splash_page_view_screen.dart';
@@ -15,6 +16,7 @@ class AppRouter {
   static const searchRoute = "/search";
   static const filterSearchRoute = "/filterSearch";
   static const verifyPhoneRoute = "/verifyPhone";
+  static const otpRoute = "/otp";
 
   static MaterialPageRoute onGenerate(RouteSettings settings) {
     switch (settings.name) {
@@ -27,6 +29,9 @@ class AppRouter {
         return MaterialPageRoute(builder: (_) => SignUpScreen());
       case verifyPhoneRoute:
         return MaterialPageRoute(builder: (_) => VerifyPhoneScreen());
+
+        case otpRoute:
+        return MaterialPageRoute(builder: (_) => OtpScreen());
       default:
         return MaterialPageRoute(builder: (_) => const Scaffold());
     }

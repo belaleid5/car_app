@@ -21,8 +21,9 @@ class VerifyPhoneScreen extends StatelessWidget {
               SliverToBoxAdapter(
                 child: SizedBox(height: res.screenHeight * 0.3),
               ),
-              SliverToBoxAdapter(child: CustomTitleSectionVerifyPhone()),
+              SliverToBoxAdapter(child: CustomTitleSectionVerify(title: 'Verify your phone number', subTitle: 'We have sent you an SMS with a code to number'),),
               SliverToBoxAdapter(child: CustomVerifySection()),
+              
             ],
           ),
         ),
