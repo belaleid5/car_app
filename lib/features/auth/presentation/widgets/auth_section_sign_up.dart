@@ -1,8 +1,8 @@
 import 'package:car_app/core/extention/adaptive_input_field.dart';
-import 'package:car_app/core/functions/app_validators.dart';
 import 'package:car_app/core/responsive/responsive_helper.dart';
 import 'package:car_app/core/routing/app_router.dart';
 import 'package:car_app/core/utils/app_color.dart';
+import 'package:car_app/core/utils/validators.dart';
 import 'package:car_app/core/widget/cutsom_eleveted_button.dart';
 import 'package:car_app/features/auth/presentation/widgets/custom_passsword_text_form.dart';
 import 'package:flutter/material.dart';
@@ -30,26 +30,32 @@ class _AuthSectionSignUpState extends State<AuthSectionSignUp> {
             controller: _emailPhoneController,
             context: context,
             hintText: 'Full Name',
-            validate: AppValidator.validateRequired,
+            validate: (value) => Validators.validateFullName(value),
           ),
           AdaptiveInputField(
             controller: _emailPhoneController,
             context: context,
             hintText: 'Email/Phone Number',
-            validate: AppValidator.validateEmail,
+            validate:  (value) => Validators.validateEmail(value),
           ),
           CustomPasswordFormField(passwordController: _passwordController),
           AdaptiveInputField(
             controller: _emailPhoneController,
             context: context,
             hintText: 'Country',
-            validate: AppValidator.validateRequired,
+            validate: (value) => Validators.validateCountry(value),
           ),
           CustomElevatedButton(
             res: res,
             titleColor: AppColors.neutral100,
             buttonColor: AppColors.neutral900,
             title: 'Sign Up',
+            onPressed: (){
+              if(_formKey.currentState!.validate()){
+                Navigator.pushNamed(context, AppRouter.loginRoute);
+
+              }
+            },
           ),
           CustomElevatedButton(
             res: res,
@@ -57,9 +63,9 @@ class _AuthSectionSignUpState extends State<AuthSectionSignUp> {
             buttonColor: AppColors.neutral100,
             title: 'LogIn',
             onPressed: () {
-              if (_formKey.currentState!.validate()) {
+
                 Navigator.pushNamed(context, AppRouter.loginRoute);
-              }
+
             },
           ),
         ],

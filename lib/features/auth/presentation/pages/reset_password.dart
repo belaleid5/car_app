@@ -1,8 +1,8 @@
 import 'package:car_app/core/extention/adaptive_input_field.dart';
-import 'package:car_app/core/functions/app_validators.dart';
 import 'package:car_app/core/responsive/responsive_helper.dart';
 import 'package:car_app/core/routing/app_router.dart';
 import 'package:car_app/core/utils/app_color.dart';
+import 'package:car_app/core/utils/validators.dart';
 import 'package:car_app/core/widget/cutsom_eleveted_button.dart';
 import 'package:car_app/features/auth/presentation/widgets/custom_title_verify_section.dart';
 import 'package:flutter/material.dart';
@@ -41,7 +41,7 @@ class _ResetPasswordState extends State<ResetPassword> {
                 controller: _emailPhoneController,
                 context: context,
                 hintText: 'Email',
-                validate: AppValidator.validateEmail,
+                validate : (value) => Validators.validateEmail(value),
               ),),
               SliverToBoxAdapter(child: SizedBox(height: res.rh(20))),
               SliverToBoxAdapter(

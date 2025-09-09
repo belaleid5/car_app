@@ -1,5 +1,5 @@
 import 'package:car_app/core/extention/adaptive_input_field.dart';
-import 'package:car_app/core/functions/app_validators.dart';
+import 'package:car_app/core/utils/validators.dart';
 import 'package:flutter/material.dart';
 
 class CustomPasswordFormField extends StatefulWidget {
@@ -35,7 +35,7 @@ class _CustomPasswordFormFieldState extends State<CustomPasswordFormField> {
         },
         child: Icon(_isObscure ? Icons.visibility_off : Icons.visibility),
       ),
-      validate: AppValidator.validatePassword,
+      validate: (value) => Validators.validatePassword(value),
     );
   }
 }

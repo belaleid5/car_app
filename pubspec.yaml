@@ -28,15 +28,20 @@ environment:
 # the latest version available on pub.dev. To see which dependencies have newer
 # versions available, run `flutter pub outdated`.
 dependencies:
+  connectivity_plus: ^6.1.5
   country_picker: ^2.0.27
   cupertino_icons: ^1.0.8
+  dartz: ^0.10.1
   dio: ^5.9.0
   equatable: ^2.0.7
   flutter:
     sdk: flutter
+  flutter_secure_storage: ^9.2.4
   flutter_svg: null
+  get_it: ^8.2.0
   logger: ^2.6.1
   pinput: ^5.0.2
+  shared_preferences: ^2.5.3
 
 dev_dependencies:
   flutter_lints: ^5.0.0

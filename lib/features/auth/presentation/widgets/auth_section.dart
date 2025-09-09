@@ -1,8 +1,8 @@
 import 'package:car_app/core/extention/adaptive_input_field.dart';
-import 'package:car_app/core/functions/app_validators.dart';
 import 'package:car_app/core/responsive/responsive_helper.dart';
 import 'package:car_app/core/routing/app_router.dart';
 import 'package:car_app/core/utils/app_color.dart';
+import 'package:car_app/core/utils/validators.dart';
 import 'package:car_app/core/widget/cutsom_eleveted_button.dart';
 import 'package:car_app/features/auth/presentation/widgets/custom_passsword_text_form.dart';
 import 'package:car_app/features/auth/presentation/widgets/custom_remember_and_fogetpasssowrd.dart';
@@ -31,7 +31,7 @@ class _AuthSectionState extends State<AuthSection> {
             controller: _emailPhoneController,
             context: context,
             hintText: 'Email/Phone Number',
-            validate: AppValidator.validateEmail,
+            validate: (value) => Validators.validateEmail(value),
           ),
           CustomPasswordFormField(passwordController: _passwordController),
           CustomRememberAndForgetPassword(),
