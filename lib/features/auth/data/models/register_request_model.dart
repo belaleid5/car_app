@@ -5,7 +5,8 @@ class RegisterRequestModel extends RegisterRequestEntity {
     required super.fullName,
     required super.email,
     required super.password,
-    required super.country,
+    required super.phoneNumber,
+    required super.countryCode,
   });
 
   factory RegisterRequestModel.fromEntity(RegisterRequestEntity entity) {
@@ -13,7 +14,8 @@ class RegisterRequestModel extends RegisterRequestEntity {
       fullName: entity.fullName,
       email: entity.email,
       password: entity.password,
-      country: entity.country,
+      countryCode: entity.countryCode,
+      phoneNumber: entity.phoneNumber,
     );
   }
 
@@ -22,7 +24,8 @@ class RegisterRequestModel extends RegisterRequestEntity {
       'full_name': fullName,
       'email': email,
       'password': password,
-      'country': country,
+      'country': countryCode,
+      'phone': phoneNumber,
     };
   }
 }

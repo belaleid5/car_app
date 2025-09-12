@@ -1,5 +1,6 @@
 import 'package:car_app/core/responsive/responsive_helper.dart';
 import 'package:car_app/core/utils/app_color.dart';
+import 'package:car_app/core/utils/app_text.dart';
 import 'package:car_app/core/widget/cutsom_eleveted_button.dart';
 import 'package:car_app/features/auth/presentation/widgets/custom_form_verifcation.dart';
 import 'package:car_app/features/auth/presentation/widgets/custom_logo_car_and_qent.dart';
@@ -38,7 +39,13 @@ class OtpScreen extends StatelessWidget {
                 res: res,
                 titleColor: AppColors.white,
                 buttonColor: AppColors.neutral900,
-                title: 'Continue',
+                title:         Text(
+        "Continue",
+        style: AppTextStyles.bodyLarge().copyWith(
+          color:  Colors.white,
+          fontWeight: FontWeight.w600,
+        ),
+      ),
               ),
             ),
             SliverToBoxAdapter(child: const SizedBox(height: 20)),

@@ -18,7 +18,7 @@ class CustomElevatedButton extends StatelessWidget {
   final void Function()? onPressed;
   final Color? titleColor;
   final Color? buttonColor;
-  final String title;
+  final Widget title;
   final Color? borderColor; // Add borderColor field
 
   @override
@@ -43,13 +43,7 @@ class CustomElevatedButton extends StatelessWidget {
           ),
         ),
       ),
-      child: Text(
-        title,
-        style: AppTextStyles.bodyLarge().copyWith(
-          color: titleColor ?? Colors.white,
-          fontWeight: FontWeight.w600,
-        ),
-      ),
+      child: title,
     );
   }
 }

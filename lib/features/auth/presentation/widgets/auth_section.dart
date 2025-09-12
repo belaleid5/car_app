@@ -2,6 +2,7 @@ import 'package:car_app/core/extention/adaptive_input_field.dart';
 import 'package:car_app/core/responsive/responsive_helper.dart';
 import 'package:car_app/core/routing/app_router.dart';
 import 'package:car_app/core/utils/app_color.dart';
+import 'package:car_app/core/utils/app_text.dart';
 import 'package:car_app/core/utils/validators.dart';
 import 'package:car_app/core/widget/cutsom_eleveted_button.dart';
 import 'package:car_app/features/auth/presentation/widgets/custom_passsword_text_form.dart';
@@ -39,11 +40,17 @@ class _AuthSectionState extends State<AuthSection> {
             res: res,
             titleColor: AppColors.neutral100,
             buttonColor: AppColors.neutral900,
-            title: 'Login',
-
+            title: 
+                
+                  Text(
+        "Login",
+        style: AppTextStyles.bodyLarge().copyWith(
+          color:  Colors.white,
+          fontWeight: FontWeight.w600,
+        ),
+      ),
             onPressed: () {
               if (_formKey.currentState!.validate()) {
-                // Handle login logic here
                  if (_formKey.currentState!.validate()) {
                 Navigator.pushNamed(context, '/home');
               }
@@ -54,7 +61,15 @@ class _AuthSectionState extends State<AuthSection> {
             res: res,
             titleColor: AppColors.black,
             buttonColor: AppColors.neutral100,
-            title: 'Sign Up',
+            title: 
+                
+                  Text(
+        "SignUp",
+        style: AppTextStyles.bodyLarge().copyWith(
+          color:  Colors.white,
+          fontWeight: FontWeight.w600,
+        ),
+      ),
             onPressed: () {
               Navigator.pushNamed(context, AppRouter.signUpRoute);
             },

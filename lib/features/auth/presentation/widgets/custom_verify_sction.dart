@@ -1,6 +1,7 @@
 import 'package:car_app/core/extention/adaptive_input_field.dart';
 import 'package:car_app/core/responsive/responsive_helper.dart';
 import 'package:car_app/core/utils/app_color.dart';
+import 'package:car_app/core/utils/app_text.dart';
 import 'package:car_app/core/utils/validators.dart';
 import 'package:car_app/core/widget/cutsom_eleveted_button.dart';
 import 'package:car_app/features/auth/presentation/widgets/custom_country_text_form_field.dart';
@@ -18,6 +19,7 @@ class CustomVerifySection extends StatefulWidget {
 }
 
 final TextEditingController _phoneController = TextEditingController();
+final TextEditingController country = TextEditingController();
 
 class _CustomVerifySectionState extends State<CustomVerifySection> {
   @override
@@ -27,7 +29,7 @@ class _CustomVerifySectionState extends State<CustomVerifySection> {
       mainAxisAlignment: MainAxisAlignment.center,
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        CustomCountryTextFormField(),
+        CustomCountryTextFormField(controller: country,),
         SizedBox(height: res.rh(10)),
         AdaptiveInputField(
           controller: _phoneController,
@@ -40,7 +42,15 @@ class _CustomVerifySectionState extends State<CustomVerifySection> {
           res: res,
           titleColor: AppColors.white,
           buttonColor: AppColors.neutral900,
-          title: "Continue",
+          title: 
+                
+                  Text(
+        "Continue",
+        style: AppTextStyles.bodyLarge().copyWith(
+          color:  Colors.white,
+          fontWeight: FontWeight.w600,
+        ),
+      ),
         ),
       ],
     );

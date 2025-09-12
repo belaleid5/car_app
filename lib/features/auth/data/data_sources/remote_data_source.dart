@@ -1,5 +1,7 @@
 import 'package:car_app/core/error/faliure.dart';
 import 'package:car_app/features/auth/data/models/auth_token_model.dart';
+import 'package:car_app/features/auth/data/models/login_request_model.dart';
+import 'package:car_app/features/auth/data/models/login_response_model.dart';
 import 'package:car_app/features/auth/data/models/refresh_token_model.dart';
 import 'package:car_app/features/auth/data/models/register_response.dart';
 import 'package:dio/dio.dart';
@@ -10,6 +12,8 @@ import '../../../../core/constants/api_constants.dart';
 abstract class AuthRemoteDataSource {
   Future<RegisterResponseModel> register(RegisterRequestModel registerRequest);
   Future<AuthTokensModel> refreshToken(String refreshToken);
+    Future<LoginResponseModel> login(LoginRequestModel loginRequest);
+
 }
 
 class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
@@ -98,6 +102,36 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
       }
     } catch (e) {
       throw ServerException('Unexpected error: ${e.toString()}');
+    }
+  }
+  
+ @override
+  Future<LoginResponseModel> login(LoginRequestModel loginRequest) async {
+    try {
+      final response = await dio.post(
+        ApiConstants.loginEndpoint,
+        data: loginRequest.toJson(),
+      );
+
+      if (response.statusCode == 200) {
+        return LoginResponseModel.fromJson(response.data);
+      } else {
+        throw ServerException(
+         response.data["message"] ?? "Login failed",
+          response.statusCode ?? 500,
+        );
+      }
+    } on DioException catch (e) {
+      if (e.response != null) {
+        throw ServerException(
+           e.response?.data["message"] ?? "Login error",
+           e.response?.statusCode ?? 500,
+        );
+      } else {
+        throw NetworkException("No internet connection");
+      }
+    } catch (e) {
+      throw ServerException( e.toString(),  500);
     }
   }
 }

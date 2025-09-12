@@ -1,6 +1,8 @@
 // lib/features/auth/domain/repositories/auth_repository.dart
 import 'package:car_app/core/error/faliure.dart';
 import 'package:car_app/features/auth/domain/entities/auth_token_entity.dart';
+import 'package:car_app/features/auth/domain/entities/login_entity.dart';
+import 'package:car_app/features/auth/domain/entities/login_response_entity.dart';
 import 'package:dartz/dartz.dart';
 import '../entities/register_request_entity.dart';
 import '../entities/register_response_entity.dart';
@@ -11,6 +13,9 @@ abstract class AuthRepository {
   Future<Either<Failure, RegisterResponseEntity>> register(
     RegisterRequestEntity registerRequest,
   );
+
+ Future<Either<Failure, LoginResponseEntity>> login(LoginRequestEntity loginRequest);
+
 
   /// Refresh access token using refresh token
   Future<Either<Failure, AuthTokensEntity>> refreshToken(String refreshToken);

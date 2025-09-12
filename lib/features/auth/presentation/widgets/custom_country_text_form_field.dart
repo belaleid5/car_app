@@ -3,17 +3,22 @@ import 'package:country_picker/country_picker.dart';
 import 'package:flutter/material.dart';
 
 class CustomCountryTextFormField extends StatefulWidget {
-  const CustomCountryTextFormField({super.key});
+  final TextEditingController controller; // هنستقبل controller من برة
+
+  const CustomCountryTextFormField({
+    super.key,
+    required this.controller,
+  });
 
   @override
   State<CustomCountryTextFormField> createState() =>
       _CustomCountryTextFormFieldState();
 }
 
-Country? _selectedCountry;
-
 class _CustomCountryTextFormFieldState
     extends State<CustomCountryTextFormField> {
+  Country? _selectedCountry;
+
   @override
   Widget build(BuildContext context) {
     return CountryTextFormField(
@@ -21,6 +26,7 @@ class _CustomCountryTextFormFieldState
       onChanged: (country) {
         setState(() {
           _selectedCountry = country;
+          widget.controller.text = country!.countryCode; // نخزن اسم البلد في الـ controller
         });
       },
       validator: (country) {
