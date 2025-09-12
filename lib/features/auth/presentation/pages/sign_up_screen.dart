@@ -40,9 +40,9 @@ class SignUpScreen extends StatelessWidget {
           ),
           SliverToBoxAdapter(child: SizedBox(height: res.rh(20))),
           SliverToBoxAdapter(child: AuthSectionSignUp()),
-          SliverToBoxAdapter(child: SizedBox(height: res.rh(40))),
+          SliverToBoxAdapter(child: SizedBox(height: res.rh(10))),
           SliverToBoxAdapter(child: CustomDividerAndOR(res: res)),
-          SliverToBoxAdapter(child: SizedBox(height: res.rh(40))),
+          SliverToBoxAdapter(child: SizedBox(height: res.rh(20))),
           SliverToBoxAdapter(
           child: CustomButtonSocial(
             res: res,

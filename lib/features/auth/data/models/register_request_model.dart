@@ -24,7 +24,7 @@ class RegisterRequestModel extends RegisterRequestEntity {
       'full_name': fullName,
       'email': email,
       'password': password,
-      'country': countryCode,
+      'country_id': countryCode,
       'phone': phoneNumber,
     };
   }

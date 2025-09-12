@@ -94,14 +94,12 @@ class _AuthSectionSignUpState extends State<AuthSectionSignUp> {
               // Password Field
               CustomPasswordFormField(passwordController: _passwordController),
 
-              // Country Phone Field - محسن للأداء
               CountryPhoneInputField(
                 phoneController: _phoneController,
                 validator: (value) => Validators.validatePhone(value),
                 onChanged: _onPhoneChanged,
               ),
 
-              // SignUp Button
               CustomElevatedButton(
                 res: res,
                 titleColor: AppColors.neutral100,

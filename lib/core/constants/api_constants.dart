@@ -5,11 +5,11 @@ class ApiConstants {
 
   // Auth Endpoints
   static const String registerEndpoint = '$baseUrl/auth/register/';
-  static const String loginEndpoint = '/auth/login';
-  static const String refreshTokenEndpoint = '/auth/refresh';
-  static const String logoutEndpoint = '/auth/logout';
-  static const String forgotPasswordEndpoint = '/auth/forgot-password';
-  static const String resetPasswordEndpoint = '/auth/reset-password';
+  static const String loginEndpoint = '$baseUrl/auth/login/';
+  static const String refreshTokenEndpoint = '$baseUrl/auth/refresh';
+  static const String logoutEndpoint = '$baseUrl/auth/logout';
+  static const String forgotPasswordEndpoint = '$baseUrl/auth/forgot-password';
+  static const String resetPasswordEndpoint = '$baseUrl/auth/reset-password';
   
 
 
