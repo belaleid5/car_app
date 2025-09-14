@@ -1,9 +1,12 @@
 import 'package:car_app/core/error/faliure.dart';
 import 'package:car_app/features/auth/data/models/auth_token_model.dart';
+import 'package:car_app/features/auth/data/models/confirm_passowrd_response_model.dart';
 import 'package:car_app/features/auth/data/models/login_request_model.dart';
 import 'package:car_app/features/auth/data/models/login_response_model.dart';
 import 'package:car_app/features/auth/data/models/refresh_token_model.dart';
 import 'package:car_app/features/auth/data/models/register_response.dart';
+import 'package:car_app/features/auth/data/models/reset_password_model.dart';
+
 import 'package:dio/dio.dart';
 import '../models/register_request_model.dart';
 
@@ -12,7 +15,9 @@ import '../../../../core/constants/api_constants.dart';
 abstract class AuthRemoteDataSource {
   Future<RegisterResponseModel> register(RegisterRequestModel registerRequest);
   Future<AuthTokensModel> refreshToken(String refreshToken);
-    Future<LoginResponseModel> login(LoginRequestModel loginRequest);
+  Future<LoginResponseModel> login(LoginRequestModel loginRequest);
+  Future<ConfirmPasswordResponseModel> resetPassword(ResetPasswordModel resetModel);
+
 
 }
 
@@ -134,4 +139,34 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
       throw ServerException( e.toString(),  500);
     }
   }
+  
+  @override
+Future<ConfirmPasswordResponseModel> resetPassword(ResetPasswordModel resetModel) async {
+  try {
+    final response = await dio.post(
+      ApiConstants.resetPasswordEndpoint,
+      data: resetModel.toJson(),
+    );
+
+    if (response.statusCode == 200) {
+      return ConfirmPasswordResponseModel.fromJson(response.data);
+    } else {
+      throw ServerException(
+        response.data["message"] ?? "Reset Password failed",
+        response.statusCode ?? 500,
+      );
+    }
+  } on DioException catch (e) {
+    if (e.response != null) {
+      throw ServerException(
+        e.response?.data["message"] ?? "Reset Password error",
+        e.response?.statusCode ?? 500,
+      );
+    } else {
+      throw NetworkException("No internet connection");
+    }
+  } catch (e) {
+    throw ServerException(e.toString(), 500);
+  }
+}
 }

@@ -89,7 +89,7 @@ class _ToastWidgetState extends State<_ToastWidget>
                     AppColors.neutral100,
                     AppColors.neutral900,
                   ],
-                  stops: [0.25, 0.25], // ربع مساحة للون الأول والباقي للتاني
+                  stops: [0.15, 0.15], // ربع مساحة للون الأول والباقي للتاني
                   begin: Alignment.centerLeft,
                   end: Alignment.centerRight,
                 ),
@@ -105,7 +105,7 @@ class _ToastWidgetState extends State<_ToastWidget>
                 widget.message,
                 textAlign: TextAlign.center,
                 style: const TextStyle(
-                  color: Colors.white, // النص أبيض
+                  color: Colors.white,  
                   fontSize: 16,
                   fontWeight: FontWeight.w600,
                 ),

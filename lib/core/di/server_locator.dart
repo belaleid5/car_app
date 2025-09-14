@@ -10,6 +10,7 @@ import 'package:car_app/features/auth/domain/use_cases/login_usecase.dart';
 import 'package:car_app/features/auth/domain/use_cases/logout_usecase.dart';
 import 'package:car_app/features/auth/domain/use_cases/refresh_tokens_params.dart';
 import 'package:car_app/features/auth/domain/use_cases/register_usecase.dart';
+import 'package:car_app/features/auth/domain/use_cases/reset_password_usecase.dart';
 import 'package:car_app/features/auth/domain/use_cases/save_tokens_params.dart';
 import 'package:car_app/features/auth/presentation/blocs/auth_cubit.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
@@ -71,6 +72,10 @@ Future<void> setupDependencyInjection() async {
     () => LogoutUseCase(sl<AuthRepository>()),
   );
 
+   sl.registerLazySingleton<ResetPasswordUseCase>(
+    () => ResetPasswordUseCase(sl<AuthRepository>()),
+  );
+
   /// Cubit
   sl.registerFactory<AuthCubit>(
     () => AuthCubit(
@@ -81,6 +86,7 @@ Future<void> setupDependencyInjection() async {
       logoutUseCase: sl<LogoutUseCase>(),
       registerUseCase: sl<RegisterUseCase>(),
       loginUseCase: sl<LoginUseCase>(),
+       resetPasswordUseCase: sl<ResetPasswordUseCase>(),
     ),
   );
 }

@@ -2,11 +2,15 @@ import 'package:car_app/core/error/faliure.dart';
 import 'package:car_app/features/auth/data/data_sources/local_datasource.dart';
 import 'package:car_app/features/auth/data/data_sources/remote_data_source.dart';
 import 'package:car_app/features/auth/data/models/auth_token_model.dart';
+import 'package:car_app/features/auth/data/models/confirm_passowrd_response_model.dart';
 import 'package:car_app/features/auth/data/models/login_request_model.dart';
+import 'package:car_app/features/auth/data/models/reset_password_model.dart';
 import 'package:car_app/features/auth/data/models/user_model.dart';
 import 'package:car_app/features/auth/domain/entities/auth_token_entity.dart';
+import 'package:car_app/features/auth/domain/entities/confirm_password_entity.dart';
 import 'package:car_app/features/auth/domain/entities/login_entity.dart';
 import 'package:car_app/features/auth/domain/entities/login_response_entity.dart';
+import 'package:car_app/features/auth/domain/entities/reset_password_request_entity.dart';
 import 'package:car_app/features/auth/domain/repositories/auth_repo.dart';
 import 'package:dartz/dartz.dart';
 import '../../domain/entities/register_request_entity.dart';
@@ -159,6 +163,19 @@ class AuthRepositoryImpl implements AuthRepository {
       final requestModel = LoginRequestModel.fromEntity(request);
 
       final responseModel = await remoteDataSource.login(requestModel);
+
+      return Right(responseModel);
+    } catch (e) {
+      return Left(ServerFailure(e.toString()));
+    }
+  }
+
+  @override
+  Future<Either<Failure, ConfirmPasswordResponseEntity>> resetPassword(ResetPasswordRequestEntity resetRequest)async {
+    try {
+      final requestModel = ResetPasswordModel.fromEntity(resetRequest);
+
+      final responseModel = await remoteDataSource.resetPassword(requestModel);
 
       return Right(responseModel);
     } catch (e) {
