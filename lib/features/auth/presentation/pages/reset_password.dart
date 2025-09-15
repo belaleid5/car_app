@@ -10,6 +10,7 @@ import 'package:car_app/core/utils/validators.dart';
 import 'package:car_app/core/widget/custom_toast.dart';
 import 'package:car_app/core/widget/cutsom_eleveted_button.dart';
 import 'package:car_app/features/auth/domain/entities/reset_password_request_entity.dart';
+import 'package:car_app/features/auth/domain/entities/forget_password_request_entity.dart';
 import 'package:car_app/features/auth/presentation/blocs/auth_cubit.dart';
 import 'package:car_app/features/auth/presentation/blocs/auth_states.dart';
 import 'package:car_app/features/auth/presentation/widgets/custom_title_verify_section.dart';
@@ -53,6 +54,13 @@ class _ResetPasswordState extends State<ResetPassword> {
                     );
 
                     Navigator.pushNamed(context, AppRouter.otpRoute);
+
+                  
+                    );
+
+                  Navigator.pushNamed(context, 
+                    AppRouter.otpRoute,arguments:
+                    state.resetPasswordResponse!.resetToken,);
                   }
                 },
                 builder: (context, state) {
@@ -99,6 +107,12 @@ class _ResetPasswordState extends State<ResetPassword> {
                                 email: _emailPhoneController.text.trim(),
                               );
                               context.read<AuthCubit>().resetPassword(request);
+
+                              final request = ForgetPasswordRequestEntity(
+                                email: _emailPhoneController.text.trim(),
+                              );
+                              context.read<AuthCubit>().forgetPassword(request);
+                               
                             }
                           },
                         ),
@@ -106,11 +120,4 @@ class _ResetPasswordState extends State<ResetPassword> {
                     ],
                   );
                 },
-              ),
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-}
+           

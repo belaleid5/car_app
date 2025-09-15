@@ -38,12 +38,14 @@ class _AuthSectionState extends State<AuthSection> {
       child: BlocConsumer<AuthCubit, AuthState>(
         listener: (context, state) {
           // Handle state changes like showing SnackBars or navigation
+
           if (state.status == AppStatus.success) {
             CustomToast.show(context, state.message ?? 'Login successful!');
 
             Navigator.pushNamed(context, '/home');
           } else if (state.status == AppStatus.failure) {
             CustomToast.show(context, state.message ?? 'Login failed!');
+            CustomToast.show(context,' Login failed, Error Email Or Password');
           }
         },
         builder: (context, state) {
@@ -60,6 +62,8 @@ class _AuthSectionState extends State<AuthSection> {
                 ),
                 CustomPasswordFormField(
                   passwordController: _passwordController,
+
+                  validate: (value) => Validators.validatePassword(value),
                 ),
                 CustomRememberAndForgetPassword(),
                 CustomElevatedButton(

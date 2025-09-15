@@ -5,6 +5,7 @@ import 'package:car_app/features/auth/data/data_sources/remote_data_source.dart'
 import 'package:car_app/features/auth/data/repositories_impl/auth_repo_imp.dart';
 import 'package:car_app/features/auth/domain/repositories/auth_repo.dart';
 import 'package:car_app/features/auth/domain/use_cases/check_usecase.dart';
+import 'package:car_app/features/auth/domain/use_cases/forget_password_usecase.dart';
 import 'package:car_app/features/auth/domain/use_cases/get_usecase.dart';
 import 'package:car_app/features/auth/domain/use_cases/login_usecase.dart';
 import 'package:car_app/features/auth/domain/use_cases/logout_usecase.dart';
@@ -71,14 +72,17 @@ Future<void> setupDependencyInjection() async {
   sl.registerLazySingleton<LogoutUseCase>(
     () => LogoutUseCase(sl<AuthRepository>()),
   );
-
-   sl.registerLazySingleton<ResetPasswordUseCase>(
+  sl.registerLazySingleton<ForgetPasswordUseCase>(
+    () => ForgetPasswordUseCase(sl<AuthRepository>()),
+  );
+  sl.registerLazySingleton<ResetPasswordUseCase>(
     () => ResetPasswordUseCase(sl<AuthRepository>()),
   );
 
   /// Cubit
   sl.registerFactory<AuthCubit>(
     () => AuthCubit(
+      resetPasswordUseCase: sl<ResetPasswordUseCase>(),
       checkAuthUseCase: sl<CheckAuthUseCase>(),
       getTokensUseCase: sl<GetTokensUseCase>(),
       saveTokensUseCase: sl<SaveTokensUseCase>(),
@@ -86,7 +90,7 @@ Future<void> setupDependencyInjection() async {
       logoutUseCase: sl<LogoutUseCase>(),
       registerUseCase: sl<RegisterUseCase>(),
       loginUseCase: sl<LoginUseCase>(),
-       resetPasswordUseCase: sl<ResetPasswordUseCase>(),
+      forgetPasswordUseCase: sl<ForgetPasswordUseCase>(),
     ),
   );
 }

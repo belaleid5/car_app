@@ -1,6 +1,7 @@
 import 'package:car_app/core/error/faliure.dart';
 import 'package:car_app/features/auth/data/models/auth_token_model.dart';
 import 'package:car_app/features/auth/data/models/confirm_passowrd_response_model.dart';
+import 'package:car_app/features/auth/data/models/forget_password_model.dart';
 import 'package:car_app/features/auth/data/models/login_request_model.dart';
 import 'package:car_app/features/auth/data/models/login_response_model.dart';
 import 'package:car_app/features/auth/data/models/refresh_token_model.dart';
@@ -11,6 +12,11 @@ import 'package:dio/dio.dart';
 import '../models/register_request_model.dart';
 
 import '../../../../core/constants/api_constants.dart';
+import 'package:car_app/features/auth/data/models/reset_password_response_model.dart';
+import 'package:dio/dio.dart';
+
+import '../../../../core/constants/api_constants.dart';
+import '../models/register_request_model.dart';
 
 abstract class AuthRemoteDataSource {
   Future<RegisterResponseModel> register(RegisterRequestModel registerRequest);
@@ -19,6 +25,12 @@ abstract class AuthRemoteDataSource {
   Future<ConfirmPasswordResponseModel> resetPassword(ResetPasswordModel resetModel);
 
 
+  Future<ConfirmPasswordResponseModel> forgetPassword(
+    ForgetPasswordModel resetModel,
+  );
+  Future<ResetPasswordResponseModel> resetPassword(
+    ResetPasswordModel resetModel,
+  );
 }
 
 class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
@@ -28,6 +40,9 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
 
   @override
   Future<RegisterResponseModel> register(RegisterRequestModel registerRequest) async {
+  Future<RegisterResponseModel> register(
+    RegisterRequestModel registerRequest,
+  ) async {
     try {
       final response = await dio.post(
         ApiConstants.registerEndpoint,
@@ -36,6 +51,7 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
           headers: {
             ApiConstants.contentType: ApiConstants.applicationJson,
           },
+          headers: {ApiConstants.contentType: ApiConstants.applicationJson},
         ),
       );
 
@@ -71,6 +87,10 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
     try {
       final refreshRequest = RefreshTokenRequestModel(refreshToken: refreshToken);
       
+      final refreshRequest = RefreshTokenRequestModel(
+        refreshToken: refreshToken,
+      );
+
       final response = await dio.post(
         ApiConstants.refreshTokenEndpoint,
         data: refreshRequest.toJson(),
@@ -78,6 +98,7 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
           headers: {
             ApiConstants.contentType: ApiConstants.applicationJson,
           },
+          headers: {ApiConstants.contentType: ApiConstants.applicationJson},
         ),
       );
 
@@ -95,6 +116,8 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
       } else if (e.type == DioExceptionType.connectionTimeout ||
                  e.type == DioExceptionType.receiveTimeout ||
                  e.type == DioExceptionType.sendTimeout) {
+          e.type == DioExceptionType.receiveTimeout ||
+          e.type == DioExceptionType.sendTimeout) {
         throw const NetworkException('Connection timeout');
       } else if (e.type == DioExceptionType.connectionError) {
         throw const NetworkException('No internet connection');
@@ -111,6 +134,8 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
   }
   
  @override
+
+  @override
   Future<LoginResponseModel> login(LoginRequestModel loginRequest) async {
     try {
       final response = await dio.post(
@@ -123,6 +148,7 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
       } else {
         throw ServerException(
          response.data["message"] ?? "Login failed",
+          response.data["message"] ?? "Login failed",
           response.statusCode ?? 500,
         );
       }
@@ -131,6 +157,8 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
         throw ServerException(
            e.response?.data["message"] ?? "Login error",
            e.response?.statusCode ?? 500,
+          e.response?.data["message"] ?? "Login error",
+          e.response?.statusCode ?? 500,
         );
       } else {
         throw NetworkException("No internet connection");
@@ -145,11 +173,55 @@ Future<ConfirmPasswordResponseModel> resetPassword(ResetPasswordModel resetModel
   try {
     final response = await dio.post(
       ApiConstants.resetPasswordEndpoint,
+      throw ServerException(e.toString(), 500);
+    }
+  }
+
+  @override
+  Future<ConfirmPasswordResponseModel> forgetPassword(
+    ForgetPasswordModel resetModel,
+  ) async {
+    try {
+      final response = await dio.post(
+        ApiConstants.forgotPasswordEndpoint,
+        data: resetModel.toJson(),
+      );
+
+      if (response.statusCode == 200) {
+        return ConfirmPasswordResponseModel.fromJson(response.data);
+      } else {
+        throw ServerException(
+          response.data["message"] ?? "Reset Password failed",
+          response.statusCode ?? 500,
+        );
+      }
+    } on DioException catch (e) {
+      if (e.response != null) {
+        throw ServerException(
+          e.response?.data["message"] ?? "Reset Password error",
+          e.response?.statusCode ?? 500,
+        );
+      } else {
+        throw NetworkException("No internet connection");
+      }
+    } catch (e) {
+      throw ServerException(e.toString(), 500);
+    }
+  }
+
+
+
+  @override
+Future<ResetPasswordResponseModel> resetPassword(ResetPasswordModel resetModel) async {
+  try {
+    final response = await dio.post(
+      ApiConstants.resetPasswordEndpoint, // "/reset_password/"
       data: resetModel.toJson(),
     );
 
     if (response.statusCode == 200) {
       return ConfirmPasswordResponseModel.fromJson(response.data);
+      return ResetPasswordResponseModel.fromJson(response.data);
     } else {
       throw ServerException(
         response.data["message"] ?? "Reset Password failed",
@@ -168,5 +240,6 @@ Future<ConfirmPasswordResponseModel> resetPassword(ResetPasswordModel resetModel
   } catch (e) {
     throw ServerException(e.toString(), 500);
   }
+}
 }
 }

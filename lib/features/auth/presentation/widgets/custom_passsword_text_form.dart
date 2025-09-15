@@ -10,13 +10,22 @@ class CustomPasswordFormField extends StatefulWidget {
 
   final TextEditingController _passwordController;
 
+    required TextEditingController passwordController, 
+    required this.validate,
+  } : _passwordController = passwordController;
+
+  final TextEditingController _passwordController;
+  final String? Function(String?) validate;
+
   @override
   State<CustomPasswordFormField> createState() =>
       _CustomPasswordFormFieldState();
-}
+
 
 class _CustomPasswordFormFieldState extends State<CustomPasswordFormField> {
   bool _isObscure = true; 
+
+  bool _isObscure = true;
 
   @override
   Widget build(BuildContext context) {
@@ -39,3 +48,5 @@ class _CustomPasswordFormFieldState extends State<CustomPasswordFormField> {
     );
   }
 }
+
+    

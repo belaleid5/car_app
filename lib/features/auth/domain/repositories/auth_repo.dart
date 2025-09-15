@@ -5,6 +5,12 @@ import 'package:car_app/features/auth/domain/entities/confirm_password_entity.da
 import 'package:car_app/features/auth/domain/entities/login_entity.dart';
 import 'package:car_app/features/auth/domain/entities/login_response_entity.dart';
 import 'package:car_app/features/auth/domain/entities/reset_password_request_entity.dart';
+
+import 'package:car_app/features/auth/domain/entities/forget_password_request_entity.dart';
+import 'package:car_app/features/auth/domain/entities/login_entity.dart';
+import 'package:car_app/features/auth/domain/entities/login_response_entity.dart';
+import 'package:car_app/features/auth/domain/entities/reset_password_entity.dart';
+import 'package:car_app/features/auth/domain/entities/reset_password_reponse_entity.dart';
 import 'package:dartz/dartz.dart';
 
 import '../entities/register_request_entity.dart';
@@ -38,4 +44,18 @@ abstract class AuthRepository {
   Future<Either<Failure, ConfirmPasswordResponseEntity>> resetPassword(
     ResetPasswordRequestEntity resetRequest,
   );
+
+  Future<Either<Failure, ConfirmPasswordResponseEntity>> forgetPassword(
+    ForgetPasswordRequestEntity resetRequest,
+  );
+
+  // في الـ AuthRepository interface
+Future<Either<Failure, ResetPasswordResponseEntity>> resetPassword(
+  ResetPasswordEntity resetRequest,
+);
+
+
+
+
+
 }

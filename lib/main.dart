@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 
 void main()async {
    WidgetsFlutterBinding.ensureInitialized();
-  // Setup dependency injection
   await setupDependencyInjection();
   runApp(const MyApp());
 }
@@ -21,4 +20,11 @@ class MyApp extends StatelessWidget {
     );
   }
 }
+
+
+
+
+
+
+
 

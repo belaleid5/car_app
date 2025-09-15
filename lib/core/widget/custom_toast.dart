@@ -55,7 +55,7 @@ class _ToastWidgetState extends State<_ToastWidget>
 
     _controller.forward();
 
-    Future.delayed(const Duration(seconds: 2), () async {
+    Future.delayed(const Duration(seconds: 10), () async {
       await _controller.reverse();
       widget.onDismissed();
     });

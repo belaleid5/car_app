@@ -33,6 +33,10 @@ class AppRouter {
 
         case otpRoute:
         return MaterialPageRoute(builder: (_) => OtpScreen());
+        final token = settings.arguments as String;
+        return MaterialPageRoute(
+          builder: (_) => OtpScreen(resetToken: token),
+        );
         case setPassword:
         return MaterialPageRoute(builder: (_) => ResetPassword());
       default:

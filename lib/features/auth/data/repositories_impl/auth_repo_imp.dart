@@ -3,6 +3,7 @@ import 'package:car_app/features/auth/data/data_sources/local_datasource.dart';
 import 'package:car_app/features/auth/data/data_sources/remote_data_source.dart';
 import 'package:car_app/features/auth/data/models/auth_token_model.dart';
 import 'package:car_app/features/auth/data/models/confirm_passowrd_response_model.dart';
+import 'package:car_app/features/auth/data/models/forget_password_model.dart';
 import 'package:car_app/features/auth/data/models/login_request_model.dart';
 import 'package:car_app/features/auth/data/models/reset_password_model.dart';
 import 'package:car_app/features/auth/data/models/user_model.dart';
@@ -13,6 +14,15 @@ import 'package:car_app/features/auth/domain/entities/login_response_entity.dart
 import 'package:car_app/features/auth/domain/entities/reset_password_request_entity.dart';
 import 'package:car_app/features/auth/domain/repositories/auth_repo.dart';
 import 'package:dartz/dartz.dart';
+import 'package:car_app/features/auth/domain/entities/forget_password_request_entity.dart';
+import 'package:car_app/features/auth/domain/entities/login_entity.dart';
+import 'package:car_app/features/auth/domain/entities/login_response_entity.dart';
+import 'package:car_app/features/auth/domain/entities/reset_password_entity.dart';
+import 'package:car_app/features/auth/domain/entities/reset_password_reponse_entity.dart';
+import 'package:car_app/features/auth/domain/repositories/auth_repo.dart';
+import 'package:dartz/dartz.dart';
+
+import '../../../../core/network/network_info.dart';
 import '../../domain/entities/register_request_entity.dart';
 import '../../domain/entities/register_response_entity.dart';
 import '../models/register_request_model.dart';
@@ -159,6 +169,10 @@ class AuthRepositoryImpl implements AuthRepository {
 @override
   Future<Either<Failure, LoginResponseEntity>> login(
       LoginRequestEntity request) async {
+  @override
+  Future<Either<Failure, LoginResponseEntity>> login(
+    LoginRequestEntity request,
+  ) async {
     try {
       final requestModel = LoginRequestModel.fromEntity(request);
 
@@ -172,6 +186,24 @@ class AuthRepositoryImpl implements AuthRepository {
 
   @override
   Future<Either<Failure, ConfirmPasswordResponseEntity>> resetPassword(ResetPasswordRequestEntity resetRequest)async {
+  Future<Either<Failure, ConfirmPasswordResponseEntity>> forgetPassword(
+    ForgetPasswordRequestEntity resetRequest,
+  ) async {
+    try {
+      final requestModel = ForgetPasswordModel.fromEntity(resetRequest);
+
+      final responseModel = await remoteDataSource.forgetPassword(requestModel);
+
+      return Right(responseModel);
+    } catch (e) {
+      return Left(ServerFailure(e.toString()));
+    }
+  }
+
+  @override
+  Future<Either<Failure, ResetPasswordResponseEntity>> resetPassword(
+    ResetPasswordEntity resetRequest,
+  ) async {
     try {
       final requestModel = ResetPasswordModel.fromEntity(resetRequest);
 
@@ -188,3 +220,4 @@ class AuthRepositoryImpl implements AuthRepository {
 
 
 
+}

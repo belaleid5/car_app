@@ -45,7 +45,7 @@ class ResponsiveHelper {
     _orientation = _mediaQuery.orientation;
   }
 
-  // ===================== الخصائص الأساسية =====================
+  //  الخصائص الأساسية 
 
   /// الحصول على عرض الشاشة
   double get screenWidth => _screenWidth;
@@ -76,7 +76,7 @@ class ResponsiveHelper {
   double get availableWidth => 
       _screenWidth - _mediaQuery.padding.left - _mediaQuery.padding.right;
 
-  // ===================== تحديد نوع الجهاز =====================
+  //  تحديد نوع الجهاز 
 
   /// تحديد نوع الجهاز بناءً على المنصة وحجم الشاشة
   DeviceType get deviceType {
@@ -109,7 +109,7 @@ class ResponsiveHelper {
   bool get isTV => deviceType == DeviceType.tv;
   bool get isWeb => kIsWeb;
 
-  // ===================== تحديد حجم الشاشة =====================
+  //  تحديد حجم الشاشة 
 
   /// تحديد حجم الشاشة
   ScreenSize get screenSizeCategory {
@@ -127,7 +127,7 @@ class ResponsiveHelper {
   bool get isLarge => screenSizeCategory == ScreenSize.large;
   bool get isXLarge => screenSizeCategory == ScreenSize.xLarge;
 
-  // ===================== الحسابات المتجاوبة =====================
+  //  الحسابات المتجاوبة 
 
   /// تحويل العرض إلى نسبة مئوية من عرض الشاشة
   double widthPercent(double percent) => _screenWidth * (percent / 100);
@@ -156,7 +156,7 @@ class ResponsiveHelper {
     return (shortestSide / 375) * size;
   }
 
-  // ===================== القيم الشرطية =====================
+  //  القيم الشرطية 
 
   /// إرجاع قيمة مختلفة حسب نوع الجهاز
   T valueByDevice<T>({
@@ -212,7 +212,7 @@ class ResponsiveHelper {
     return isPortrait ? portrait : landscape;
   }
 
-  // ===================== التخطيطات المتجاوبة =====================
+  //  التخطيطات المتجاوبة 
 
   /// تحديد عدد الأعمدة في الشبكة بناءً على عرض الشاشة
   int getGridColumns({
@@ -257,7 +257,7 @@ class ResponsiveHelper {
     );
   }
 
-  // ===================== أحجام الخطوط المتجاوبة =====================
+  //  أحجام الخطوط المتجاوبة 
 
   /// الحصول على أحجام الخطوط المتجاوبة
   TextStyle getResponsiveTextStyle({
@@ -303,7 +303,7 @@ class ResponsiveHelper {
     fontWeight: FontWeight.w400,
   );
 
-  // ===================== الطرق المساعدة =====================
+  //  الطرق المساعدة 
 
   /// التحقق من كون الشاشة صغيرة (موبايل أو أصغر)
   bool get isSmallScreen => _screenWidth < 600;
