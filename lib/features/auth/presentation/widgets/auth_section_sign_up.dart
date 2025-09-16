@@ -44,14 +44,11 @@ class _AuthSectionSignUpState extends State<AuthSectionSignUp> {
     super.dispose();
   }
 
-  // تحديث القيم بدون setState - فقط حفظ البيانات
   void _onPhoneChanged(String fullPhone, String countryCode, String phoneNumber) {
-    // تحديث القيم بدون setState لتحسين الأداء
     _fullPhoneNumber = fullPhone;
     _countryCode = countryCode;
     _phoneNumber = phoneNumber;
     
-    // طباعة للتأكد من التحديث (يمكن حذفها في الإنتاج)
     debugPrint("Full phone: $fullPhone");
     debugPrint("Country Code: $countryCode");
     debugPrint("Phone Number: $phoneNumber");
@@ -92,7 +89,7 @@ class _AuthSectionSignUpState extends State<AuthSectionSignUp> {
               ),
 
               // Password Field
-              CustomPasswordFormField(passwordController: _passwordController),
+              CustomPasswordFormField(passwordController: _passwordController, validate: (value)=>Validators.validatePassword(value) ,),
 
               CountryPhoneInputField(
                 phoneController: _phoneController,
@@ -117,7 +114,6 @@ class _AuthSectionSignUpState extends State<AuthSectionSignUp> {
                     ? null
                     : () {
                         if (_formKey.currentState!.validate()) {
-                          // استخدام القيم المحفوظة بدون الحاجة لـ setState
                           final registerRequest = RegisterRequestEntity(
                             fullName: _fullNameController.text.trim(),
                             email: _emailController.text.trim(),

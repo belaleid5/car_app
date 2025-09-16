@@ -89,7 +89,7 @@ class _ToastWidgetState extends State<_ToastWidget>
                     AppColors.neutral100,
                     AppColors.neutral900,
                   ],
-                  stops: [0.15, 0.15], // ربع مساحة للون الأول والباقي للتاني
+                  stops: [0.05, 0.05], // ربع مساحة للون الأول والباقي للتاني
                   begin: Alignment.centerLeft,
                   end: Alignment.centerRight,
                 ),

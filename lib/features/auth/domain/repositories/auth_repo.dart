@@ -2,14 +2,10 @@
 import 'package:car_app/core/error/faliure.dart';
 import 'package:car_app/features/auth/domain/entities/auth_token_entity.dart';
 import 'package:car_app/features/auth/domain/entities/confirm_password_entity.dart';
-import 'package:car_app/features/auth/domain/entities/login_entity.dart';
-import 'package:car_app/features/auth/domain/entities/login_response_entity.dart';
-import 'package:car_app/features/auth/domain/entities/reset_password_request_entity.dart';
-
 import 'package:car_app/features/auth/domain/entities/forget_password_request_entity.dart';
 import 'package:car_app/features/auth/domain/entities/login_entity.dart';
 import 'package:car_app/features/auth/domain/entities/login_response_entity.dart';
-import 'package:car_app/features/auth/domain/entities/reset_password_entity.dart';
+import 'package:car_app/features/auth/domain/entities/reset_password_request_entity.dart';
 import 'package:car_app/features/auth/domain/entities/reset_password_reponse_entity.dart';
 import 'package:dartz/dartz.dart';
 
@@ -41,21 +37,12 @@ abstract class AuthRepository {
   /// Check if user is authenticated (has valid tokens)
   Future<Either<Failure, bool>> isAuthenticated();
 
-  Future<Either<Failure, ConfirmPasswordResponseEntity>> resetPassword(
-    ResetPasswordRequestEntity resetRequest,
-  );
-
   Future<Either<Failure, ConfirmPasswordResponseEntity>> forgetPassword(
     ForgetPasswordRequestEntity resetRequest,
   );
 
   // في الـ AuthRepository interface
-Future<Either<Failure, ResetPasswordResponseEntity>> resetPassword(
-  ResetPasswordEntity resetRequest,
-);
-
-
-
-
-
+  Future<Either<Failure, ResetPasswordResponseEntity>> resetPassword(
+    ResetRequestPasswordEntity resetRequest,
+  );
 }

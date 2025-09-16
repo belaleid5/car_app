@@ -2,22 +2,16 @@ import 'package:car_app/core/error/faliure.dart';
 import 'package:car_app/features/auth/data/data_sources/local_datasource.dart';
 import 'package:car_app/features/auth/data/data_sources/remote_data_source.dart';
 import 'package:car_app/features/auth/data/models/auth_token_model.dart';
-import 'package:car_app/features/auth/data/models/confirm_passowrd_response_model.dart';
 import 'package:car_app/features/auth/data/models/forget_password_model.dart';
 import 'package:car_app/features/auth/data/models/login_request_model.dart';
 import 'package:car_app/features/auth/data/models/reset_password_model.dart';
 import 'package:car_app/features/auth/data/models/user_model.dart';
 import 'package:car_app/features/auth/domain/entities/auth_token_entity.dart';
 import 'package:car_app/features/auth/domain/entities/confirm_password_entity.dart';
-import 'package:car_app/features/auth/domain/entities/login_entity.dart';
-import 'package:car_app/features/auth/domain/entities/login_response_entity.dart';
-import 'package:car_app/features/auth/domain/entities/reset_password_request_entity.dart';
-import 'package:car_app/features/auth/domain/repositories/auth_repo.dart';
-import 'package:dartz/dartz.dart';
 import 'package:car_app/features/auth/domain/entities/forget_password_request_entity.dart';
 import 'package:car_app/features/auth/domain/entities/login_entity.dart';
 import 'package:car_app/features/auth/domain/entities/login_response_entity.dart';
-import 'package:car_app/features/auth/domain/entities/reset_password_entity.dart';
+import 'package:car_app/features/auth/domain/entities/reset_password_request_entity.dart';
 import 'package:car_app/features/auth/domain/entities/reset_password_reponse_entity.dart';
 import 'package:car_app/features/auth/domain/repositories/auth_repo.dart';
 import 'package:dartz/dartz.dart';
@@ -26,8 +20,6 @@ import '../../../../core/network/network_info.dart';
 import '../../domain/entities/register_request_entity.dart';
 import '../../domain/entities/register_response_entity.dart';
 import '../models/register_request_model.dart';
-
-import '../../../../core/network/network_info.dart';
 
 class AuthRepositoryImpl implements AuthRepository {
   final AuthRemoteDataSource remoteDataSource;
@@ -49,15 +41,11 @@ class AuthRepositoryImpl implements AuthRepository {
     }
 
     try {
-      // Convert entity to model
       final registerRequestModel = RegisterRequestModel.fromEntity(
         registerRequest,
       );
-
-      // Make API call
       final result = await remoteDataSource.register(registerRequestModel);
 
-      // Save tokens and user data locally
       await localDataSource.saveTokens(result.tokens as AuthTokensModel);
       await localDataSource.saveUser(result.user as UserModel);
 
@@ -76,7 +64,7 @@ class AuthRepositoryImpl implements AuthRepository {
     } on CacheException catch (e) {
       return Left(CacheFailure(e.message));
     } catch (e) {
-      return Left(ServerFailure('Unexpected error occurred: ${e.toString()}'));
+      return Left(ServerFailure('Unexpected error occurred: $e'));
     }
   }
 
@@ -92,12 +80,10 @@ class AuthRepositoryImpl implements AuthRepository {
       final result = await remoteDataSource.refreshToken(refreshToken);
       return Right(result);
     } on TokenExpiredException catch (e) {
-      // Clear local tokens if refresh token is expired
       await localDataSource.clearTokens();
       return Left(TokenExpiredFailure(e.message));
     } on ServerException catch (e) {
       if (e.statusCode == 401) {
-        // Clear local tokens if unauthorized
         await localDataSource.clearTokens();
         return Left(TokenExpiredFailure(e.message));
       }
@@ -105,26 +91,26 @@ class AuthRepositoryImpl implements AuthRepository {
     } on NetworkException catch (e) {
       return Left(NetworkFailure(e.message));
     } catch (e) {
-      return Left(ServerFailure('Unexpected error occurred: ${e.toString()}'));
+      return Left(ServerFailure('Unexpected error occurred: $e'));
     }
   }
 
   @override
   Future<Either<Failure, void>> saveTokens(AuthTokensEntity tokens) async {
     try {
-      final tokensModel =
-          tokens as AuthTokensModel? ??
-          AuthTokensModel(
-            accessToken: tokens.accessToken,
-            refreshToken: tokens.refreshToken,
-          );
+      final tokensModel = tokens is AuthTokensModel
+          ? tokens
+          : AuthTokensModel(
+              accessToken: tokens.accessToken,
+              refreshToken: tokens.refreshToken,
+            );
 
       await localDataSource.saveTokens(tokensModel);
       return const Right(null);
     } on CacheException catch (e) {
       return Left(CacheFailure(e.message));
     } catch (e) {
-      return Left(CacheFailure('Failed to save tokens: ${e.toString()}'));
+      return Left(CacheFailure('Failed to save tokens: $e'));
     }
   }
 
@@ -136,7 +122,7 @@ class AuthRepositoryImpl implements AuthRepository {
     } on CacheException catch (e) {
       return Left(CacheFailure(e.message));
     } catch (e) {
-      return Left(CacheFailure('Failed to get tokens: ${e.toString()}'));
+      return Left(CacheFailure('Failed to get tokens: $e'));
     }
   }
 
@@ -148,7 +134,7 @@ class AuthRepositoryImpl implements AuthRepository {
     } on CacheException catch (e) {
       return Left(CacheFailure(e.message));
     } catch (e) {
-      return Left(CacheFailure('Failed to clear tokens: ${e.toString()}'));
+      return Left(CacheFailure('Failed to clear tokens: $e'));
     }
   }
 
@@ -158,26 +144,17 @@ class AuthRepositoryImpl implements AuthRepository {
       final result = await localDataSource.isLoggedIn();
       return Right(result);
     } catch (e) {
-      return Left(
-        ServerFailure('Failed to check authentication: ${e.toString()}'),
-      );
+      return Left(ServerFailure('Failed to check authentication: $e'));
     }
   }
 
-
-
-@override
-  Future<Either<Failure, LoginResponseEntity>> login(
-      LoginRequestEntity request) async {
   @override
   Future<Either<Failure, LoginResponseEntity>> login(
     LoginRequestEntity request,
   ) async {
     try {
       final requestModel = LoginRequestModel.fromEntity(request);
-
       final responseModel = await remoteDataSource.login(requestModel);
-
       return Right(responseModel);
     } catch (e) {
       return Left(ServerFailure(e.toString()));
@@ -185,39 +162,30 @@ class AuthRepositoryImpl implements AuthRepository {
   }
 
   @override
-  Future<Either<Failure, ConfirmPasswordResponseEntity>> resetPassword(ResetPasswordRequestEntity resetRequest)async {
   Future<Either<Failure, ConfirmPasswordResponseEntity>> forgetPassword(
-    ForgetPasswordRequestEntity resetRequest,
+    ForgetPasswordRequestEntity request,
   ) async {
     try {
-      final requestModel = ForgetPasswordModel.fromEntity(resetRequest);
-
+      final requestModel = ForgetPasswordModel.fromEntity(request);
       final responseModel = await remoteDataSource.forgetPassword(requestModel);
-
       return Right(responseModel);
     } catch (e) {
       return Left(ServerFailure(e.toString()));
     }
   }
+
+
 
   @override
   Future<Either<Failure, ResetPasswordResponseEntity>> resetPassword(
-    ResetPasswordEntity resetRequest,
+    ResetRequestPasswordEntity request,
   ) async {
     try {
-      final requestModel = ResetPasswordModel.fromEntity(resetRequest);
-
+      final requestModel = ResetPasswordModel.fromEntity(request);
       final responseModel = await remoteDataSource.resetPassword(requestModel);
-
       return Right(responseModel);
     } catch (e) {
       return Left(ServerFailure(e.toString()));
     }
   }
-
-    
-  }
-
-
-
 }

@@ -6,13 +6,8 @@ class CustomPasswordFormField extends StatefulWidget {
   const CustomPasswordFormField({
     super.key,
     required TextEditingController passwordController,
-  }) : _passwordController = passwordController;
-
-  final TextEditingController _passwordController;
-
-    required TextEditingController passwordController, 
     required this.validate,
-  } : _passwordController = passwordController;
+  }) : _passwordController = passwordController;
 
   final TextEditingController _passwordController;
   final String? Function(String?) validate;
@@ -20,11 +15,9 @@ class CustomPasswordFormField extends StatefulWidget {
   @override
   State<CustomPasswordFormField> createState() =>
       _CustomPasswordFormFieldState();
-
+}
 
 class _CustomPasswordFormFieldState extends State<CustomPasswordFormField> {
-  bool _isObscure = true; 
-
   bool _isObscure = true;
 
   @override
@@ -44,9 +37,7 @@ class _CustomPasswordFormFieldState extends State<CustomPasswordFormField> {
         },
         child: Icon(_isObscure ? Icons.visibility_off : Icons.visibility),
       ),
-      validate: (value) => Validators.validatePassword(value),
+      validate: widget.validate, // تم تصحيح تمرير validate
     );
   }
 }
-
-    

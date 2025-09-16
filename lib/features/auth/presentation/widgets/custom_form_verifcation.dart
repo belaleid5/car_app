@@ -1,15 +1,12 @@
-
 import 'package:car_app/core/responsive/responsive_helper.dart';
 import 'package:flutter/material.dart';
 import 'package:pinput/pinput.dart';
 
 class CustomFormVerification extends StatelessWidget {
-  const CustomFormVerification({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-
-  const CustomFormVerification({super.key, required this.controller});
+  const CustomFormVerification({
+    super.key,
+    required this.controller,
+  });
 
   final TextEditingController controller;
 
@@ -34,25 +31,16 @@ class CustomFormVerification extends StatelessWidget {
     return Center(
       child: Pinput(
         length: 4,
+        controller: controller, // ✅ هنا مكانها الصح
         defaultPinTheme: defaultPinTheme,
-        separatorBuilder: (index) => Spacer(),
-
+        separatorBuilder: (index) => SizedBox(width: res.screenWidth * 0.10),
         onCompleted: (pin) {
           debugPrint('✅ Entered PIN is: $pin');
         },
         onChanged: (value) {
           debugPrint('🔄 Current value: $value');
-
-        controller: controller, // ✅ ربط بالـ controller
-        defaultPinTheme: defaultPinTheme,
-        separatorBuilder: (index) => SizedBox(width: res.screenWidth * 0.10),
-        onCompleted: (value) {
-          debugPrint('✅ Entered OTP: $value');
         },
       ),
     );
   }
 }
-
-}
-

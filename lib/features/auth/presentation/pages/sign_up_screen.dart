@@ -1,12 +1,9 @@
 import 'package:car_app/core/di/server_locator.dart';
-import 'package:car_app/core/enums/app_states.dart';
-import 'package:car_app/core/error/faliure.dart';
 import 'package:car_app/core/responsive/responsive_helper.dart';
 import 'package:car_app/core/routing/app_router.dart';
 import 'package:car_app/core/utils/app_color.dart';
 import 'package:car_app/core/utils/app_images.dart';
 import 'package:car_app/features/auth/presentation/blocs/auth_cubit.dart';
-import 'package:car_app/features/auth/presentation/blocs/auth_states.dart';
 import 'package:car_app/features/auth/presentation/widgets/auth_section_sign_up.dart';
 import 'package:car_app/features/auth/presentation/widgets/custom_button_social.dart';
 import 'package:car_app/features/auth/presentation/widgets/custom_divider_and_or.dart';
@@ -39,7 +36,7 @@ class SignUpScreen extends StatelessWidget {
           ),
           ),
           SliverToBoxAdapter(child: SizedBox(height: res.rh(20))),
-          SliverToBoxAdapter(child: AuthSectionSignUp()),
+         SliverToBoxAdapter(child: AuthSectionSignUp()),
           SliverToBoxAdapter(child: SizedBox(height: res.rh(10))),
           SliverToBoxAdapter(child: CustomDividerAndOR(res: res)),
           SliverToBoxAdapter(child: SizedBox(height: res.rh(20))),

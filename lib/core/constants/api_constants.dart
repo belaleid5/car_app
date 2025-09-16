@@ -8,8 +8,6 @@ class ApiConstants {
   static const String loginEndpoint = '$baseUrl/auth/login/';
   static const String refreshTokenEndpoint = '$baseUrl/auth/refresh';
   static const String logoutEndpoint = '$baseUrl/auth/logout';
-  static const String forgotPasswordEndpoint = '$baseUrl/auth/forgot-password';
-  static const String resetPasswordEndpoint = '$baseUrl/auth/reset-password';
   static const String forgotPasswordEndpoint = '$baseUrl/auth/forgot_password/';
   static const String resetPasswordEndpoint = '$baseUrl/auth/reset_password/';
   

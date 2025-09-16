@@ -7,30 +7,17 @@ import 'package:car_app/features/auth/data/models/login_response_model.dart';
 import 'package:car_app/features/auth/data/models/refresh_token_model.dart';
 import 'package:car_app/features/auth/data/models/register_response.dart';
 import 'package:car_app/features/auth/data/models/reset_password_model.dart';
-
 import 'package:dio/dio.dart';
-import '../models/register_request_model.dart';
-
 import '../../../../core/constants/api_constants.dart';
+import '../models/register_request_model.dart';
 import 'package:car_app/features/auth/data/models/reset_password_response_model.dart';
-import 'package:dio/dio.dart';
-
-import '../../../../core/constants/api_constants.dart';
-import '../models/register_request_model.dart';
 
 abstract class AuthRemoteDataSource {
   Future<RegisterResponseModel> register(RegisterRequestModel registerRequest);
   Future<AuthTokensModel> refreshToken(String refreshToken);
   Future<LoginResponseModel> login(LoginRequestModel loginRequest);
-  Future<ConfirmPasswordResponseModel> resetPassword(ResetPasswordModel resetModel);
-
-
-  Future<ConfirmPasswordResponseModel> forgetPassword(
-    ForgetPasswordModel resetModel,
-  );
-  Future<ResetPasswordResponseModel> resetPassword(
-    ResetPasswordModel resetModel,
-  );
+  Future<ResetPasswordResponseModel> resetPassword(ResetPasswordModel resetModel);
+  Future<ConfirmPasswordResponseModel> forgetPassword(ForgetPasswordModel resetModel);
 }
 
 class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
@@ -40,17 +27,11 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
 
   @override
   Future<RegisterResponseModel> register(RegisterRequestModel registerRequest) async {
-  Future<RegisterResponseModel> register(
-    RegisterRequestModel registerRequest,
-  ) async {
     try {
       final response = await dio.post(
         ApiConstants.registerEndpoint,
         data: registerRequest.toJson(),
         options: Options(
-          headers: {
-            ApiConstants.contentType: ApiConstants.applicationJson,
-          },
           headers: {ApiConstants.contentType: ApiConstants.applicationJson},
         ),
       );
@@ -64,19 +45,7 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
         );
       }
     } on DioException catch (e) {
-      if (e.type == DioExceptionType.connectionTimeout ||
-          e.type == DioExceptionType.receiveTimeout ||
-          e.type == DioExceptionType.sendTimeout) {
-        throw const NetworkException('Connection timeout');
-      } else if (e.type == DioExceptionType.connectionError) {
-        throw const NetworkException('No internet connection');
-      } else if (e.response != null) {
-        final statusCode = e.response!.statusCode;
-        final message = e.response!.data?['message'] ?? 'Server error occurred';
-        throw ServerException(message, statusCode);
-      } else {
-        throw const ServerException('Unknown server error occurred');
-      }
+      return _handleDioException(e);
     } catch (e) {
       throw ServerException('Unexpected error: ${e.toString()}');
     }
@@ -86,18 +55,10 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
   Future<AuthTokensModel> refreshToken(String refreshToken) async {
     try {
       final refreshRequest = RefreshTokenRequestModel(refreshToken: refreshToken);
-      
-      final refreshRequest = RefreshTokenRequestModel(
-        refreshToken: refreshToken,
-      );
-
       final response = await dio.post(
         ApiConstants.refreshTokenEndpoint,
         data: refreshRequest.toJson(),
         options: Options(
-          headers: {
-            ApiConstants.contentType: ApiConstants.applicationJson,
-          },
           headers: {ApiConstants.contentType: ApiConstants.applicationJson},
         ),
       );
@@ -111,29 +72,11 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
         );
       }
     } on DioException catch (e) {
-      if (e.response?.statusCode == 401) {
-        throw const TokenExpiredException('Refresh token expired');
-      } else if (e.type == DioExceptionType.connectionTimeout ||
-                 e.type == DioExceptionType.receiveTimeout ||
-                 e.type == DioExceptionType.sendTimeout) {
-          e.type == DioExceptionType.receiveTimeout ||
-          e.type == DioExceptionType.sendTimeout) {
-        throw const NetworkException('Connection timeout');
-      } else if (e.type == DioExceptionType.connectionError) {
-        throw const NetworkException('No internet connection');
-      } else if (e.response != null) {
-        final statusCode = e.response!.statusCode;
-        final message = e.response!.data?['message'] ?? 'Server error occurred';
-        throw ServerException(message, statusCode);
-      } else {
-        throw const ServerException('Unknown server error occurred');
-      }
+      return _handleDioException(e);
     } catch (e) {
       throw ServerException('Unexpected error: ${e.toString()}');
     }
   }
-  
- @override
 
   @override
   Future<LoginResponseModel> login(LoginRequestModel loginRequest) async {
@@ -141,54 +84,39 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
       final response = await dio.post(
         ApiConstants.loginEndpoint,
         data: loginRequest.toJson(),
+        options: Options(
+          headers: {ApiConstants.contentType: ApiConstants.applicationJson},
+        ),
       );
 
       if (response.statusCode == 200) {
         return LoginResponseModel.fromJson(response.data);
       } else {
         throw ServerException(
-         response.data["message"] ?? "Login failed",
           response.data["message"] ?? "Login failed",
           response.statusCode ?? 500,
         );
       }
     } on DioException catch (e) {
-      if (e.response != null) {
-        throw ServerException(
-           e.response?.data["message"] ?? "Login error",
-           e.response?.statusCode ?? 500,
-          e.response?.data["message"] ?? "Login error",
-          e.response?.statusCode ?? 500,
-        );
-      } else {
-        throw NetworkException("No internet connection");
-      }
+      return _handleDioException(e);
     } catch (e) {
-      throw ServerException( e.toString(),  500);
-    }
-  }
-  
-  @override
-Future<ConfirmPasswordResponseModel> resetPassword(ResetPasswordModel resetModel) async {
-  try {
-    final response = await dio.post(
-      ApiConstants.resetPasswordEndpoint,
-      throw ServerException(e.toString(), 500);
+      throw ServerException('Unexpected error: ${e.toString()}');
     }
   }
 
   @override
-  Future<ConfirmPasswordResponseModel> forgetPassword(
-    ForgetPasswordModel resetModel,
-  ) async {
+  Future<ResetPasswordResponseModel> resetPassword(ResetPasswordModel resetModel) async {
     try {
       final response = await dio.post(
-        ApiConstants.forgotPasswordEndpoint,
+        ApiConstants.resetPasswordEndpoint,
         data: resetModel.toJson(),
+        options: Options(
+          headers: {ApiConstants.contentType: ApiConstants.applicationJson},
+        ),
       );
 
       if (response.statusCode == 200) {
-        return ConfirmPasswordResponseModel.fromJson(response.data);
+        return ResetPasswordResponseModel.fromJson(response.data);
       } else {
         throw ServerException(
           response.data["message"] ?? "Reset Password failed",
@@ -196,50 +124,52 @@ Future<ConfirmPasswordResponseModel> resetPassword(ResetPasswordModel resetModel
         );
       }
     } on DioException catch (e) {
-      if (e.response != null) {
-        throw ServerException(
-          e.response?.data["message"] ?? "Reset Password error",
-          e.response?.statusCode ?? 500,
-        );
-      } else {
-        throw NetworkException("No internet connection");
-      }
+      return _handleDioException(e);
     } catch (e) {
-      throw ServerException(e.toString(), 500);
+      throw ServerException('Unexpected error: ${e.toString()}');
     }
   }
-
-
 
   @override
-Future<ResetPasswordResponseModel> resetPassword(ResetPasswordModel resetModel) async {
-  try {
-    final response = await dio.post(
-      ApiConstants.resetPasswordEndpoint, // "/reset_password/"
-      data: resetModel.toJson(),
-    );
+  Future<ConfirmPasswordResponseModel> forgetPassword(ForgetPasswordModel resetModel) async {
+    try {
+      final response = await dio.post(
+        ApiConstants.forgotPasswordEndpoint,
+        data: resetModel.toJson(),
+        options: Options(
+          headers: {ApiConstants.contentType: ApiConstants.applicationJson},
+        ),
+      );
 
-    if (response.statusCode == 200) {
-      return ConfirmPasswordResponseModel.fromJson(response.data);
-      return ResetPasswordResponseModel.fromJson(response.data);
-    } else {
-      throw ServerException(
-        response.data["message"] ?? "Reset Password failed",
-        response.statusCode ?? 500,
-      );
+      if (response.statusCode == 200) {
+        return ConfirmPasswordResponseModel.fromJson(response.data);
+      } else {
+        throw ServerException(
+          response.data["message"] ?? "Forgot Password failed",
+          response.statusCode ?? 500,
+        );
+      }
+    } on DioException catch (e) {
+      return _handleDioException(e);
+    } catch (e) {
+      throw ServerException('Unexpected error: ${e.toString()}');
     }
-  } on DioException catch (e) {
-    if (e.response != null) {
-      throw ServerException(
-        e.response?.data["message"] ?? "Reset Password error",
-        e.response?.statusCode ?? 500,
-      );
-    } else {
-      throw NetworkException("No internet connection");
-    }
-  } catch (e) {
-    throw ServerException(e.toString(), 500);
   }
-}
-}
+
+  // Helper method to handle Dio exceptions
+  Future<T> _handleDioException<T>(DioException e) async {
+    if (e.type == DioExceptionType.connectionTimeout ||
+        e.type == DioExceptionType.receiveTimeout ||
+        e.type == DioExceptionType.sendTimeout) {
+      throw const NetworkException('Connection timeout');
+    } else if (e.type == DioExceptionType.connectionError) {
+      throw const NetworkException('No internet connection');
+    } else if (e.response != null) {
+      final statusCode = e.response!.statusCode;
+      final message = e.response!.data?['message'] ?? 'Server error occurred';
+      throw ServerException(message, statusCode);
+    } else {
+      throw const ServerException('Unknown server error occurred');
+    }
+  }
 }

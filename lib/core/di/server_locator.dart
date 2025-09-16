@@ -23,20 +23,17 @@ final GetIt sl = GetIt.instance;
 Future<void> setupDependencyInjection() async {
   /// External
   final sharedPreferences = await SharedPreferences.getInstance();
-  sl.registerLazySingleton<SharedPreferences>(() => sharedPreferences);
-  sl.registerLazySingleton<DioClient>(() => DioClient.instance);
+  sl.registerLazySingleton(() => sharedPreferences);
+  sl.registerLazySingleton(() => DioClient.instance);
 
   /// Core
-  sl.registerLazySingleton<Connectivity>(() => Connectivity());
-  sl.registerLazySingleton<NetworkInfo>(
-    () => NetworkInfoImpl(sl<Connectivity>()),
-  );
+  sl.registerLazySingleton(() => Connectivity());
+  sl.registerLazySingleton<NetworkInfo>(() => NetworkInfoImpl(sl()));
 
   /// Data Sources
   sl.registerLazySingleton<AuthLocalDataSource>(
-    () => AuthLocalDataSourceImpl(sl<SharedPreferences>()),
+    () => AuthLocalDataSourceImpl(sl()),
   );
-
   sl.registerLazySingleton<AuthRemoteDataSource>(
     () => AuthRemoteDataSourceImpl(dio: sl<DioClient>().dio),
   );
@@ -44,53 +41,35 @@ Future<void> setupDependencyInjection() async {
   /// Repository
   sl.registerLazySingleton<AuthRepository>(
     () => AuthRepositoryImpl(
-      remoteDataSource: sl<AuthRemoteDataSource>(),
-      localDataSource: sl<AuthLocalDataSource>(),
-      networkInfo: sl<NetworkInfo>(),
+      remoteDataSource: sl(),
+      localDataSource: sl(),
+      networkInfo: sl(),
     ),
   );
 
   /// UseCases
-  sl.registerLazySingleton<RegisterUseCase>(
-    () => RegisterUseCase(sl<AuthRepository>()),
-  );
-  sl.registerLazySingleton<LoginUseCase>(
-    () => LoginUseCase(sl<AuthRepository>()),
-  );
-  sl.registerLazySingleton<CheckAuthUseCase>(
-    () => CheckAuthUseCase(sl<AuthRepository>()),
-  );
-  sl.registerLazySingleton<GetTokensUseCase>(
-    () => GetTokensUseCase(sl<AuthRepository>()),
-  );
-  sl.registerLazySingleton<SaveTokensUseCase>(
-    () => SaveTokensUseCase(sl<AuthRepository>()),
-  );
-  sl.registerLazySingleton<RefreshTokenUseCase>(
-    () => RefreshTokenUseCase(sl<AuthRepository>()),
-  );
-  sl.registerLazySingleton<LogoutUseCase>(
-    () => LogoutUseCase(sl<AuthRepository>()),
-  );
-  sl.registerLazySingleton<ForgetPasswordUseCase>(
-    () => ForgetPasswordUseCase(sl<AuthRepository>()),
-  );
-  sl.registerLazySingleton<ResetPasswordUseCase>(
-    () => ResetPasswordUseCase(sl<AuthRepository>()),
-  );
+  sl.registerLazySingleton(() => RegisterUseCase(sl()));
+  sl.registerLazySingleton(() => LoginUseCase(sl()));
+  sl.registerLazySingleton(() => CheckAuthUseCase(sl()));
+  sl.registerLazySingleton(() => GetTokensUseCase(sl()));
+  sl.registerLazySingleton(() => SaveTokensUseCase(sl()));
+  sl.registerLazySingleton(() => RefreshTokenUseCase(sl()));
+  sl.registerLazySingleton(() => LogoutUseCase(sl()));
+  sl.registerLazySingleton(() => ForgetPasswordUseCase(sl()));
+  sl.registerLazySingleton(() => ResetPasswordUseCase(sl()));
 
   /// Cubit
-  sl.registerFactory<AuthCubit>(
+  sl.registerFactory(
     () => AuthCubit(
-      resetPasswordUseCase: sl<ResetPasswordUseCase>(),
-      checkAuthUseCase: sl<CheckAuthUseCase>(),
-      getTokensUseCase: sl<GetTokensUseCase>(),
-      saveTokensUseCase: sl<SaveTokensUseCase>(),
-      refreshTokenUseCase: sl<RefreshTokenUseCase>(),
-      logoutUseCase: sl<LogoutUseCase>(),
-      registerUseCase: sl<RegisterUseCase>(),
-      loginUseCase: sl<LoginUseCase>(),
-      forgetPasswordUseCase: sl<ForgetPasswordUseCase>(),
+      resetPasswordUseCase: sl(),
+      checkAuthUseCase: sl(),
+      getTokensUseCase: sl(),
+      saveTokensUseCase: sl(),
+      refreshTokenUseCase: sl(),
+      logoutUseCase: sl(),
+      registerUseCase: sl(),
+      loginUseCase: sl(),
+      forgetPasswordUseCase: sl(),
     ),
   );
 }

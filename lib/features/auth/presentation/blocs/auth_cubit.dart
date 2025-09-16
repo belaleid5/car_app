@@ -1,20 +1,20 @@
 import 'package:car_app/core/enums/app_states.dart';
 import 'package:car_app/core/usecases/base_use_case.dart';
 import 'package:car_app/features/auth/domain/entities/auth_token_entity.dart';
-import 'package:car_app/features/auth/domain/entities/confirm_password_entity.dart';
 import 'package:car_app/features/auth/domain/entities/login_entity.dart';
 import 'package:car_app/features/auth/domain/entities/register_request_entity.dart';
+import 'package:car_app/features/auth/domain/entities/forget_password_request_entity.dart';
 import 'package:car_app/features/auth/domain/entities/reset_password_request_entity.dart';
 import 'package:car_app/features/auth/domain/use_cases/check_usecase.dart';
+import 'package:car_app/features/auth/domain/use_cases/forget_password_usecase.dart';
 import 'package:car_app/features/auth/domain/use_cases/get_usecase.dart';
+import 'package:car_app/features/auth/domain/use_cases/login_usecase.dart';
 import 'package:car_app/features/auth/domain/use_cases/logout_usecase.dart';
 import 'package:car_app/features/auth/domain/use_cases/refresh_tokens_params.dart';
 import 'package:car_app/features/auth/domain/use_cases/register_usecase.dart';
 import 'package:car_app/features/auth/domain/use_cases/reset_password_usecase.dart';
 import 'package:car_app/features/auth/domain/use_cases/save_tokens_params.dart';
-import 'package:car_app/features/auth/domain/use_cases/login_usecase.dart';
 import 'package:car_app/features/auth/presentation/blocs/auth_states.dart';
-import 'package:car_app/features/auth/presentation/pages/reset_password.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class AuthCubit extends Cubit<AuthState> {
@@ -26,9 +26,11 @@ class AuthCubit extends Cubit<AuthState> {
   final RegisterUseCase registerUseCase;
   final LoginUseCase loginUseCase;
   final ResetPasswordUseCase resetPasswordUseCase;
-  // ✅ أضفنا الـ LoginUseCase
+  final ForgetPasswordUseCase forgetPasswordUseCase;
 
   AuthCubit({
+    required this.forgetPasswordUseCase,
+
     required this.checkAuthUseCase,
     required this.getTokensUseCase,
     required this.saveTokensUseCase,
@@ -39,10 +41,8 @@ class AuthCubit extends Cubit<AuthState> {
     required this.resetPasswordUseCase,
   }) : super(const AuthState());
 
-  /// 🔹 Register
   Future<void> register(RegisterRequestEntity request) async {
     emit(state.copyWith(status: AppStatus.loading));
-
     final result = await registerUseCase(
       RegisterParams(registerRequest: request),
     );
@@ -51,47 +51,23 @@ class AuthCubit extends Cubit<AuthState> {
       (failure) => emit(
         state.copyWith(status: AppStatus.failure, message: failure.message),
       ),
-      (response) async {
-        await saveTokensUseCase(SaveTokensParams(tokens: response.tokens));
-
-        emit(
-          state.copyWith(
-            status: AppStatus.success,
-            tokens: response.tokens,
-            message: "Register success",
-          ),
-        );
-      },
+      (response) async =>
+          _handleAuthSuccess(response.tokens, "Register success"),
     );
   }
 
-  /// 🔹 Login
   Future<void> login(LoginRequestEntity request) async {
     emit(state.copyWith(status: AppStatus.loading));
-
-    final result = await loginUseCase(
-      LoginRequestEntity(email: request.email, password: request.password),
-    );
+    final result = await loginUseCase(request);
 
     result.fold(
       (failure) => emit(
         state.copyWith(status: AppStatus.failure, message: failure.message),
       ),
-      (response) async {
-        await saveTokensUseCase(SaveTokensParams(tokens: response.tokens));
-
-        emit(
-          state.copyWith(
-            status: AppStatus.success,
-            tokens: response.tokens,
-            message: "Login success",
-          ),
-        );
-      },
+      (response) async => _handleAuthSuccess(response.tokens, "Login success"),
     );
   }
 
-  /// Check if user is authenticated
   Future<void> checkAuth() async {
     emit(state.copyWith(status: AppStatus.loading));
     final result = await checkAuthUseCase(NoParams());
@@ -99,17 +75,14 @@ class AuthCubit extends Cubit<AuthState> {
       (failure) => emit(
         state.copyWith(status: AppStatus.failure, message: failure.message),
       ),
-      (isAuthenticated) {
-        if (isAuthenticated) {
-          emit(state.copyWith(status: AppStatus.success));
-        } else {
-          emit(state.copyWith(status: AppStatus.empty));
-        }
-      },
+      (isAuthenticated) => emit(
+        state.copyWith(
+          status: isAuthenticated ? AppStatus.success : AppStatus.empty,
+        ),
+      ),
     );
   }
 
-  /// Get stored tokens
   Future<void> getTokens() async {
     emit(state.copyWith(status: AppStatus.loading));
     final result = await getTokensUseCase(NoParams());
@@ -122,7 +95,6 @@ class AuthCubit extends Cubit<AuthState> {
     );
   }
 
-  /// Save tokens locally
   Future<void> saveTokens(AuthTokensEntity tokens) async {
     emit(state.copyWith(status: AppStatus.loading));
     final result = await saveTokensUseCase(SaveTokensParams(tokens: tokens));
@@ -134,7 +106,6 @@ class AuthCubit extends Cubit<AuthState> {
     );
   }
 
-  /// Refresh tokens
   Future<void> refreshToken(String refreshToken) async {
     emit(state.copyWith(status: AppStatus.loading));
     final result = await refreshTokenUseCase(
@@ -149,7 +120,6 @@ class AuthCubit extends Cubit<AuthState> {
     );
   }
 
-  /// Logout
   Future<void> logout() async {
     emit(state.copyWith(status: AppStatus.loading));
     final result = await logoutUseCase(NoParams());
@@ -161,27 +131,58 @@ class AuthCubit extends Cubit<AuthState> {
     );
   }
 
-Future<void> resetPassword(ResetPasswordRequestEntity request) async {
-  emit(state.copyWith(status: AppStatus.loading));
 
-  final result = await resetPasswordUseCase(request);
+
+
+ 
+Future<void> forgetPassword(ForgetPasswordRequestEntity request) async {
+  emit(state.copyWith(status: AppStatus.loading));
+  final result = await forgetPasswordUseCase(request);
 
   result.fold(
     (failure) => emit(
+      state.copyWith(status: AppStatus.failure, message: failure.message),
+    ),
+    (response) => emit(
       state.copyWith(
-        status: AppStatus.failure, 
-        message: failure.message
+        status: AppStatus.success,
+        message: response.message,
+        confirmPasswordResponse: response, // أو resetPasswordResponse حسب اسم الـ field في AuthState
       ),
     ),
-    (response) {
-      emit(
-        state.copyWith(
-          status: AppStatus.success,
-          resetPasswordResponse: response, 
-          message: response.message, 
-        ),
-      );
-    },
   );
 }
+
+
+
+  Future<void> resetPassword(ResetRequestPasswordEntity request) async {
+    emit(state.copyWith(status: AppStatus.loading));
+    final result = await resetPasswordUseCase(request);
+
+    result.fold(
+      (failure) => emit(
+        state.copyWith(status: AppStatus.failure, message: failure.message),
+      ),
+      (response) => emit(
+        state.copyWith(
+          status: AppStatus.success,
+          message: response.message,
+        ),
+      ),
+    );
+  }
+
+  Future<void> _handleAuthSuccess(
+    AuthTokensEntity tokens,
+    String message,
+  ) async {
+    await saveTokensUseCase(SaveTokensParams(tokens: tokens));
+    emit(
+      state.copyWith(
+        status: AppStatus.success,
+        tokens: tokens,
+        message: message,
+      ),
+    );
+  }
 }

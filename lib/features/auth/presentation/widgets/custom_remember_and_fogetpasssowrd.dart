@@ -24,7 +24,7 @@ class CustomRememberAndForgetPassword extends StatelessWidget {
         Spacer(),
         TextButton(
           onPressed: () {
-            Navigator.pushNamed(context, AppRouter.setPassword);
+            Navigator.pushNamed(context, AppRouter.forgetPasswordRoute);
           },
           child: Text(
             'Forgot Password?',

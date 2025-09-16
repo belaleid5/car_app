@@ -1,14 +1,6 @@
 import 'package:car_app/features/auth/domain/entities/reset_password_request_entity.dart';
 
-class ResetPasswordModel extends ResetPasswordRequestEntity{
-  const ResetPasswordModel({required super.email});
-
-
-  factory ResetPasswordModel.fromEntity(ResetPasswordRequestEntity entity) {
-    return ResetPasswordModel(email: entity.email,);
-import 'package:car_app/features/auth/domain/entities/reset_password_entity.dart';
-
-class ResetPasswordModel extends ResetPasswordEntity {
+class ResetPasswordModel extends ResetRequestPasswordEntity {
   const ResetPasswordModel({
     required super.resetToken,
     required super.code,
@@ -16,7 +8,7 @@ class ResetPasswordModel extends ResetPasswordEntity {
     required super.confirmPassword,
   });
 
-  factory ResetPasswordModel.fromEntity(ResetPasswordEntity entity) {
+  factory ResetPasswordModel.fromEntity(ResetRequestPasswordEntity entity) {
     return ResetPasswordModel(
       resetToken: entity.resetToken,
       code: entity.code,
@@ -27,10 +19,9 @@ class ResetPasswordModel extends ResetPasswordEntity {
 
   Map<String, dynamic> toJson() {
     return {
-      "email": email,
-      "reset_token": resetToken,      // 🔥 ده اللي هيروح للـ API
-      "code": code,                   // 🔥 ده اللي هيروح للـ API  
-      "password": password,           // 🔥 ده اللي هيروح للـ API
+      "reset_token": resetToken, // 🔥 ده اللي هيروح للـ API
+      "code": code, // 🔥 ده اللي هيروح للـ API
+      "password": password, // 🔥 ده اللي هيروح للـ API
       "confirm_password": confirmPassword, // 🔥 ده اللي هيروح للـ API
     };
   }
