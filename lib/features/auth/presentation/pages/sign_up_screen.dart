@@ -22,6 +22,8 @@ class SignUpScreen extends StatelessWidget {
     return BlocProvider(
       create: (_) => sl<AuthCubit>(),
       child: Scaffold(
+          resizeToAvoidBottomInset: true, // يخلي الصفحة تطلع لفوق تلقائي
+
       backgroundColor: AppColors.white,
       body: Padding(
         padding: EdgeInsets.symmetric(horizontal: res.availableWidth * 0.06),

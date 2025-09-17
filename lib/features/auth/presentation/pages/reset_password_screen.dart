@@ -27,21 +27,37 @@ class _ResetPasswordState extends State<ResetPassword> {
   final TextEditingController _emailPhoneController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
 
+
+
+
+
   @override
   void dispose() {
     _emailPhoneController.dispose();
     super.dispose();
   }
 
+
+
+
+
+
   void _handleResetPassword(BuildContext context) {
-    if (_formKey.currentState!.validate() &&
-        _emailPhoneController.text.isNotEmpty) {
+    if (
+        _formKey.currentState!.validate() &&
+        _emailPhoneController.text.isNotEmpty
+        
+        ) {
       final request = ForgetPasswordRequestEntity(
-        email: _emailPhoneController.text.trim(),
-      );
+                      email: _emailPhoneController.text.trim(),
+                          );
       context.read<AuthCubit>().forgetPassword(request);
     }
   }
+
+
+
+
 
   @override
   Widget build(BuildContext context) {
@@ -50,6 +66,8 @@ class _ResetPasswordState extends State<ResetPassword> {
     return BlocProvider(
       create: (context) => sl<AuthCubit>(),
       child: Scaffold(
+          resizeToAvoidBottomInset: true, // يخلي الصفحة تطلع لفوق تلقائي
+
         backgroundColor: AppColors.white,
         appBar: AppBar(
           backgroundColor: AppColors.white,
@@ -60,7 +78,7 @@ class _ResetPasswordState extends State<ResetPassword> {
           ),
         ),
         body: Padding(
-          padding: EdgeInsets.symmetric(horizontal: res.screenWidth * 0.05),
+              padding: EdgeInsets.symmetric(horizontal: res.screenWidth * 0.05),
           child: Align(
             alignment: Alignment.center,
             child: Form(
