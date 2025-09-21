@@ -7,10 +7,13 @@ class RegisterRequestModel extends RegisterRequestEntity {
     required super.password,
     required super.phoneNumber,
     required super.countryCode,
+       required super.locationId,
+    
   });
 
   factory RegisterRequestModel.fromEntity(RegisterRequestEntity entity) {
     return RegisterRequestModel(
+      locationId: entity.locationId,
       fullName: entity.fullName,
       email: entity.email,
       password: entity.password,
@@ -26,6 +29,7 @@ class RegisterRequestModel extends RegisterRequestEntity {
       'password': password,
       'country_id': countryCode,
       'phone': phoneNumber,
+      "location_id":locationId,
     };
   }
 }

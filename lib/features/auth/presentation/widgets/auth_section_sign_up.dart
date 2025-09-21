@@ -30,10 +30,17 @@ class _AuthSectionSignUpState extends State<AuthSectionSignUp> {
   final TextEditingController _phoneController = TextEditingController();
 
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-  
+
   String _fullPhoneNumber = '';
   String _countryCode = '+20';
   String _phoneNumber = '';
+
+  @override
+  void initState() {
+    super.initState();
+    // تحميل المواقع عند فتح الصفحة
+    context.read<AuthCubit>().getLocations();
+  }
 
   @override
   void dispose() {
@@ -48,10 +55,6 @@ class _AuthSectionSignUpState extends State<AuthSectionSignUp> {
     _fullPhoneNumber = fullPhone;
     _countryCode = countryCode;
     _phoneNumber = phoneNumber;
-    
-    debugPrint("Full phone: $fullPhone");
-    debugPrint("Country Code: $countryCode");
-    debugPrint("Phone Number: $phoneNumber");
   }
 
   @override
@@ -89,14 +92,51 @@ class _AuthSectionSignUpState extends State<AuthSectionSignUp> {
               ),
 
               // Password Field
-              CustomPasswordFormField(passwordController: _passwordController, validate: (value)=>Validators.validatePassword(value) ,),
+              CustomPasswordFormField(
+                passwordController: _passwordController,
+                validate: (value) => Validators.validatePassword(value),
+              ),
 
+              // Phone Field
               CountryPhoneInputField(
                 phoneController: _phoneController,
                 validator: (value) => Validators.validatePhone(value),
                 onChanged: _onPhoneChanged,
               ),
 
+              // Location Dropdown
+              Container(
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(10.67),
+                  border: Border.all(color: AppColors.neutral500),
+                ),
+                child: DropdownButtonFormField<int>(
+                  decoration: const InputDecoration(
+                    hintText: 'اختر الموقع',
+                    contentPadding: EdgeInsets.all(15),
+                    border: InputBorder.none,
+                    prefixIcon: Icon(Icons.location_on, color: AppColors.neutral900),
+                  ),
+                  value: state.selectedLocation?.id,
+                  validator: (value) {
+                    if (value == null) {
+                      return 'الموقع مطلوب';
+                    }
+                    return null;
+                  },
+                  items: _buildDropdownItems(state),
+                  onChanged: (int? locationId) {
+                    final locationsList = state.locations?.locations;
+                    if (locationId != null && (locationsList?.isNotEmpty ?? false)) {
+                      final selectedLocation = locationsList!
+                          .firstWhere((location) => location.id == locationId);
+                      context.read<AuthCubit>().selectLocation(selectedLocation);
+                    }
+                  },
+                ),
+              ),
+
+              // Sign Up Button
               CustomElevatedButton(
                 res: res,
                 titleColor: AppColors.neutral100,
@@ -120,6 +160,7 @@ class _AuthSectionSignUpState extends State<AuthSectionSignUp> {
                             password: _passwordController.text.trim(),
                             countryCode: _countryCode.trim(),
                             phoneNumber: _phoneNumber.trim(),
+                            locationId: state.selectedLocation?.id ?? 0,
                           );
                           context.read<AuthCubit>().register(registerRequest);
                         }
@@ -149,5 +190,70 @@ class _AuthSectionSignUpState extends State<AuthSectionSignUp> {
         );
       },
     );
+  }
+
+  List<DropdownMenuItem<int>>? _buildDropdownItems(AuthState state) {
+    if (state.status == AppStatus.loading) {
+      return [
+        const DropdownMenuItem<int>(
+          enabled: false,
+          child: Row(
+            children: [
+              SizedBox(
+                width: 16,
+                height: 16,
+                child: CircularProgressIndicator(strokeWidth: 2),
+              ),
+              SizedBox(width: 8),
+              Text('جاري التحميل...'),
+            ],
+          ),
+        ),
+      ];
+    }
+
+    if (state.status == AppStatus.failure) {
+      return [
+        const DropdownMenuItem<int>(
+          enabled: false,
+          child: Row(
+            children: [
+              Icon(Icons.error, color: Colors.red, size: 16),
+              SizedBox(width: 8),
+              Text('خطأ في تحميل المواقع'),
+            ],
+          ),
+        ),
+      ];
+    }
+
+    final locationsList = state.locations?.locations;
+
+    if (locationsList == null || locationsList.isEmpty) {
+      return [
+        const DropdownMenuItem<int>(
+          enabled: false,
+          child: Text('لا توجد مواقع'),
+        ),
+      ];
+    }
+
+    return locationsList.map((location) {
+      return DropdownMenuItem<int>(
+        value: location.id,
+        child: Row(
+          children: [
+            Icon(Icons.location_on, size: 16, color: AppColors.neutral900),
+            const SizedBox(width: 8),
+            Expanded(
+              child: Text(
+                location.name,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+          ],
+        ),
+      );
+    }).toList();
   }
 }

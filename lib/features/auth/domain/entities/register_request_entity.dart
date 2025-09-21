@@ -4,10 +4,12 @@ class RegisterRequestEntity extends Equatable {
   final String fullName;
   final String email;
   final String password;
+  final int locationId;
   final String countryCode;
   final String phoneNumber;
 
-  const RegisterRequestEntity({
+  const RegisterRequestEntity( {
+    required this.locationId, 
     required this.fullName,
     required this.email,
     required this.password,
@@ -15,10 +17,13 @@ class RegisterRequestEntity extends Equatable {
     required this.phoneNumber,
   });
 
-
-
   @override
   List<Object?> get props => [
+    locationId,
     phoneNumber,
-    fullName, email, password, countryCode];
+    fullName,
+    email,
+    password,
+    countryCode,
+  ];
 }

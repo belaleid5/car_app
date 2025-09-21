@@ -11,7 +11,7 @@ class VerifyPhoneScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final res = ResponsiveHelper(context);
     return Scaffold(
-        resizeToAvoidBottomInset: true, // يخلي الصفحة تطلع لفوق تلقائي
+        resizeToAvoidBottomInset: true, 
       backgroundColor: AppColors.white,
       body: Padding(
         padding: EdgeInsets.symmetric(horizontal: res.screenWidth * 0.05),

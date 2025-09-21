@@ -11,7 +11,9 @@ class ApiConstants {
   static const String forgotPasswordEndpoint = '$baseUrl/auth/forgot_password/';
   static const String resetPasswordEndpoint = '$baseUrl/auth/reset_password/';
   
-
+  static const String locations = '$baseUrl/public/register_locations/';
+  
+//public/register_locations
 
   // Headers
   static const String contentType = 'Content-Type';

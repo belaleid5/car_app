@@ -1,4 +1,4 @@
-import 'package:car_app/core/di/server_locator.dart';
+import 'package:car_app/core/services/server_locator.dart';
 import 'package:car_app/core/responsive/responsive_helper.dart';
 import 'package:car_app/core/routing/app_router.dart';
 import 'package:car_app/core/utils/app_color.dart';
