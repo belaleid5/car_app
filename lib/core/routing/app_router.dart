@@ -24,7 +24,7 @@ class AppRouter {
 
       case loginRoute:
         return MaterialPageRoute(
-          builder: (_) => const LoginScreen(), // إزالة resetToken مؤقتاً
+          builder: (_) => const LoginScreen(),   
         );
 
       case signUpRoute:

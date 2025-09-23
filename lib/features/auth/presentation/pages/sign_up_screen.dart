@@ -13,68 +13,95 @@ import 'package:car_app/features/auth/presentation/widgets/dont_have_an_account.
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-class SignUpScreen extends StatelessWidget {
+class SignUpScreen extends StatefulWidget {
   const SignUpScreen({super.key});
+
+  @override
+  State<SignUpScreen> createState() => _SignUpScreenState();
+}
+
+class _SignUpScreenState extends State<SignUpScreen> {
+  late AuthCubit authCubit;
+
+  @override
+  void initState() {
+    super.initState();
+    authCubit = sl<AuthCubit>()..fetchAllLocations();
+
+  }
+
+  @override
+  void dispose() {
+    authCubit.close();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
     final res = ResponsiveHelper(context);
-    return BlocProvider(
-      create: (_) => sl<AuthCubit>(),
+    
+    return BlocProvider.value(
+      value: authCubit,
       child: Scaffold(
-          resizeToAvoidBottomInset: true, // يخلي الصفحة تطلع لفوق تلقائي
+        resizeToAvoidBottomInset: true,
+        backgroundColor: AppColors.white,
+        body: Padding(
+          padding: EdgeInsets.symmetric(horizontal: res.availableWidth * 0.06),
+          child: CustomScrollView(
+            slivers: [
+              SliverToBoxAdapter(child: SizedBox(height: res.rh(80))),
+              SliverToBoxAdapter(child: CustomLogoCarAndQent(res: res)),
+              SliverToBoxAdapter(child: SizedBox(height: res.rh(20))),
+              SliverToBoxAdapter(
+                child: Center(
+                  child: CustomTitleAuthSection(title: 'Sign Up'),
+                ),
+              ),
+              SliverToBoxAdapter(child: SizedBox(height: res.rh(20))),
+              SliverToBoxAdapter(child: AuthSectionSignUp()),
+              SliverToBoxAdapter(child: SizedBox(height: res.rh(10))),
+              SliverToBoxAdapter(child: CustomDividerAndOR(res: res)),
+              SliverToBoxAdapter(child: SizedBox(height: res.rh(20))),
+              SliverToBoxAdapter(
+                child: CustomButtonSocial(
+                  res: res,
+                  title: 'Apple',
+                  imagePath: AppImages.assetsIconsAppleIcon,
+                  onPressed: () {
+                    // Handle Apple sign up
+                  },
+                ),
+              ),
+              SliverToBoxAdapter(child: SizedBox(height: res.rh(20))),
+              SliverToBoxAdapter(
+                child: CustomButtonSocial(
+                  res: res,
+                  title: 'Google',
+                  imagePath: AppImages.assetsIconsGoogleIcon,
+                  onPressed: () {
+                    // Handle Google sign up
+                  },
+                ),
+              ),
+              SliverToBoxAdapter(child: SizedBox(height: res.rh(40))),
+              SliverToBoxAdapter(
+                child: DontHaveOrHaveAccount(
+                  title: "Already have an account? ",
+                  titleButton: "Log In",
+                  onTap: () {
+                    Navigator.pushNamed(context, AppRouter.loginRoute);
+                  },
+                ),
+              ),
+              SliverToBoxAdapter(child: SizedBox(height: res.rh(40))),
+            ],
+          ),
 
-      backgroundColor: AppColors.white,
-      body: Padding(
-        padding: EdgeInsets.symmetric(horizontal: res.availableWidth * 0.06),
-        child: CustomScrollView(
-        slivers: [
-          SliverToBoxAdapter(child: SizedBox(height: res.rh(80))),
-          SliverToBoxAdapter(child: CustomLogoCarAndQent(res: res)),
-          SliverToBoxAdapter(child: SizedBox(height: res.rh(20))),
-          SliverToBoxAdapter(
-          child: Center(
-            child: CustomTitleAuthSection(title: 'Sign Up'),
-          ),
-          ),
-          SliverToBoxAdapter(child: SizedBox(height: res.rh(20))),
-         SliverToBoxAdapter(child: AuthSectionSignUp()),
-          SliverToBoxAdapter(child: SizedBox(height: res.rh(10))),
-          SliverToBoxAdapter(child: CustomDividerAndOR(res: res)),
-          SliverToBoxAdapter(child: SizedBox(height: res.rh(20))),
-          SliverToBoxAdapter(
-          child: CustomButtonSocial(
-            res: res,
-            title: 'Apple',
-            imagePath: AppImages.assetsIconsAppleIcon,
-            onPressed: () {
-            },
-          ),
-          ),
-          SliverToBoxAdapter(child: SizedBox(height: res.rh(20))),
-          SliverToBoxAdapter(
-          child: CustomButtonSocial(
-            res: res,
-            title: 'Google',
-            imagePath: AppImages.assetsIconsGoogleIcon,
-            onPressed: () {},
-          ),
-          ),
-          SliverToBoxAdapter(child: SizedBox(height: res.rh(40))),
-          SliverToBoxAdapter(
-          child: DontHaveOrHaveAccount(
-            title: "Already have an account? ",
-            titleButton: "Log In",
-            onTap: () {
-            Navigator.pushNamed(context, AppRouter.loginRoute);
-            },
-          ),
-          ),
-          SliverToBoxAdapter(child: SizedBox(height: res.rh(40))),
-        ],
         ),
-      ),
+
+        
       ),
     );
   }
 }
+

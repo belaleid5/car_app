@@ -2,18 +2,13 @@ import 'package:car_app/core/enums/app_states.dart';
 import 'package:car_app/core/usecases/base_use_case.dart';
 import 'package:car_app/features/auth/domain/entities/auth_token_entity.dart';
 import 'package:car_app/features/auth/domain/entities/forget_password_request_entity.dart';
-import 'package:car_app/features/auth/domain/entities/lcation_entity.dart';
-import 'package:car_app/features/auth/domain/entities/location_page_entity.dart';
+import 'package:car_app/features/auth/domain/entities/location_entity.dart';
 import 'package:car_app/features/auth/domain/entities/login_entity.dart';
 import 'package:car_app/features/auth/domain/entities/register_request_entity.dart';
 import 'package:car_app/features/auth/domain/entities/reset_password_request_entity.dart';
-import 'package:car_app/features/auth/domain/params/get-location_by_id_params.dart';
-import 'package:car_app/features/auth/domain/params/get_location_params.dart';
-import 'package:car_app/features/auth/domain/params/search_location_params.dart';
 import 'package:car_app/features/auth/domain/use_cases/check_usecase.dart';
 import 'package:car_app/features/auth/domain/use_cases/forget_password_usecase.dart';
-import 'package:car_app/features/auth/domain/use_cases/get_location_by_id-usecase.dart';
-import 'package:car_app/features/auth/domain/use_cases/get_location_usecase.dart';
+import 'package:car_app/features/auth/domain/use_cases/get_location-usecase.dart';
 import 'package:car_app/features/auth/domain/use_cases/get_usecase.dart';
 import 'package:car_app/features/auth/domain/use_cases/login_usecase.dart';
 import 'package:car_app/features/auth/domain/use_cases/logout_usecase.dart';
@@ -21,11 +16,12 @@ import 'package:car_app/features/auth/domain/use_cases/refresh_tokens_params.dar
 import 'package:car_app/features/auth/domain/use_cases/register_usecase.dart';
 import 'package:car_app/features/auth/domain/use_cases/reset_password_usecase.dart';
 import 'package:car_app/features/auth/domain/use_cases/save_tokens_params.dart';
-import 'package:car_app/features/auth/domain/use_cases/search_location_usecase.dart';
 import 'package:car_app/features/auth/presentation/blocs/auth_states.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+
 class AuthCubit extends Cubit<AuthState> {
+  // UseCases for Authentication
   final CheckAuthUseCase checkAuthUseCase;
   final GetTokensUseCase getTokensUseCase;
   final SaveTokensUseCase saveTokensUseCase;
@@ -35,14 +31,10 @@ class AuthCubit extends Cubit<AuthState> {
   final LoginUseCase loginUseCase;
   final ResetPasswordUseCase resetPasswordUseCase;
   final ForgetPasswordUseCase forgetPasswordUseCase;
+
   final GetLocationsUseCase getLocationsUseCase;
-  final GetLocationByIdUseCase getLocationByIdUseCase;
-  final SearchLocationsUseCase searchLocationsUseCase;
 
   AuthCubit({
-    required this.getLocationsUseCase,
-    required this.getLocationByIdUseCase,
-    required this.searchLocationsUseCase,
     required this.forgetPasswordUseCase,
     required this.checkAuthUseCase,
     required this.getTokensUseCase,
@@ -52,10 +44,13 @@ class AuthCubit extends Cubit<AuthState> {
     required this.registerUseCase,
     required this.loginUseCase,
     required this.resetPasswordUseCase,
+    required this.getLocationsUseCase,
   }) : super(const AuthState());
 
+ 
+
   Future<void> register(RegisterRequestEntity request) async {
-    emit(state.copyWith(status: AppStatus.loading));
+    emit(state.copyWith(status: AppStatus.registering));
     final result = await registerUseCase(
       RegisterParams(registerRequest: request),
     );
@@ -156,8 +151,7 @@ class AuthCubit extends Cubit<AuthState> {
         state.copyWith(
           status: AppStatus.success,
           message: response.message,
-          confirmPasswordResponse:
-              response, // أو resetPasswordResponse حسب اسم الـ field في AuthState
+          confirmPasswordResponse: response,
         ),
       ),
     );
@@ -191,203 +185,147 @@ class AuthCubit extends Cubit<AuthState> {
     );
   }
 
-  Future<void> getLocations({int page = 1, bool isLoadMore = false}) async {
-    // Don't emit loading if it's load more
-    if (!isLoadMore) {
-      emit(state.copyWith(status: AppStatus.loading));
+
+  Future<void> getLocations() async {
+    if ((state.locations?.isNotEmpty ?? false) || state.status == AppStatus.loading) {
+      return;
     }
 
-    final result = await getLocationsUseCase(GetLocationsParams(page: page));
-
-    result.fold(
-      (failure) => emit(
-        state.copyWith(status: AppStatus.failure, message: failure.message),
-      ),
-      (locationPage) => _handleGetLocationsSuccess(locationPage, isLoadMore),
-    );
-  }
-
-  /// Get location by ID
-  Future<void> getLocationById(int id) async {
     emit(state.copyWith(status: AppStatus.loading));
 
-    final result = await getLocationByIdUseCase(GetLocationByIdParams(id: id));
+    final result = await getLocationsUseCase(1);
 
     result.fold(
-      (failure) => emit(
-        state.copyWith(status: AppStatus.failure, message: failure.message),
-      ),
-      (location) => emit(
-        state.copyWith(
+      (failure) {
+        emit(state.copyWith(
+          status: AppStatus.failure,
+          message: failure.message,
+        ));
+      },
+      (newLocations) {
+        emit(state.copyWith(
           status: AppStatus.success,
-          selectedLocation: location,
-          message: "تم جلب الموقع بنجاح",
-        ),
-      ),
+          locations: newLocations,
+          hasReachedMax: true, // نفترض أننا جلبنا كل ما نحتاجه
+        ));
+      },
     );
   }
 
-  /// Search locations
-  Future<void> searchLocations({
-    required String query,
-    int page = 1,
-    bool isLoadMore = false,
-  }) async {
-    // Don't emit loading if it's load more
-    if (!isLoadMore) {
-      emit(
-        state.copyWith(status: AppStatus.loading, currentSearchQuery: query),
+
+Future<void> fetchAllLocations() async {
+    if ((state.locations?.isNotEmpty ?? false) || state.status == AppStatus.loading) {
+      return;
+    }
+
+    emit(state.copyWith(status: AppStatus.loading, locations: [], currentPage: 1, hasReachedMax: false));
+
+    List<LocationEntity> allLocations = [];
+    int currentPage = 1;
+    bool hasMorePages = true;
+
+    while (hasMorePages) {
+      final result = await getLocationsUseCase(currentPage);
+
+      result.fold(
+        (failure) {
+          // --- [التعديل الرئيسي هنا] ---
+          // بدلاً من إصدار حالة خطأ، فقط أوقف الحلقة.
+          // هذا يعني أننا وصلنا إلى نهاية الصفحات (أو حدث خطأ غير متوقع).
+          // في كلتا الحالتين، يجب أن نعرض البيانات التي جمعناها حتى الآن.
+          hasMorePages = false;
+        },
+        (newLocations) {
+          if (newLocations.isEmpty) {
+            hasMorePages = false;
+          } else {
+            allLocations.addAll(newLocations);
+            currentPage++;
+          }
+        },
       );
     }
 
-    final result = await searchLocationsUseCase(
-      SearchLocationsParams(query: query, page: page),
-    );
+    // --- [تعديل ثانوي] ---
+    // الآن، بغض النظر عن سبب توقف الحلقة (نهاية البيانات أو خطأ)،
+    // سنقوم بإصدار حالة النجاح مع كل البيانات التي تمكنا من جمعها.
+    // هذا يضمن ظهور البيانات في الـ UI.
+    emit(state.copyWith(
+      status: AppStatus.success,
+      locations: allLocations,
+      hasReachedMax: true,
+    ));
+  } /// Resets only the location-related parts of the state.
+  void resetLocationsState() {
+    emit(state.copyWith(
+      locations: [],
+      currentPage: 1,
+      hasReachedMax: false,
+      status: AppStatus.initial,
+    ));
+  }
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+Future<void> getNextLocationsPage() async {
+    // لا تطلب صفحة جديدة إذا كنا قد وصلنا للنهاية أو كنا نحمل بيانات بالفعل
+    if (state.hasReachedMax || state.status == AppStatus.loadingMore) return;
+
+    // إذا كانت هذه هي الصفحة الأولى، استخدم `loading`
+    if (state.currentPage == 1) {
+      emit(state.copyWith(status: AppStatus.loading));
+    } else {
+      // للصفحات التالية، استخدم `loadingMore`
+      emit(state.copyWith(status: AppStatus.loadingMore));
+    }
+
+    final result = await getLocationsUseCase(state.currentPage);
 
     result.fold(
-      (failure) => emit(
-        state.copyWith(status: AppStatus.failure, message: failure.message),
-      ),
-      (locationPage) => _handleSearchSuccess(locationPage, query, isLoadMore),
+      (failure) {
+        emit(state.copyWith(
+          status: AppStatus.failure,
+          message: failure.message,
+        ));
+      },
+      (newLocations) {
+        final bool hasReachedMax = newLocations.isEmpty;
+        
+        emit(state.copyWith(
+          status: AppStatus.success,
+          locations: List.of(state.locations!)..addAll(newLocations),
+          currentPage: state.currentPage + 1,
+          hasReachedMax: hasReachedMax,
+        ));
+      },
     );
   }
 
-  /// Load more locations (pagination)
-  Future<void> loadMoreLocations() async {
-    if (state.hasReachedMax! || state.status == AppStatus.loading) return;
-
-    final nextPage = state.currentPage! + 1;
-
-    if (state.currentSearchQuery != null &&
-        state.currentSearchQuery!.isNotEmpty) {
-      await searchLocations(
-        query: state.currentSearchQuery!,
-        page: nextPage,
-        isLoadMore: true,
-      );
-    } else {
-      await getLocations(page: nextPage, isLoadMore: true);
-    }
+  /// Resets the location state for a fresh start.
+  void refreshLocations() {
+    // لا تقم بالطلب مرة أخرى إذا كانت البيانات محملة بالفعل
+    if (state.locations?.isNotEmpty ?? false) return;
+    
+    emit(state.copyWith(
+      locations: [],
+      currentPage: 1,
+      hasReachedMax: false,
+      status: AppStatus.initial,
+    ));
+    getNextLocationsPage();
   }
 
-  /// Refresh locations (pull to refresh)
-  Future<void> refreshLocations() async {
-    // Reset pagination
-    emit(state.copyWith(currentPage: 1, hasReachedMax: false));
 
-    if (state.currentSearchQuery != null &&
-        state.currentSearchQuery!.isNotEmpty) {
-      await searchLocations(query: state.currentSearchQuery!, page: 1);
-    } else {
-      await getLocations(page: 1);
-    }
-  }
-
-  /// Clear search results and go back to normal locations
-  void clearSearch() {
-    emit(
-      state.copyWith(
-        searchResults: null,
-        currentSearchQuery: null,
-        currentPage: 1,
-        hasReachedMax: false,
-        status: AppStatus.initial,
-      ),
-    );
-    // Load first page of normal locations
-    getLocations(page: 1);
-  }
-
-  /// Select a location
-  void selectLocation(LocationEntity location) {
-    emit(state.copyWith(selectedLocation: location, status: AppStatus.success));
-  }
-
-  /// Clear selected location
-  void clearSelectedLocation() {
-    emit(
-      state.copyWith(
-        selectedLocation: null,
-        status: state.locations != null ? AppStatus.success : AppStatus.initial,
-      ),
-    );
-  }
-
-  /// Reset state to initial
-  void resetState() {
-    emit(const AuthState());
-  }
-
-  void _handleGetLocationsSuccess(
-    LocationPageEntity locationPage,
-    bool isLoadMore,
-  ) {
-    List<LocationEntity> allLocations = [];
-
-    if (isLoadMore && state.locations != null) {
-      // Append new locations to existing ones
-      allLocations = [...state.locations!.locations, ...locationPage.locations];
-    } else {
-      // Replace with new locations
-      allLocations = locationPage.locations;
-    }
-
-    // Create updated location page with combined locations
-    final updatedLocationPage = LocationPageEntity(
-      locations: allLocations,
-      pagination: locationPage.pagination,
-    );
-
-    // Check if reached max (no more pages)
-    final hasReachedMax =
-        locationPage.pagination.currentPage >= locationPage.pagination.lastPage;
-
-    emit(
-      state.copyWith(
-        status: allLocations.isEmpty ? AppStatus.empty : AppStatus.success,
-        locationPage: updatedLocationPage,
-        currentPage: locationPage.pagination.currentPage,
-        hasReachedMax: hasReachedMax,
-        message: isLoadMore
-            ? "تم تحميل المزيد من المواقع"
-            : "تم جلب المواقع بنجاح",
-      ),
-    );
-  }
-
-  /// Handle successful search
-  void _handleSearchSuccess(
-    LocationPageEntity locationPage,
-    String query,
-    bool isLoadMore,
-  ) {
-    List<LocationEntity> allSearchResults = [];
-
-    if (isLoadMore && state.searchResults != null) {
-      // Append new search results to existing ones
-      allSearchResults = [...state.searchResults!, ...locationPage.locations];
-    } else {
-      // Replace with new search results
-      allSearchResults = locationPage.locations;
-    }
-
-    // Check if reached max for search results
-    final hasReachedMax =
-        locationPage.pagination.currentPage >= locationPage.pagination.lastPage;
-
-    emit(
-      state.copyWith(
-        status: allSearchResults.isEmpty ? AppStatus.empty : AppStatus.success,
-        searchResults: allSearchResults,
-        currentSearchQuery: query,
-        currentPage: locationPage.pagination.currentPage,
-        hasReachedMax: hasReachedMax,
-        message: isLoadMore
-            ? "تم تحميل المزيد من نتائج البحث"
-            : allSearchResults.isEmpty
-            ? "لا توجد نتائج للبحث"
-            : "تم العثور على ${allSearchResults.length} نتيجة",
-      ),
-    );
-  }
+  
 }

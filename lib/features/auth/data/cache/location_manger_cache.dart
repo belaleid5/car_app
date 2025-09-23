@@ -1,4 +1,4 @@
-import 'dart:convert';
+/*import 'dart:convert';
 import 'package:car_app/core/cache/location_cache_manger.dart';
 import 'package:car_app/features/auth/data/models/location-response-model.dart';
 
@@ -66,3 +66,4 @@ class SearchCacheManager extends BaseCacheManager<LocationResponseModel> {
     return LocationResponseModel.fromJson(jsonData);
   }
 }
+*/

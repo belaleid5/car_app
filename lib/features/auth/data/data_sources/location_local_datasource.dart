@@ -1,103 +1,50 @@
 import 'package:car_app/core/error/faliure.dart';
-import 'package:car_app/features/auth/data/cache/location_manger_cache.dart';
-import 'package:car_app/features/auth/data/models/location-response-model.dart';
+import 'package:dio/dio.dart'; // استيراد dio // كلاس الاستثناءات المخصص
 import '../models/location_model.dart';
 
-/// Contract for local data source operations
-abstract class LocationLocalDataSource {
-  /// Cache locations response for specific page
-  Future<void> cacheLocationResponse(LocationResponseModel response, int page);
-  
-  /// Get cached locations response for specific page
-  Future<LocationResponseModel> getCachedLocationResponse(int page);
-  
-  /// Cache single location
-  Future<void> cacheLocation(LocationModel location);
-  
-  /// Get cached location by ID
-  Future<LocationModel> getCachedLocation(int id);
-  
-  /// Cache search results
-  Future<void> cacheSearchResults(String query, int page, LocationResponseModel response);
-  
-  /// Get cached search results
-  Future<LocationResponseModel> getCachedSearchResults(String query, int page);
-  
-  /// Check if cache is valid
-  Future<bool> isCacheValid(String cacheKey);
-  
-  /// Clear all cache
-  Future<void> clearAllCache();
+abstract class LocationsRemoteDataSource {
+  Future<List<LocationModel>> getLocations(int page);
 }
 
+class LocationsRemoteDataSourceImpl implements LocationsRemoteDataSource {
+  // غيّرنا التبعية من http.Client إلى Dio
+  final Dio dio;
 
-
-class LocationLocalDataSourceImpl implements LocationLocalDataSource {
-  final LocationCacheManager _locationCacheManager;
-  final SingleLocationCacheManager _singleLocationCacheManager;
-  final SearchCacheManager _searchCacheManager;
-
-  const LocationLocalDataSourceImpl({
-    required LocationCacheManager locationCacheManager,
-    required SingleLocationCacheManager singleLocationCacheManager,
-    required SearchCacheManager searchCacheManager,
-  })  : _locationCacheManager = locationCacheManager,
-        _singleLocationCacheManager = singleLocationCacheManager,
-        _searchCacheManager = searchCacheManager;
+  // نقوم بتمرير Dio عبر الـ constructor
+  LocationsRemoteDataSourceImpl({required this.dio} );
 
   @override
-  Future<void> cacheLocationResponse(LocationResponseModel response, int page) async {
-    await _locationCacheManager.cache(page.toString(), response);
-  }
+  Future<List<LocationModel>> getLocations(int page) async {
+    try {
+      // استخدم dio.get بدلاً من client.get
+      // لا حاجة لوضع الرابط الكامل، فقط الـ endpoint لأن baseUrl موجود في DioClient
+      final response = await dio.get(
+        '/public/register_locations/', // فقط الـ endpoint
+        queryParameters: {'page': page}, // طريقة dio لإضافة query params
+      );
 
-  @override
-  Future<LocationResponseModel> getCachedLocationResponse(int page) async {
-    final cached = await _locationCacheManager.getCached(page.toString());
-    if (cached == null) {
-      throw const CacheException('لا توجد بيانات محفوظة');
+      // dio يتعامل مع response.statusCode تلقائيًا، وإذا لم يكن 2xx سيرمي DioException
+      // والذي سيتم التقاطه بواسطة ErrorInterceptor الخاص بك أو في bloc الـ catch
+      
+      // الـ response.data يكون مفكوكًا (decoded) تلقائيًا بواسطة dio
+      final List<dynamic> data = response.data['data'];
+      
+      // يمكنك أيضًا استخراج بيانات الـ meta إذا احتجت إليها في الـ Bloc
+      // final Map<String, dynamic> meta = response.data['meta'];
+      // final int lastPage = meta['last_page'];
+
+      return data.map((item) => LocationModel.fromJson(item)).toList();
+
+    } on DioException catch (e) {
+      // يمكنك هنا التعامل مع أخطاء dio بشكل مخصص إذا أردت
+      // أو يمكنك ترك ErrorInterceptor يقوم بالمهمة
+      // على سبيل المثال، يمكنك تحويل DioException إلى ServerException المخصص
+      print('DioException in DataSource: ${e.message}');
+      throw ServerException('DioException in DataSource: ${e.message}'); // ارمِ الاستثناء المخصص الذي تفهمه طبقة الـ Repository
+    } catch (e) {
+      // للتعامل مع أي أخطاء أخرى غير متوقعة
+      print('Unexpected error in DataSource: $e');
+      throw ServerException('Unexpected error in DataSource: $e');
     }
-    return cached;
-  }
-
-  @override
-  Future<void> cacheLocation(LocationModel location) async {
-    await _singleLocationCacheManager.cache(location.id.toString(), location);
-  }
-
-  @override
-  Future<LocationModel> getCachedLocation(int id) async {
-    final cached = await _singleLocationCacheManager.getCached(id.toString());
-    if (cached == null) {
-      throw const CacheException('لا يوجد موقع محفوظ');
-    }
-    return cached;
-  }
-
-  @override
-  Future<void> cacheSearchResults(String query, int page, LocationResponseModel response) async {
-    final key = '${query.hashCode.abs()}_$page';
-    await _searchCacheManager.cache(key, response);
-  }
-
-  @override
-  Future<LocationResponseModel> getCachedSearchResults(String query, int page) async {
-    final key = '${query.hashCode.abs()}_$page';
-    final cached = await _searchCacheManager.getCached(key);
-    if (cached == null) {
-      throw const CacheException('لا توجد نتائج بحث محفوظة');
-    }
-    return cached;
-  }
-
-  @override
-  Future<bool> isCacheValid(String cacheKey) async {
-    return await _locationCacheManager.isCacheValid(cacheKey);
-  }
-
-  @override
-  Future<void> clearAllCache() async {
-    await _locationCacheManager.clearCache();
-    await _singleLocationCacheManager.clearCache();
-    await _searchCacheManager.clearCache();
   }
 }

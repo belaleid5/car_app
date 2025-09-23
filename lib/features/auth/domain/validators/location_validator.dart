@@ -1,5 +1,5 @@
 import 'package:car_app/core/error/faliure.dart';
-import 'package:car_app/features/auth/domain/entities/lcation_entity.dart';
+import 'package:car_app/features/auth/domain/entities/location_entity.dart';
 import 'package:dartz/dartz.dart';
 
 class LocationValidator {
@@ -51,14 +51,14 @@ class LocationValidator {
       ));
     }
     
-    if (location.latitude < -90 || location.latitude > 90) {
+    if (location.lat < -90 || location.lat > 90) {
       return Left(ValidationFailure(
          'Latitude must be between -90 and 90',
          400,
       ));
     }
     
-    if (location.longitude < -180 || location.longitude > 180) {
+    if (location.lat < -180 || location.lat > 180) {
       return Left(ValidationFailure(
          'Longitude must be between -180 and 180',
          400,

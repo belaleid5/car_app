@@ -8,11 +8,13 @@ import 'package:car_app/core/utils/app_text.dart';
 import 'package:car_app/core/utils/validators.dart';
 import 'package:car_app/core/widget/custom_toast.dart';
 import 'package:car_app/core/widget/cutsom_eleveted_button.dart';
+import 'package:car_app/features/auth/domain/entities/location_entity.dart';
 import 'package:car_app/features/auth/domain/entities/register_request_entity.dart';
 import 'package:car_app/features/auth/presentation/blocs/auth_cubit.dart';
 import 'package:car_app/features/auth/presentation/blocs/auth_states.dart';
 import 'package:car_app/features/auth/presentation/widgets/custom_coountry_phone.dart';
 import 'package:car_app/features/auth/presentation/widgets/custom_passsword_text_form.dart';
+import 'package:car_app/features/auth/presentation/widgets/custom_select_location.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -28,19 +30,13 @@ class _AuthSectionSignUpState extends State<AuthSectionSignUp> {
   final TextEditingController _passwordController = TextEditingController();
   final TextEditingController _fullNameController = TextEditingController();
   final TextEditingController _phoneController = TextEditingController();
-
+  final TextEditingController _locationController = TextEditingController();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
   String _fullPhoneNumber = '';
   String _countryCode = '+20';
   String _phoneNumber = '';
-
-  @override
-  void initState() {
-    super.initState();
-    // تحميل المواقع عند فتح الصفحة
-    context.read<AuthCubit>().getLocations();
-  }
+  LocationEntity? _selectedLocation;
 
   @override
   void dispose() {
@@ -48,10 +44,15 @@ class _AuthSectionSignUpState extends State<AuthSectionSignUp> {
     _passwordController.dispose();
     _fullNameController.dispose();
     _phoneController.dispose();
+    _locationController.dispose();
     super.dispose();
   }
 
-  void _onPhoneChanged(String fullPhone, String countryCode, String phoneNumber) {
+  void _onPhoneChanged(
+    String fullPhone,
+    String countryCode,
+    String phoneNumber,
+  ) {
     _fullPhoneNumber = fullPhone;
     _countryCode = countryCode;
     _phoneNumber = phoneNumber;
@@ -62,11 +63,18 @@ class _AuthSectionSignUpState extends State<AuthSectionSignUp> {
     final res = ResponsiveHelper(context);
     return BlocConsumer<AuthCubit, AuthState>(
       listener: (context, state) {
-        if (state.status == AppStatus.success) {
-          CustomToast.show(context, state.message ?? 'Registration successful!');
-          Navigator.pushNamed(context, AppRouter.loginRoute);
+        if (state.status == AppStatus.success && state.tokens != null) {
+          CustomToast.show(
+            context,
+            state.message ?? 'Registration successful!',
+          );
+          Navigator.pushNamedAndRemoveUntil(
+            context,
+            AppRouter.loginRoute,
+            (route) => false,
+          );
         } else if (state.status == AppStatus.failure) {
-          CustomToast.show(context, state.message ?? 'Registration failed!');
+          CustomToast.show(context, state.message ?? 'An error occurred!');
         }
       },
       builder: (context, state) {
@@ -75,73 +83,43 @@ class _AuthSectionSignUpState extends State<AuthSectionSignUp> {
           child: Column(
             spacing: 18,
             children: [
-              // Full Name Field
               AdaptiveInputField(
                 controller: _fullNameController,
                 context: context,
                 hintText: 'Full Name',
                 validate: (value) => Validators.validateFullName(value),
               ),
-
-              // Email Field
               AdaptiveInputField(
                 controller: _emailController,
                 context: context,
                 hintText: 'Email',
                 validate: (value) => Validators.validateEmail(value),
               ),
-
-              // Password Field
               CustomPasswordFormField(
                 passwordController: _passwordController,
                 validate: (value) => Validators.validatePassword(value),
               ),
-
-              // Phone Field
               CountryPhoneInputField(
                 phoneController: _phoneController,
                 validator: (value) => Validators.validatePhone(value),
                 onChanged: _onPhoneChanged,
               ),
 
-              // Location Dropdown
-              Container(
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(10.67),
-                  border: Border.all(color: AppColors.neutral500),
-                ),
-                child: DropdownButtonFormField<int>(
-                  decoration: const InputDecoration(
-                    hintText: 'اختر الموقع',
-                    contentPadding: EdgeInsets.all(15),
-                    border: InputBorder.none,
-                    prefixIcon: Icon(Icons.location_on, color: AppColors.neutral900),
-                  ),
-                  value: state.selectedLocation?.id,
-                  validator: (value) {
-                    if (value == null) {
-                      return 'الموقع مطلوب';
-                    }
-                    return null;
-                  },
-                  items: _buildDropdownItems(state),
-                  onChanged: (int? locationId) {
-                    final locationsList = state.locations?.locations;
-                    if (locationId != null && (locationsList?.isNotEmpty ?? false)) {
-                      final selectedLocation = locationsList!
-                          .firstWhere((location) => location.id == locationId);
-                      context.read<AuthCubit>().selectLocation(selectedLocation);
-                    }
-                  },
-                ),
+              CustomSelectLocation(
+                locationController: _locationController,
+                onLocationSelected: (selectedLocation) {
+                  setState(() {
+                    _selectedLocation = selectedLocation;
+                    _locationController.text = selectedLocation.name;
+                  });
+                },
               ),
 
-              // Sign Up Button
               CustomElevatedButton(
                 res: res,
                 titleColor: AppColors.neutral100,
                 buttonColor: AppColors.neutral900,
-                title: state.status == AppStatus.loading
+                title: state.status == AppStatus.registering
                     ? loadingWidget()
                     : Text(
                         "SignUp",
@@ -150,7 +128,7 @@ class _AuthSectionSignUpState extends State<AuthSectionSignUp> {
                           fontWeight: FontWeight.w600,
                         ),
                       ),
-                onPressed: state.status == AppStatus.loading
+                onPressed: state.status == AppStatus.registering
                     ? null
                     : () {
                         if (_formKey.currentState!.validate()) {
@@ -160,14 +138,13 @@ class _AuthSectionSignUpState extends State<AuthSectionSignUp> {
                             password: _passwordController.text.trim(),
                             countryCode: _countryCode.trim(),
                             phoneNumber: _phoneNumber.trim(),
-                            locationId: state.selectedLocation?.id ?? 0,
+                            locationId: _selectedLocation!.id,
                           );
                           context.read<AuthCubit>().register(registerRequest);
                         }
                       },
               ),
 
-              // Login Button
               CustomElevatedButton(
                 res: res,
                 titleColor: AppColors.black,
@@ -179,81 +156,14 @@ class _AuthSectionSignUpState extends State<AuthSectionSignUp> {
                     fontWeight: FontWeight.w600,
                   ),
                 ),
-                onPressed: state.status == AppStatus.loading
+                onPressed: state.status == AppStatus.registering
                     ? null
-                    : () {
-                        Navigator.pushNamed(context, AppRouter.loginRoute);
-                      },
+                    : () => Navigator.pushNamed(context, AppRouter.loginRoute),
               ),
             ],
           ),
         );
       },
     );
-  }
-
-  List<DropdownMenuItem<int>>? _buildDropdownItems(AuthState state) {
-    if (state.status == AppStatus.loading) {
-      return [
-        const DropdownMenuItem<int>(
-          enabled: false,
-          child: Row(
-            children: [
-              SizedBox(
-                width: 16,
-                height: 16,
-                child: CircularProgressIndicator(strokeWidth: 2),
-              ),
-              SizedBox(width: 8),
-              Text('جاري التحميل...'),
-            ],
-          ),
-        ),
-      ];
-    }
-
-    if (state.status == AppStatus.failure) {
-      return [
-        const DropdownMenuItem<int>(
-          enabled: false,
-          child: Row(
-            children: [
-              Icon(Icons.error, color: Colors.red, size: 16),
-              SizedBox(width: 8),
-              Text('خطأ في تحميل المواقع'),
-            ],
-          ),
-        ),
-      ];
-    }
-
-    final locationsList = state.locations?.locations;
-
-    if (locationsList == null || locationsList.isEmpty) {
-      return [
-        const DropdownMenuItem<int>(
-          enabled: false,
-          child: Text('لا توجد مواقع'),
-        ),
-      ];
-    }
-
-    return locationsList.map((location) {
-      return DropdownMenuItem<int>(
-        value: location.id,
-        child: Row(
-          children: [
-            Icon(Icons.location_on, size: 16, color: AppColors.neutral900),
-            const SizedBox(width: 8),
-            Expanded(
-              child: Text(
-                location.name,
-                overflow: TextOverflow.ellipsis,
-              ),
-            ),
-          ],
-        ),
-      );
-    }).toList();
   }
 }
