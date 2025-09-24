@@ -82,7 +82,9 @@ class _ToggleRadioState extends State<ToggleRadio> {
               children: [
                 Radio<int>(
                   value: 1,
+                  // ignore: deprecated_member_use
                   groupValue: _selectedValue,
+                  // ignore: deprecated_member_use
                   onChanged: (val) => _updateValue(val!),
                   activeColor: AppColors.neutral900,
                 ),

@@ -15,7 +15,7 @@ import 'package:car_app/features/auth/presentation/blocs/auth_states.dart';
 import 'package:car_app/features/auth/presentation/widgets/custom_coountry_phone.dart';
 import 'package:car_app/features/auth/presentation/widgets/custom_passsword_text_form.dart';
 import 'package:car_app/features/auth/presentation/widgets/custom_select_location.dart';
-import 'package:car_app/features/auth/presentation/widgets/toggilr_radio.dart';
+import 'package:car_app/features/auth/presentation/widgets/toggile_radio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 

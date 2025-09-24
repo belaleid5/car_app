@@ -3,7 +3,8 @@ import 'package:car_app/features/auth/presentation/pages/otp_screen.dart';
 import 'package:car_app/features/auth/presentation/pages/reset_password_screen.dart';
 import 'package:car_app/features/auth/presentation/pages/sign_up_screen.dart';
 import 'package:car_app/features/auth/presentation/pages/verfiy_phone_screen.dart';
-import 'package:car_app/features/splash/presentation/pages/splash_page_view_screen.dart';
+import 'package:car_app/features/onboarding/presentation/pages/onbording_page_view_screen.dart';
+import 'package:car_app/features/splash/presention/splash_view.dart';
 import 'package:flutter/material.dart';
 
 class AppRouter {
@@ -16,16 +17,19 @@ class AppRouter {
   static const filterSearchRoute = "/filterSearch";
   static const verifyPhoneRoute = "/verifyPhone";
   static const otpRoute = "/otp";
+    static const onBoarding = "/onBoard";
+  
 
   static Route<dynamic> onGenerateRoute(RouteSettings settings) {
     switch (settings.name) {
-      case splashRoute:
-        return MaterialPageRoute(builder: (_) => SplashPageView());
-
+ 
+ case splashRoute:
+        return MaterialPageRoute(builder: (_) => SplashScreen());
+      case onBoarding:
+        return MaterialPageRoute(builder: (_) => OnBoardingPageView());
+ 
       case loginRoute:
-        return MaterialPageRoute(
-          builder: (_) => const LoginScreen(),   
-        );
+        return MaterialPageRoute(builder: (_) => const LoginScreen());
 
       case signUpRoute:
         return MaterialPageRoute(builder: (_) => SignUpScreen());
@@ -42,9 +46,7 @@ class AppRouter {
         } else {
           return MaterialPageRoute(
             builder: (_) => const Scaffold(
-              body: Center(
-                child: Text("Error: Reset token is required"),
-              ),
+              body: Center(child: Text("Error: Reset token is required")),
             ),
           );
         }
@@ -54,9 +56,8 @@ class AppRouter {
 
       default:
         return MaterialPageRoute(
-          builder: (_) => const Scaffold(
-            body: Center(child: Text("Page not found")),
-          ),
+          builder: (_) =>
+              const Scaffold(body: Center(child: Text("Page not found"))),
         );
     }
   }

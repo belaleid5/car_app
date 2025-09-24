@@ -3,6 +3,7 @@ class AppImages {
   AppImages._();
   
   static const String assetsBaground_img = "assets/Baground_img.svg";
+   static const String carSvg = "assets/icons/car-svg.svg";
 
  static const String assetsBaground_car = "assets/background_car.png";
   static const String assetsBaground_car_tow = "assets/splash_tow.png";

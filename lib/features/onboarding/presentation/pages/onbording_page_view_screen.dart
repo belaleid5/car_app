@@ -3,19 +3,18 @@ import 'package:car_app/core/routing/app_router.dart';
 import 'package:car_app/core/utils/app_color.dart';
 import 'package:car_app/core/utils/app_text.dart';
 import 'package:car_app/core/widget/cutsom_eleveted_button.dart';
-import 'package:car_app/features/splash/presentation/pages/splash_screen_tow.dart';
+import 'package:car_app/features/onboarding/presentation/pages/onboarding_screen_tow.dart';
+import 'package:car_app/features/onboarding/presentation/pages/onbording_screen.dart';
 import 'package:flutter/material.dart';
 
-import 'splash_screen.dart';
-
-class SplashPageView extends StatefulWidget {
-  const SplashPageView({super.key});
+class OnBoardingPageView extends StatefulWidget {
+  const OnBoardingPageView({super.key});
 
   @override
-  State<SplashPageView> createState() => _SplashPageViewState();
+  State<OnBoardingPageView> createState() => _OnBoardingPageViewState();
 }
 
-class _SplashPageViewState extends State<SplashPageView> {
+class _OnBoardingPageViewState extends State<OnBoardingPageView> {
   final PageController _pageController = PageController();
   int _currentPage = 0;
 
@@ -33,7 +32,7 @@ class _SplashPageViewState extends State<SplashPageView> {
             onPageChanged: (index) {
               setState(() => _currentPage = index);
             },
-            children: const [SplashScreen(), SplashScreenTow()],
+            children: const [OnBoardingScreen(), OnBoardingScreenTow()],
           ),
 
           Positioned(
@@ -48,10 +47,9 @@ class _SplashPageViewState extends State<SplashPageView> {
                   height: res.rh(10),
                   width: _currentPage == index ? res.rw(30) : res.rw(10),
                   decoration: BoxDecoration(
-                    color:
-                        _currentPage == index
-                            ? AppColors.black
-                            : AppColors.neutral50,
+                    color: _currentPage == index
+                        ? AppColors.black
+                        : AppColors.neutral50,
                     borderRadius: BorderRadius.circular(20),
                   ),
                 ),
@@ -75,17 +73,16 @@ class _SplashPageViewState extends State<SplashPageView> {
                 } else {
                   Navigator.pushReplacementNamed(context, AppRouter.loginRoute);
                 }
-              }, titleColor: AppColors.white, 
-              buttonColor: AppColors.neutral900, 
-              title:
-                
-                  Text(
-        "Get Started",
-        style: AppTextStyles.bodyLarge().copyWith(
-          color:  Colors.white,
-          fontWeight: FontWeight.w600,
-        ),
-      ),
+              },
+              titleColor: AppColors.white,
+              buttonColor: AppColors.neutral900,
+              title: Text(
+                "Get Started",
+                style: AppTextStyles.bodyLarge().copyWith(
+                  color: Colors.white,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
             ),
           ),
         ],
