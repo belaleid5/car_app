@@ -7,7 +7,9 @@ class RegisterRequestModel extends RegisterRequestEntity {
     required super.password,
     required super.phoneNumber,
     required super.countryCode,
-       required super.locationId,
+       required super.locationId, 
+       required super.availableToCreateCar,
+       
     
   });
 
@@ -18,7 +20,8 @@ class RegisterRequestModel extends RegisterRequestEntity {
       email: entity.email,
       password: entity.password,
       countryCode: entity.countryCode,
-      phoneNumber: entity.phoneNumber,
+      phoneNumber: entity.phoneNumber, 
+      availableToCreateCar: entity.availableToCreateCar,
     );
   }
 
@@ -30,6 +33,7 @@ class RegisterRequestModel extends RegisterRequestEntity {
       'country_id': countryCode,
       'phone': phoneNumber,
       "location_id":locationId,
+    "available_to_create_car": availableToCreateCar ? 1 : 0,
     };
   }
 }

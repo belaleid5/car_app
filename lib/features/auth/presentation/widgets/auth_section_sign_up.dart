@@ -15,6 +15,7 @@ import 'package:car_app/features/auth/presentation/blocs/auth_states.dart';
 import 'package:car_app/features/auth/presentation/widgets/custom_coountry_phone.dart';
 import 'package:car_app/features/auth/presentation/widgets/custom_passsword_text_form.dart';
 import 'package:car_app/features/auth/presentation/widgets/custom_select_location.dart';
+import 'package:car_app/features/auth/presentation/widgets/toggilr_radio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -37,6 +38,7 @@ class _AuthSectionSignUpState extends State<AuthSectionSignUp> {
   String _countryCode = '+20';
   String _phoneNumber = '';
   LocationEntity? _selectedLocation;
+  bool _availableToCreateCar = false;
 
   @override
   void dispose() {
@@ -89,16 +91,19 @@ class _AuthSectionSignUpState extends State<AuthSectionSignUp> {
                 hintText: 'Full Name',
                 validate: (value) => Validators.validateFullName(value),
               ),
+
               AdaptiveInputField(
                 controller: _emailController,
                 context: context,
                 hintText: 'Email',
                 validate: (value) => Validators.validateEmail(value),
               ),
+
               CustomPasswordFormField(
                 passwordController: _passwordController,
                 validate: (value) => Validators.validatePassword(value),
               ),
+
               CountryPhoneInputField(
                 phoneController: _phoneController,
                 validator: (value) => Validators.validatePhone(value),
@@ -114,7 +119,20 @@ class _AuthSectionSignUpState extends State<AuthSectionSignUp> {
                   });
                 },
               ),
-
+              Text(
+                "Available To Create Car",
+                style: AppTextStyles.bodyLarge().copyWith(
+                  color: AppColors.neutral900,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              ToggleRadio(
+                onChanged: (int value) {
+                  setState(() {
+                    _availableToCreateCar = value == 1;
+                  });
+                },
+              ),
               CustomElevatedButton(
                 res: res,
                 titleColor: AppColors.neutral100,
@@ -139,12 +157,12 @@ class _AuthSectionSignUpState extends State<AuthSectionSignUp> {
                             countryCode: _countryCode.trim(),
                             phoneNumber: _phoneNumber.trim(),
                             locationId: _selectedLocation!.id,
+                            availableToCreateCar: _availableToCreateCar,
                           );
                           context.read<AuthCubit>().register(registerRequest);
                         }
                       },
               ),
-
               CustomElevatedButton(
                 res: res,
                 titleColor: AppColors.black,

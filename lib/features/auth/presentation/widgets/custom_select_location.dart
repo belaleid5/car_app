@@ -13,20 +13,18 @@ class CustomSelectLocation extends StatelessWidget {
   const CustomSelectLocation({
     super.key,
     required this.locationController,
-    required this.onLocationSelected, // اجعلها مطلوبة
+    required this.onLocationSelected, 
   });
 
   @override
   Widget build(BuildContext context) {
-    return TextFormField(
+    return AdaptiveInputField(
       controller: locationController,
       readOnly: true,
-      decoration: InputDecoration(
-        hintText: 'اختر موقعك',
-        prefixIcon: const Icon(Icons.location_on_outlined),
-        border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
-      ),
-      validator: (value) => value == null || value.isEmpty ? 'الموقع مطلوب' : null,
+      hintText: "select location",
+      prefix: Icon(Icons.location_on),
+      context:context,
+      validate: (value) => value == null || value.isEmpty ? ' required location' : null,
       onTap: () async {
         final result = await showModalBottomSheet<LocationEntity>(
           context: context,
@@ -34,14 +32,17 @@ class CustomSelectLocation extends StatelessWidget {
           backgroundColor: Colors.transparent,
           builder: (_) => BlocProvider.value(
             value: BlocProvider.of<AuthCubit>(context),
-            child: const LocationsBottomSheet(), // افترض أن هذا هو الـ BottomSheet
+            child: const LocationsBottomSheet(), 
           ),
         );
 
         if (result != null) {
           onLocationSelected(result);
         }
-      },
+      }, 
     );
   }
 }
+
+
+
