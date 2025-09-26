@@ -1,10 +1,12 @@
 import 'package:car_app/core/enums/app_states.dart';
 import 'package:car_app/core/usecases/base_use_case.dart';
 import 'package:car_app/features/auth/domain/entities/auth_token_entity.dart';
+import 'package:car_app/features/auth/domain/entities/confirm_code_phone_entity.dart';
 import 'package:car_app/features/auth/domain/entities/forget_password_request_entity.dart';
 import 'package:car_app/features/auth/domain/entities/location_entity.dart';
 import 'package:car_app/features/auth/domain/entities/login_entity.dart';
 import 'package:car_app/features/auth/domain/entities/register_request_entity.dart';
+import 'package:car_app/features/auth/domain/entities/request_verify_code_entity.dart';
 import 'package:car_app/features/auth/domain/entities/reset_password_request_entity.dart';
 import 'package:car_app/features/auth/domain/use_cases/check_usecase.dart';
 import 'package:car_app/features/auth/domain/use_cases/forget_password_usecase.dart';
@@ -14,11 +16,12 @@ import 'package:car_app/features/auth/domain/use_cases/login_usecase.dart';
 import 'package:car_app/features/auth/domain/use_cases/logout_usecase.dart';
 import 'package:car_app/features/auth/domain/use_cases/refresh_tokens_params.dart';
 import 'package:car_app/features/auth/domain/use_cases/register_usecase.dart';
+import 'package:car_app/features/auth/domain/use_cases/request_code_verify_phone_usecase.dart';
+import 'package:car_app/features/auth/domain/use_cases/request_confirm_code_phone_usecase.dart';
 import 'package:car_app/features/auth/domain/use_cases/reset_password_usecase.dart';
 import 'package:car_app/features/auth/domain/use_cases/save_tokens_params.dart';
 import 'package:car_app/features/auth/presentation/blocs/auth_states.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-
 
 class AuthCubit extends Cubit<AuthState> {
   // UseCases for Authentication
@@ -31,10 +34,12 @@ class AuthCubit extends Cubit<AuthState> {
   final LoginUseCase loginUseCase;
   final ResetPasswordUseCase resetPasswordUseCase;
   final ForgetPasswordUseCase forgetPasswordUseCase;
-
+  final RequestCodeVerifyPhoneUseCase requestCodeVerifyPhoneUseCase;
+  final RequestConfirmCodePhoneUseCase confirmCodePhoneUseCase;
   final GetLocationsUseCase getLocationsUseCase;
 
   AuthCubit({
+    required this.confirmCodePhoneUseCase,
     required this.forgetPasswordUseCase,
     required this.checkAuthUseCase,
     required this.getTokensUseCase,
@@ -45,9 +50,8 @@ class AuthCubit extends Cubit<AuthState> {
     required this.loginUseCase,
     required this.resetPasswordUseCase,
     required this.getLocationsUseCase,
+    required this.requestCodeVerifyPhoneUseCase,
   }) : super(const AuthState());
-
- 
 
   Future<void> register(RegisterRequestEntity request) async {
     emit(state.copyWith(status: AppStatus.registering));
@@ -171,6 +175,46 @@ class AuthCubit extends Cubit<AuthState> {
     );
   }
 
+  Future<void> sendVerifyCodePhone(RequestVerifyCodePhoneEntity request) async {
+    emit(state.copyWith(status: AppStatus.loading));
+    final result = await requestCodeVerifyPhoneUseCase(request);
+
+    result.fold(
+      (failure) => emit(
+        state.copyWith(status: AppStatus.failure, message: failure.message),
+      ),
+      (response) => emit(
+        state.copyWith(
+          status: AppStatus.success,
+          message: response.message,
+          responseVerifyCodePhone: response,
+        ),
+      ),
+    );
+  }
+
+
+  Future<void> confirmCodePhone(ConfirmCodePhoneEntity request) async {
+    emit(state.copyWith(status: AppStatus.loading));
+    final result = await confirmCodePhoneUseCase(request);
+
+    result.fold(
+      (failure) => emit(
+        state.copyWith(status: AppStatus.failure, message: failure.message),
+      ),
+      (response) => emit(
+        state.copyWith(
+          status: AppStatus.success,
+          message: response.message,
+        ),
+      ),
+    );
+  }
+
+  
+
+
+
   Future<void> _handleAuthSuccess(
     AuthTokensEntity tokens,
     String message,
@@ -185,9 +229,10 @@ class AuthCubit extends Cubit<AuthState> {
     );
   }
 
-
+  //Locations methods
   Future<void> getLocations() async {
-    if ((state.locations?.isNotEmpty ?? false) || state.status == AppStatus.loading) {
+    if ((state.locations?.isNotEmpty ?? false) ||
+        state.status == AppStatus.loading) {
       return;
     }
 
@@ -197,28 +242,36 @@ class AuthCubit extends Cubit<AuthState> {
 
     result.fold(
       (failure) {
-        emit(state.copyWith(
-          status: AppStatus.failure,
-          message: failure.message,
-        ));
+        emit(
+          state.copyWith(status: AppStatus.failure, message: failure.message),
+        );
       },
       (newLocations) {
-        emit(state.copyWith(
-          status: AppStatus.success,
-          locations: newLocations,
-          hasReachedMax: true, // نفترض أننا جلبنا كل ما نحتاجه
-        ));
+        emit(
+          state.copyWith(
+            status: AppStatus.success,
+            locations: newLocations,
+            hasReachedMax: true,
+          ),
+        );
       },
     );
   }
 
-
-Future<void> fetchAllLocations() async {
-    if ((state.locations?.isNotEmpty ?? false) || state.status == AppStatus.loading) {
+  Future<void> fetchAllLocations() async {
+    if ((state.locations?.isNotEmpty ?? false) ||
+        state.status == AppStatus.loading) {
       return;
     }
 
-    emit(state.copyWith(status: AppStatus.loading, locations: [], currentPage: 1, hasReachedMax: false));
+    emit(
+      state.copyWith(
+        status: AppStatus.loading,
+        locations: [],
+        currentPage: 1,
+        hasReachedMax: false,
+      ),
+    );
 
     List<LocationEntity> allLocations = [];
     int currentPage = 1;
@@ -229,10 +282,6 @@ Future<void> fetchAllLocations() async {
 
       result.fold(
         (failure) {
-          // --- [التعديل الرئيسي هنا] ---
-          // بدلاً من إصدار حالة خطأ، فقط أوقف الحلقة.
-          // هذا يعني أننا وصلنا إلى نهاية الصفحات (أو حدث خطأ غير متوقع).
-          // في كلتا الحالتين، يجب أن نعرض البيانات التي جمعناها حتى الآن.
           hasMorePages = false;
         },
         (newLocations) {
@@ -246,39 +295,28 @@ Future<void> fetchAllLocations() async {
       );
     }
 
-    // --- [تعديل ثانوي] ---
-    // الآن، بغض النظر عن سبب توقف الحلقة (نهاية البيانات أو خطأ)،
-    // سنقوم بإصدار حالة النجاح مع كل البيانات التي تمكنا من جمعها.
-    // هذا يضمن ظهور البيانات في الـ UI.
-    emit(state.copyWith(
-      status: AppStatus.success,
-      locations: allLocations,
-      hasReachedMax: true,
-    ));
-  } /// Resets only the location-related parts of the state.
-  void resetLocationsState() {
-    emit(state.copyWith(
-      locations: [],
-      currentPage: 1,
-      hasReachedMax: false,
-      status: AppStatus.initial,
-    ));
+    emit(
+      state.copyWith(
+        status: AppStatus.success,
+        locations: allLocations,
+        hasReachedMax: true,
+      ),
+    );
   }
 
+  /// Resets only the location-related parts of the state.
+  void resetLocationsState() {
+    emit(
+      state.copyWith(
+        locations: [],
+        currentPage: 1,
+        hasReachedMax: false,
+        status: AppStatus.initial,
+      ),
+    );
+  }
 
-
-  
-
-
-
-
-
-
-
-
-
-
-Future<void> getNextLocationsPage() async {
+  Future<void> getNextLocationsPage() async {
     // لا تطلب صفحة جديدة إذا كنا قد وصلنا للنهاية أو كنا نحمل بيانات بالفعل
     if (state.hasReachedMax || state.status == AppStatus.loadingMore) return;
 
@@ -294,20 +332,21 @@ Future<void> getNextLocationsPage() async {
 
     result.fold(
       (failure) {
-        emit(state.copyWith(
-          status: AppStatus.failure,
-          message: failure.message,
-        ));
+        emit(
+          state.copyWith(status: AppStatus.failure, message: failure.message),
+        );
       },
       (newLocations) {
         final bool hasReachedMax = newLocations.isEmpty;
-        
-        emit(state.copyWith(
-          status: AppStatus.success,
-          locations: List.of(state.locations!)..addAll(newLocations),
-          currentPage: state.currentPage + 1,
-          hasReachedMax: hasReachedMax,
-        ));
+
+        emit(
+          state.copyWith(
+            status: AppStatus.success,
+            locations: List.of(state.locations!)..addAll(newLocations),
+            currentPage: state.currentPage + 1,
+            hasReachedMax: hasReachedMax,
+          ),
+        );
       },
     );
   }
@@ -316,16 +355,15 @@ Future<void> getNextLocationsPage() async {
   void refreshLocations() {
     // لا تقم بالطلب مرة أخرى إذا كانت البيانات محملة بالفعل
     if (state.locations?.isNotEmpty ?? false) return;
-    
-    emit(state.copyWith(
-      locations: [],
-      currentPage: 1,
-      hasReachedMax: false,
-      status: AppStatus.initial,
-    ));
+
+    emit(
+      state.copyWith(
+        locations: [],
+        currentPage: 1,
+        hasReachedMax: false,
+        status: AppStatus.initial,
+      ),
+    );
     getNextLocationsPage();
   }
-
-
-  
 }

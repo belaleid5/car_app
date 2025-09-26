@@ -2,18 +2,24 @@ import 'package:car_app/core/error/faliure.dart';
 import 'package:car_app/features/auth/data/data_sources/local_datasource.dart';
 import 'package:car_app/features/auth/data/data_sources/remote_data_source.dart';
 import 'package:car_app/features/auth/data/models/auth_token_model.dart';
+import 'package:car_app/features/auth/data/models/confirm_code_phone_modl.dart';
 import 'package:car_app/features/auth/data/models/forget_password_model.dart';
 import 'package:car_app/features/auth/data/models/login_request_model.dart';
+import 'package:car_app/features/auth/data/models/request_verify_code_phone_model.dart';
 import 'package:car_app/features/auth/data/models/reset_password_model.dart';
 import 'package:car_app/features/auth/data/models/user_model.dart';
 import 'package:car_app/features/auth/domain/entities/auth_token_entity.dart';
+import 'package:car_app/features/auth/domain/entities/confirm_code_phone_entity.dart';
 import 'package:car_app/features/auth/domain/entities/confirm_password_entity.dart';
 import 'package:car_app/features/auth/domain/entities/forget_password_request_entity.dart';
 import 'package:car_app/features/auth/domain/entities/login_entity.dart';
 import 'package:car_app/features/auth/domain/entities/login_response_entity.dart';
-import 'package:car_app/features/auth/domain/entities/reset_password_request_entity.dart';
+import 'package:car_app/features/auth/domain/entities/request_verify_code_entity.dart';
 import 'package:car_app/features/auth/domain/entities/reset_password_reponse_entity.dart';
+import 'package:car_app/features/auth/domain/entities/reset_password_request_entity.dart';
+import 'package:car_app/features/auth/domain/entities/response_verfiy_code_phone_entity.dart';
 import 'package:car_app/features/auth/domain/repositories/auth_repo.dart';
+import 'package:car_app/features/auth/presentation/pages/verfiy_phone_screen.dart';
 import 'package:dartz/dartz.dart';
 
 import '../../../../core/network/network_info.dart';
@@ -174,10 +180,8 @@ class AuthRepositoryImpl implements AuthRepository {
     }
   }
 
-
-
   @override
-  Future<Either<Failure, ResetPasswordResponseEntity>> resetPassword(
+  Future<Either<Failure, MessageResponseEntity>> resetPassword(
     ResetRequestPasswordEntity request,
   ) async {
     try {
@@ -188,4 +192,37 @@ class AuthRepositoryImpl implements AuthRepository {
       return Left(ServerFailure(e.toString()));
     }
   }
+
+  @override
+  Future<Either<Failure, ResponseVerifyCodePhoneEntity>> verifyCodePhone(
+    RequestVerifyCodePhoneEntity phoneRequest,
+  ) async {
+    try {
+      final requestModel = RequestVerifyCodePhoneModel.fromEntity(phoneRequest);
+      final responseModel = await remoteDataSource.verifyCodePhone(
+        requestModel,
+      );
+      return Right(responseModel);
+    } catch (e) {
+      return Left(ServerFailure(e.toString()));
+    }
+  }
+
+  @override
+  Future<Either<Failure, MessageResponseEntity>> 
+  confirmCodePhone(ConfirmCodePhoneEntity phoneRequest) async {
+    try {
+      final requestModel = ConfirmCodePhoneModel.fromEntity(phoneRequest);
+      final responseModel = await remoteDataSource.confirmCodePhone(
+        requestModel,
+      );
+
+
+      return Right(responseModel);
+    } catch (e) {
+      return Left(ServerFailure(e.toString()));
+    }
+  }
+
+
 }

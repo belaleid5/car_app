@@ -8,6 +8,7 @@ import 'package:car_app/core/utils/app_text.dart';
 import 'package:car_app/core/utils/validators.dart';
 import 'package:car_app/core/widget/custom_toast.dart';
 import 'package:car_app/core/widget/cutsom_eleveted_button.dart';
+import 'package:car_app/features/auth/domain/entities/request_verify_code_entity.dart';
 import 'package:car_app/features/auth/domain/entities/reset_password_request_entity.dart';
 import 'package:car_app/features/auth/presentation/blocs/auth_cubit.dart';
 import 'package:car_app/features/auth/presentation/blocs/auth_states.dart';
@@ -101,11 +102,13 @@ class _SectionAuthConfirmPasswordAndCodeState
                   onPressed: () {
                     if (_formKey.currentState!.validate()) {
                       final request = ResetRequestPasswordEntity(
-                        resetToken: widget.resetToken, // ✅ هنا الاستخدام
+                        resetToken: widget.resetToken, 
                         code: _codeController.text.trim(),
                         password: _passwordController.text.trim(),
                         confirmPassword: _confirmPasswordController.text.trim(),
                       );
+
+                      
 
                       context.read<AuthCubit>().resetPassword(request);
                     }

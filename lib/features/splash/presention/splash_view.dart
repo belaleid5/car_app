@@ -1,6 +1,7 @@
 import 'package:car_app/core/utils/app_color.dart';
 import 'package:car_app/core/utils/app_images.dart';
 import 'package:car_app/core/utils/app_text.dart';
+import 'package:car_app/features/onboarding/presentation/pages/onbording_page_view_screen.dart';
 import 'package:car_app/features/onboarding/presentation/pages/onbording_screen.dart';
 import 'package:car_app/features/splash/presention/widget/custom_animated-builder.dart';
 import 'package:car_app/features/splash/presention/widget/text_animation.dart';
@@ -156,7 +157,7 @@ class _SplashScreenState extends State<SplashScreen>
     Navigator.of(context).pushReplacement(
       PageRouteBuilder(
         pageBuilder: (context, animation, secondaryAnimation) =>
-            OnBoardingScreen(),
+            OnBoardingPageView(),
         transitionsBuilder: (context, animation, secondaryAnimation, child) {
           return FadeTransition(
             opacity: animation,

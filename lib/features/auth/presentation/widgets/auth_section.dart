@@ -37,7 +37,6 @@ class _AuthSectionState extends State<AuthSection> {
       create: (_) => sl<AuthCubit>(),
       child: BlocConsumer<AuthCubit, AuthState>(
         listener: (context, state) {
-          // Handle state changes like showing SnackBars or navigation
 
           if (state.status == AppStatus.success) {
             CustomToast.show(context, state.message ?? 'Login successful!');

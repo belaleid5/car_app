@@ -1,8 +1,8 @@
 import 'package:car_app/features/auth/presentation/pages/login_screen.dart';
-import 'package:car_app/features/auth/presentation/pages/otp_screen.dart';
+import 'package:car_app/features/auth/presentation/pages/otp_confirm_password_screen.dart';
+import 'package:car_app/features/auth/presentation/pages/otp_phone_verify.dart';
 import 'package:car_app/features/auth/presentation/pages/reset_password_screen.dart';
 import 'package:car_app/features/auth/presentation/pages/sign_up_screen.dart';
-import 'package:car_app/features/auth/presentation/pages/verfiy_phone_screen.dart';
 import 'package:car_app/features/onboarding/presentation/pages/onbording_page_view_screen.dart';
 import 'package:car_app/features/splash/presention/splash_view.dart';
 import 'package:flutter/material.dart';
@@ -16,18 +16,18 @@ class AppRouter {
   static const searchRoute = "/search";
   static const filterSearchRoute = "/filterSearch";
   static const verifyPhoneRoute = "/verifyPhone";
+   static const verifyConfirmPasswordRoute = "/veriyConfirmPasswordRoute";
+
   static const otpRoute = "/otp";
-    static const onBoarding = "/onBoard";
-  
+  static const onBoarding = "/onBoard";
 
   static Route<dynamic> onGenerateRoute(RouteSettings settings) {
     switch (settings.name) {
- 
- case splashRoute:
+      case splashRoute:
         return MaterialPageRoute(builder: (_) => SplashScreen());
       case onBoarding:
         return MaterialPageRoute(builder: (_) => OnBoardingPageView());
- 
+
       case loginRoute:
         return MaterialPageRoute(builder: (_) => const LoginScreen());
 
@@ -35,13 +35,10 @@ class AppRouter {
         return MaterialPageRoute(builder: (_) => SignUpScreen());
 
       case verifyPhoneRoute:
-        return MaterialPageRoute(builder: (_) => VerifyPhoneScreen());
-
-      case otpRoute:
         final token = settings.arguments as String?;
         if (token != null) {
           return MaterialPageRoute(
-            builder: (_) => OtpScreen(resetToken: token),
+            builder: (_) => OtpVerifyCodePhoneScreen(verifyToken: token,),
           );
         } else {
           return MaterialPageRoute(
@@ -51,7 +48,24 @@ class AppRouter {
           );
         }
 
-      case forgetPasswordRoute: // إضافة route للـ reset password
+       
+      case otpRoute:
+        final token = settings.arguments as String?;
+        if (token != null) {
+          return MaterialPageRoute(
+            builder: (_) => OtpConfirmPasswordScreen(resetToken: "token"),
+          );
+        } else {
+          return MaterialPageRoute(
+            builder: (_) => const Scaffold(
+              body: Center(child: Text("Error: Reset token is required")),
+            ),
+          );
+        }
+
+
+
+      case forgetPasswordRoute: 
         return MaterialPageRoute(builder: (_) => const ResetPassword());
 
       default:

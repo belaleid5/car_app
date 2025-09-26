@@ -2,7 +2,6 @@ class ApiConstants {
   // Base URLs
   static const String baseUrl = 'https://qent.up.railway.app/api';
 
-
   // Auth Endpoints
   static const String registerEndpoint = '$baseUrl/auth/register/';
   static const String loginEndpoint = '$baseUrl/auth/login/';
@@ -10,10 +9,16 @@ class ApiConstants {
   static const String logoutEndpoint = '$baseUrl/auth/logout';
   static const String forgotPasswordEndpoint = '$baseUrl/auth/forgot_password/';
   static const String resetPasswordEndpoint = '$baseUrl/auth/reset_password/';
-  
+  static const String verifyCodePhoneEndpoint =
+      '$baseUrl/auth/phone/request_verify_code/';
+  static const String confirmCodePhoneEndpoint =
+      '$baseUrl/auth/phone/confirm_verify_code/';
+
+
+
+
   static const String locations = '$baseUrl/public/register_locations/';
-  
-//public/register_locations
+
 
   // Headers
   static const String contentType = 'Content-Type';
@@ -21,7 +26,6 @@ class ApiConstants {
   static const String bearer = 'Bearer';
   static const String applicationJson = 'application/json';
   static const String acceptLanguage = 'Accept-Language';
-  
 
   // Storage Keys
   static const String accessTokenKey = 'access_token';
@@ -30,13 +34,9 @@ class ApiConstants {
   static const String isLoggedInKey = 'is_logged_in';
   static const String languageKey = 'language';
   static const String themeKey = 'theme';
-  
 
   // API Timeouts (in seconds)
   static const int connectionTimeout = 30;
   static const int receiveTimeout = 30;
   static const int sendTimeout = 30;
-
-
-
 }

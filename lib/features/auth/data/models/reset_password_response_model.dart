@@ -1,20 +1,15 @@
-
 import 'package:car_app/features/auth/domain/entities/reset_password_reponse_entity.dart';
 
-class ResetPasswordResponseModel extends ResetPasswordResponseEntity {
-  const ResetPasswordResponseModel({
-    required super.message,
-  });
+class MessageResponseModel extends MessageResponseEntity {
+  const MessageResponseModel({required super.message});
 
-  factory ResetPasswordResponseModel.fromJson(Map<String, dynamic> json) {
-    return ResetPasswordResponseModel(
+  factory MessageResponseModel.fromJson(Map<String, dynamic> json) {
+    return MessageResponseModel(
       message: json['message'] ?? 'Password reset successfully',
     );
   }
 
   Map<String, dynamic> toJson() {
-    return {
-      "message": message,
-    };
+    return {"message": message};
   }
 }
