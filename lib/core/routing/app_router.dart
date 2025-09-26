@@ -16,8 +16,7 @@ class AppRouter {
   static const searchRoute = "/search";
   static const filterSearchRoute = "/filterSearch";
   static const verifyPhoneRoute = "/verifyPhone";
-   static const verifyConfirmPasswordRoute = "/veriyConfirmPasswordRoute";
-
+  static const verifyConfirmPasswordRoute = "/veriyConfirmPasswordRoute";
   static const otpRoute = "/otp";
   static const onBoarding = "/onBoard";
 
@@ -25,6 +24,7 @@ class AppRouter {
     switch (settings.name) {
       case splashRoute:
         return MaterialPageRoute(builder: (_) => SplashScreen());
+      
       case onBoarding:
         return MaterialPageRoute(builder: (_) => OnBoardingPageView());
 
@@ -35,20 +35,14 @@ class AppRouter {
         return MaterialPageRoute(builder: (_) => SignUpScreen());
 
       case verifyPhoneRoute:
-        final token = settings.arguments as String?;
-        if (token != null) {
-          return MaterialPageRoute(
-            builder: (_) => OtpVerifyCodePhoneScreen(verifyToken: token,),
-          );
-        } else {
-          return MaterialPageRoute(
-            builder: (_) => const Scaffold(
-              body: Center(child: Text("Error: Reset token is required")),
-            ),
-          );
-        }
+        final verifyToken = settings.arguments as String?;
+        print('Router - verifyToken: $verifyToken'); 
+        
+        return MaterialPageRoute(
+          builder: (_) => OtpVerifyCodePhoneScreen(),
+          settings: settings, 
+        );
 
-       
       case otpRoute:
         final token = settings.arguments as String?;
         if (token != null) {
@@ -63,9 +57,7 @@ class AppRouter {
           );
         }
 
-
-
-      case forgetPasswordRoute: 
+      case forgetPasswordRoute:
         return MaterialPageRoute(builder: (_) => const ResetPassword());
 
       default:

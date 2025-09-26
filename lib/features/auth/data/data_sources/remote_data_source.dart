@@ -220,7 +220,7 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
   confirmCodePhone(ConfirmCodePhoneModel confirmPhone) async {
     try {
       final response = await dio.post(
-        ApiConstants.verifyCodePhoneEndpoint,
+        ApiConstants.confirmCodePhoneEndpoint,
         data: confirmPhone.toJson(),
         options: Options(
           headers: {ApiConstants.contentType: ApiConstants.applicationJson},

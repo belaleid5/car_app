@@ -21,13 +21,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class AuthSectionSignUp extends StatefulWidget {
-  // إضافة الـ verifyToken كـ parameter للـ Widget
   final String? verifyToken;
-  
-  const AuthSectionSignUp({
-    super.key,
-    this.verifyToken, // اختياري - يمكن يكون null
-  });
+
+  const AuthSectionSignUp({super.key, this.verifyToken});
 
   @override
   State<AuthSectionSignUp> createState() => _AuthSectionSignUpState();
@@ -40,7 +36,7 @@ class _AuthSectionSignUpState extends State<AuthSectionSignUp> {
   final TextEditingController _phoneController = TextEditingController();
   final TextEditingController _locationController = TextEditingController();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-  
+
   String _fullPhoneNumber = '';
   String _countryCode = '+20';
   String _phoneNumber = '';
@@ -72,12 +68,15 @@ class _AuthSectionSignUpState extends State<AuthSectionSignUp> {
     final res = ResponsiveHelper(context);
     return BlocConsumer<AuthCubit, AuthState>(
       listener: (context, state) {
-        if (state.status == AppStatus.success && state.tokens != null) {
+        if (state.status == AppStatus.success &&
+            state.responseVerifyCodePhone != null) {
           CustomToast.show(context, state.responseVerifyCodePhone!.code);
+
           Navigator.pushNamed(
             context,
             AppRouter.verifyPhoneRoute,
-            arguments: widget.verifyToken,
+            arguments:
+                state.responseVerifyCodePhone!.verifyToken, // هنا التعديل المهم
           );
         } else if (state.status == AppStatus.failure) {
           CustomToast.show(context, state.message ?? 'An error occurred!');
@@ -123,7 +122,7 @@ class _AuthSectionSignUpState extends State<AuthSectionSignUp> {
                   });
                 },
               ),
-              
+
               Text(
                 "Available To Create Car",
                 style: AppTextStyles.bodyLarge().copyWith(
@@ -131,7 +130,7 @@ class _AuthSectionSignUpState extends State<AuthSectionSignUp> {
                   fontWeight: FontWeight.w600,
                 ),
               ),
-              
+
               ToggleRadio(
                 onChanged: (int value) {
                   setState(() {
@@ -139,7 +138,7 @@ class _AuthSectionSignUpState extends State<AuthSectionSignUp> {
                   });
                 },
               ),
-              
+
               CustomElevatedButton(
                 res: res,
                 titleColor: AppColors.neutral100,
@@ -155,14 +154,16 @@ class _AuthSectionSignUpState extends State<AuthSectionSignUp> {
                       ),
                 onPressed: state.status == AppStatus.registering
                     ? null
-                    : () {
+                    : () async {
                         if (_formKey.currentState!.validate()) {
-                          // التأكد من أن الـ location مُختار
                           if (_selectedLocation == null) {
-                            CustomToast.show(context, 'Please select a location');
+                            CustomToast.show(
+                              context,
+                              'Please select a location',
+                            );
                             return;
                           }
-                          
+
                           final registerRequest = RegisterRequestEntity(
                             fullName: _fullNameController.text.trim(),
                             email: _emailController.text.trim(),
@@ -172,20 +173,22 @@ class _AuthSectionSignUpState extends State<AuthSectionSignUp> {
                             locationId: _selectedLocation!.id,
                             availableToCreateCar: _availableToCreateCar,
                           );
-                          
+
                           final requestSendPhone = RequestVerifyCodePhoneEntity(
                             phone: _phoneNumber.trim(),
                           );
-                          
-                          // استدعاء الـ methods
-                          context.read<AuthCubit>().sendVerifyCodePhone(
+
+                          await context.read<AuthCubit>().register(
+                            registerRequest,
+                          );
+
+                          await context.read<AuthCubit>().sendVerifyCodePhone(
                             requestSendPhone,
                           );
-                          context.read<AuthCubit>().register(registerRequest);
                         }
                       },
               ),
-              
+
               CustomElevatedButton(
                 res: res,
                 titleColor: AppColors.black,
