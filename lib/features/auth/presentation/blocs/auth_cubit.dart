@@ -1,5 +1,6 @@
 import 'package:car_app/core/enums/app_states.dart';
 import 'package:car_app/core/usecases/base_use_case.dart';
+import 'package:car_app/features/auth/data/models/reset_password_model.dart';
 import 'package:car_app/features/auth/domain/entities/auth_token_entity.dart';
 import 'package:car_app/features/auth/domain/entities/confirm_code_phone_entity.dart';
 import 'package:car_app/features/auth/domain/entities/forget_password_request_entity.dart';
@@ -162,18 +163,49 @@ class AuthCubit extends Cubit<AuthState> {
   }
 
   Future<void> resetPassword(ResetRequestPasswordEntity request) async {
+  try {
     emit(state.copyWith(status: AppStatus.loading));
-    final result = await resetPasswordUseCase(request);
-
+    
+    final model = ResetPasswordModel.fromEntity(request);
+    
+    if (!model.isValid) {
+      emit(state.copyWith(
+        status: AppStatus.failure, 
+        message: "Invalid data. Please check all fields."
+      ));
+      return;
+    }
+    
+    print('🔥 Reset Password Request: ${model.toString()}');
+    print('🔥 JSON Data: ${model.toJson()}');
+    
+    final result = await resetPasswordUseCase(model); // إرسال Model بدلاً من Entity
+    
     result.fold(
-      (failure) => emit(
-        state.copyWith(status: AppStatus.failure, message: failure.message),
-      ),
-      (response) => emit(
-        state.copyWith(status: AppStatus.success, message: response.message),
-      ),
+      (failure) {
+        print('❌ Reset Password Failed: ${failure.message}');
+        emit(state.copyWith(
+          status: AppStatus.failure, 
+          message: failure.message
+        ));
+      },
+      (response) {
+        print('✅ Reset Password Success: ${response.message}');
+        emit(state.copyWith(
+          status: AppStatus.success, 
+          message: response.message
+        ));
+      },
     );
+  } catch (e, stackTrace) {
+    print('💥 Reset Password Exception: $e');
+    print('📍 Stack Trace: $stackTrace');
+    emit(state.copyWith(
+      status: AppStatus.failure, 
+      message: "An unexpected error occurred. Please try again."
+    ));
   }
+}
 
   Future<void> sendVerifyCodePhone(RequestVerifyCodePhoneEntity request) async {
     emit(state.copyWith(status: AppStatus.loading));

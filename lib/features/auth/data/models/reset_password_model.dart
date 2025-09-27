@@ -19,10 +19,24 @@ class ResetPasswordModel extends ResetRequestPasswordEntity {
 
   Map<String, dynamic> toJson() {
     return {
-      "reset_token": resetToken, // 🔥 ده اللي هيروح للـ API
-      "code": code, // 🔥 ده اللي هيروح للـ API
-      "password": password, // 🔥 ده اللي هيروح للـ API
-      "confirm_password": confirmPassword, // 🔥 ده اللي هيروح للـ API
+      "reset_token": resetToken.trim(),
+      "code": code.trim(),
+      "password": password.trim(),
+      "confirm_password": confirmPassword.trim(),
     };
+  }
+
+  bool get isValid {
+    return resetToken.trim().isNotEmpty &&
+           code.trim().isNotEmpty &&
+           password.trim().isNotEmpty &&
+           confirmPassword.trim().isNotEmpty &&
+           password.trim() == confirmPassword.trim();
+  }
+
+  @override
+  String toString() {
+    return 'ResetPasswordModel(resetToken: ${resetToken.isNotEmpty ? "***${resetToken.substring(resetToken.length - 4)}" : "empty"}, '
+           'code: $code, password: *****, confirmPassword: *****)';
   }
 }

@@ -50,7 +50,7 @@ class AppRouter {
         final token = settings.arguments as String?;
         if (token != null) {
           return MaterialPageRoute(
-            builder: (_) => OtpConfirmPasswordScreen(resetToken: "token"),
+            builder: (_) => OtpConfirmPasswordScreen(resetToken: token),
           );
         } else {
           return MaterialPageRoute(

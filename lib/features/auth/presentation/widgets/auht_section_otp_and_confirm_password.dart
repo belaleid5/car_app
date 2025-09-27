@@ -20,7 +20,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 class SectionAuthConfirmPasswordAndCode extends StatefulWidget {
   final ResponsiveHelper res;
-  final String resetToken; // ✅ استقبال من OtpScreen
+  final String resetToken;
 
   const SectionAuthConfirmPasswordAndCode({
     super.key,
@@ -101,14 +101,36 @@ class _SectionAuthConfirmPasswordAndCodeState
                         ),
                   onPressed: () {
                     if (_formKey.currentState!.validate()) {
-                      final request = ResetRequestPasswordEntity(
-                        resetToken: widget.resetToken, 
-                        code: _codeController.text.trim(),
-                        password: _passwordController.text.trim(),
-                        confirmPassword: _confirmPasswordController.text.trim(),
-                      );
+                      // التأكد من أن جميع البيانات عبارة عن strings وليست فارغة
+                      final code = _codeController.text.trim();
+                      final password = _passwordController.text.trim();
+                      final confirmPassword = _confirmPasswordController.text.trim();
+                      final resetToken = widget.resetToken.trim();
 
-                      
+                      // التحقق من أن الكود غير فارغ
+                      if (code.isEmpty) {
+                        CustomToast.show(context, "Please enter verification code");
+                        return;
+                      }
+
+                      // التحقق من أن reset token غير فارغ
+                      if (resetToken.isEmpty) {
+                        CustomToast.show(context, "Reset token is missing");
+                        return;
+                      }
+
+                      // طباعة البيانات للتأكد من صحتها (يمكن حذفها في الإنتاج)
+                      print('Debug - Reset Token: $resetToken');
+                      print('Debug - Code: $code');
+                      print('Debug - Password: ${password.isNotEmpty ? "***" : "empty"}');
+                      print('Debug - Confirm Password: ${confirmPassword.isNotEmpty ? "***" : "empty"}');
+
+                      final request = ResetRequestPasswordEntity(
+                        resetToken: resetToken,
+                        code: code,
+                        password: password,
+                        confirmPassword: confirmPassword,
+                      );
 
                       context.read<AuthCubit>().resetPassword(request);
                     }
