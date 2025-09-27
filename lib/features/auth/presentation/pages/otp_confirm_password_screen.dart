@@ -1,8 +1,8 @@
 import 'package:car_app/core/responsive/responsive_helper.dart';
 import 'package:car_app/core/utils/app_color.dart';
+import 'package:car_app/features/auth/presentation/widgets/auht_section_otp_and_confirm_password.dart';
 
-import 'package:car_app/features/auth/presentation/widgets/custom_form_verifcation.dart';
-import 'package:car_app/features/auth/presentation/widgets/custom_logo_car_and_qent.dart';
+import 'package:car_app/core/widget/custom_logo_car_and_qent.dart';
 import 'package:car_app/features/auth/presentation/widgets/custom_title_verify_section.dart';
 import 'package:car_app/features/auth/presentation/widgets/dont_have_an_account.dart';
 import 'package:flutter/material.dart';
@@ -18,14 +18,11 @@ class OtpConfirmPasswordScreen extends StatefulWidget {
 }
 
 class _OtpConfirmPasswordScreenState extends State<OtpConfirmPasswordScreen> {
-  final TextEditingController _codeController = TextEditingController();
-
   @override
   Widget build(BuildContext context) {
     final res = ResponsiveHelper(context);
     return Scaffold(
       resizeToAvoidBottomInset: true,
-
       backgroundColor: AppColors.white,
       body: Padding(
         padding: EdgeInsets.symmetric(horizontal: res.screenWidth * 0.05),
@@ -48,9 +45,11 @@ class _OtpConfirmPasswordScreenState extends State<OtpConfirmPasswordScreen> {
               child: SizedBox(height: res.screenHeight * 0.05),
             ),
             SliverToBoxAdapter(
-              child: CustomFormVerification(controller: _codeController),
+              child: SectionAuthConfirmPasswordAndCode(res: res,
+               resetToken: widget.resetToken,),
             ),
             SliverToBoxAdapter(child: const SizedBox(height: 20)),
+            
             SliverToBoxAdapter(
               child: DontHaveOrHaveAccount(
                 onTap: () {},
@@ -64,9 +63,5 @@ class _OtpConfirmPasswordScreenState extends State<OtpConfirmPasswordScreen> {
     );
   }
 
-  @override
-  void dispose() {
-    _codeController.dispose();
-    super.dispose();
-  }
+  
 }

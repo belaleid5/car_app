@@ -7,7 +7,7 @@ import 'package:car_app/features/auth/presentation/blocs/auth_cubit.dart';
 import 'package:car_app/features/auth/presentation/widgets/auth_section_sign_up.dart';
 import 'package:car_app/features/auth/presentation/widgets/custom_button_social.dart';
 import 'package:car_app/features/auth/presentation/widgets/custom_divider_and_or.dart';
-import 'package:car_app/features/auth/presentation/widgets/custom_logo_car_and_qent.dart';
+import 'package:car_app/core/widget/custom_logo_car_and_qent.dart';
 import 'package:car_app/features/auth/presentation/widgets/custom_title_auth_section.dart';
 import 'package:car_app/features/auth/presentation/widgets/dont_have_an_account.dart';
 import 'package:flutter/material.dart';

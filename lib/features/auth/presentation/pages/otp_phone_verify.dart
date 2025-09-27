@@ -11,7 +11,7 @@ import 'package:car_app/features/auth/domain/entities/confirm_code_phone_entity.
 import 'package:car_app/features/auth/presentation/blocs/auth_cubit.dart';
 import 'package:car_app/features/auth/presentation/blocs/auth_states.dart';
 import 'package:car_app/features/auth/presentation/widgets/custom_form_verifcation.dart';
-import 'package:car_app/features/auth/presentation/widgets/custom_logo_car_and_qent.dart';
+import 'package:car_app/core/widget/custom_logo_car_and_qent.dart';
 import 'package:car_app/features/auth/presentation/widgets/custom_title_verify_section.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';

@@ -7,6 +7,8 @@ class AppImages {
 
  static const String assetsBaground_car = "assets/background_car.png";
   static const String assetsBaground_car_tow = "assets/splash_tow.png";
+   static const String persion_image = "assets/persionImage.svg";
+
   /// Assets for assetsIconsAppleIcon
   /// assets/icons/apple_icon.svg
   static const String assetsIconsAppleIcon = "assets/icons/apple_icon.svg";
@@ -42,7 +44,7 @@ class AppImages {
 
   /// Assets for assetsIconsNotificationIcon
   /// assets/icons/notification_icon.svg
-  static const String assetsIconsNotificationIcon = "assets/icons/notification_icon.svg";
+  static const String assetsIconsNotificationIcon = "assets/notifications.svg";
 
   /// Assets for assetsIconsSearchIcon
   /// assets/icons/search_icon.svg

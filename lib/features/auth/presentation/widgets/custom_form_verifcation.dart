@@ -31,7 +31,7 @@ class CustomFormVerification extends StatelessWidget {
     return Center(
       child: Pinput(
         length: 4,
-        controller: controller, // ✅ هنا مكانها الصح
+        controller: controller, 
         defaultPinTheme: defaultPinTheme,
         separatorBuilder: (index) => SizedBox(width: res.screenWidth * 0.10),
         onCompleted: (pin) {

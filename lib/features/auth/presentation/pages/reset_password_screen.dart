@@ -160,18 +160,13 @@ class _ResetPasswordState extends State<ResetPassword> {
                                     fontWeight: FontWeight.w600,
                                   ),
                                 ),
-                          // استخدام onTap بدلاً من onPressed إذا كان الـ widget يتطلب ذلك
                           onPressed: state.status == AppStatus.loading
                               ? null
                               : () => _handleResetPassword(context),
-                          // أو onPressed حسب تعريف الـ CustomElevatedButton
-                          // onPressed: state.status == AppStatus.loading
-                          //     ? null
-                          //     : () => _handleResetPassword(context),
+                          
                         ),
                       ),
                       SliverToBoxAdapter(child: SizedBox(height: res.rh(20))),
-                      // زر للرجوع للـ Login (اختياري)
                       SliverToBoxAdapter(
                         child: TextButton(
                           onPressed: () {
