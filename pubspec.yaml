@@ -5,7 +5,7 @@ publish_to: 'none'
 version: 1.0.0+1
 
 environment:
-  sdk: ^3.8.0-265.0.dev
+  sdk: ">=3.5.0 <4.0.0"
 
 dependencies:
   connectivity_plus: ^6.1.5
@@ -26,7 +26,8 @@ dependencies:
   logger: ^2.6.1
   pinput: ^5.0.2
   shared_preferences: ^2.5.3
-
+  shimmer: ^3.0.0
+  cached_network_image: ^3.3.0
 dev_dependencies:
   flutter_lints: ^5.0.0
   flutter_test:

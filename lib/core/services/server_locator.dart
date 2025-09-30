@@ -1,7 +1,6 @@
 import 'package:car_app/core/network/network_info.dart';
 import 'package:car_app/core/network/dio_client.dart';
 import 'package:car_app/core/services/services_sharedprefrences.dart';
-import 'package:car_app/features/auth/data/cache/location_manger_cache.dart';
 import 'package:car_app/features/auth/data/data_sources/local_datasource.dart';
 import 'package:car_app/features/auth/data/data_sources/location_local_datasource.dart';
 import 'package:car_app/features/auth/data/data_sources/remote_data_source.dart';
@@ -22,6 +21,11 @@ import 'package:car_app/features/auth/domain/use_cases/request_confirm_code_phon
 import 'package:car_app/features/auth/domain/use_cases/reset_password_usecase.dart';
 import 'package:car_app/features/auth/domain/use_cases/save_tokens_params.dart';
 import 'package:car_app/features/auth/presentation/blocs/auth_cubit.dart';
+import 'package:car_app/features/home/data/datasource/remote_data_source.dart';
+import 'package:car_app/features/home/data/repo_imp.dart/home_repo_imp.dart';
+import 'package:car_app/features/home/domain/Repo/home_repo.dart';
+import 'package:car_app/features/home/domain/usecase/get_brands_usecase.dart';
+import 'package:car_app/features/home/presentaion/manger/home_cubit.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:get_it/get_it.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -35,8 +39,7 @@ Future<void> setupDependencyInjection() async {
   final sharedPreferences = await SharedPreferences.getInstance();
   sl.registerLazySingleton(() => sharedPreferences);
   sl.registerLazySingleton(() => DioClient.instance.dio);
-  // -----------------------------------------------------------------
-
+  
   /// Core
   sl.registerLazySingleton(() => Connectivity());
   sl.registerLazySingleton<NetworkInfo>(() => NetworkInfoImpl(sl()));
@@ -93,7 +96,17 @@ Future<void> setupDependencyInjection() async {
 
   /// UseCases
   sl.registerLazySingleton(() => GetLocationsUseCase(sl()));
+   sl.registerLazySingleton(() => GetBrandsUseCase());
+sl.registerLazySingleton<HomeRepo>(
+    () => HomeRepositoryImpl(
+      remoteDataSource: sl(),
+    ),
+  );
 
+sl.registerLazySingleton<HomeRemoteDataSource>(
+    () => HomeRemoteDataSourceImpl(dioClient: sl(),
+    ),
+  );
 
   /// AuthCubit
   sl.registerFactory(
@@ -110,6 +123,13 @@ Future<void> setupDependencyInjection() async {
       getLocationsUseCase: sl(), 
       requestCodeVerifyPhoneUseCase: sl(), 
       confirmCodePhoneUseCase: sl(), 
+    ),
+  );
+
+   sl.registerFactory(
+    () => HomeCubit(
+      getBrands: sl(),
+       
     ),
   );
 }

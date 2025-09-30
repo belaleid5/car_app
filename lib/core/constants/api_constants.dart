@@ -13,9 +13,10 @@ class ApiConstants {
       '$baseUrl/auth/phone/request_verify_code/';
   static const String confirmCodePhoneEndpoint =
       '$baseUrl/auth/phone/confirm_verify_code/';
+  static const String brandsEndpoint = '$baseUrl/brands/';
 
 
-
+//brands/
 
   static const String locations = '$baseUrl/public/register_locations/';
 

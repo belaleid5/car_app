@@ -1,14 +1,11 @@
 import 'package:car_app/core/utils/app_color.dart';
 import 'package:car_app/core/utils/app_images.dart';
-import 'package:car_app/core/utils/app_text.dart';
 import 'package:car_app/features/onboarding/presentation/pages/onbording_page_view_screen.dart';
-import 'package:car_app/features/onboarding/presentation/pages/onbording_screen.dart';
 import 'package:car_app/features/splash/presention/widget/custom_animated-builder.dart';
 import 'package:car_app/features/splash/presention/widget/text_animation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'dart:async';
-import 'dart:math';
 
 import 'package:flutter_svg/svg.dart';
 
@@ -105,7 +102,6 @@ class _SplashScreenState extends State<SplashScreen>
       curve: Curves.easeInOut,
     ));
     
-    // حركة الخلفية
   }
   
   void _startSplashSequence() async {

@@ -20,7 +20,7 @@ class AdaptiveInputField extends StatelessWidget {
   final dynamic Function(String)? onSubmit;
   final dynamic Function(String)? onChange;
   final dynamic Function()? onTap;
-  final String? Function(String?) validate;
+  final String? Function(String?)? validate;
   final bool isPassword;
   final bool? enabled;
   final Widget? suffix;
@@ -41,7 +41,7 @@ class AdaptiveInputField extends StatelessWidget {
   const AdaptiveInputField({
     required this.context,
     required this.controller,
-    required this.validate,
+     this.validate,
     super.key,
     this.title,
     this.counterText,
