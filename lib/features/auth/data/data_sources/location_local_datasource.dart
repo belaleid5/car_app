@@ -1,6 +1,6 @@
 import 'package:car_app/core/error/faliure.dart';
 import 'package:dio/dio.dart'; // استيراد dio // كلاس الاستثناءات المخصص
-import '../models/location_model.dart';
+import '../../../../core/shared/location_model.dart';
 
 abstract class LocationsRemoteDataSource {
   Future<List<LocationModel>> getLocations(int page);

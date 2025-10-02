@@ -1,5 +1,5 @@
 import 'package:car_app/core/extention/adaptive_input_field.dart';
-import 'package:car_app/features/auth/domain/entities/location_entity.dart';
+import 'package:car_app/core/shared/location_entity.dart';
 import 'package:car_app/features/auth/presentation/blocs/auth_cubit.dart';
 import 'package:car_app/features/auth/presentation/widgets/location_bottom_sheet.dart';
 import 'package:flutter/material.dart';

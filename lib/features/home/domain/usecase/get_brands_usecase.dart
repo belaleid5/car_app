@@ -5,7 +5,9 @@ import 'package:car_app/features/home/domain/entity/brands_entity.dart';
 import 'package:dartz/dartz.dart';
 
 class GetBrandsUseCase extends BaseUseCase<List<BrandEntity>, BrandParams> {
- late HomeRepo homeRepo;
+ final HomeRepo homeRepo;
+
+  GetBrandsUseCase({required this.homeRepo});
   @override
    @override
   Future<Either<Failure, List<BrandEntity>>> call(BrandParams params) async {

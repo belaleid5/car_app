@@ -8,7 +8,7 @@ import 'package:car_app/core/utils/app_text.dart';
 import 'package:car_app/core/utils/validators.dart';
 import 'package:car_app/core/widget/custom_toast.dart';
 import 'package:car_app/core/widget/cutsom_eleveted_button.dart';
-import 'package:car_app/features/auth/domain/entities/location_entity.dart';
+import 'package:car_app/core/shared/location_entity.dart';
 import 'package:car_app/features/auth/domain/entities/register_request_entity.dart';
 import 'package:car_app/features/auth/domain/entities/request_verify_code_entity.dart';
 import 'package:car_app/features/auth/presentation/blocs/auth_cubit.dart';

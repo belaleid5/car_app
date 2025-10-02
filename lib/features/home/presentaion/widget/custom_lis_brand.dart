@@ -1,16 +1,15 @@
-
 import 'package:car_app/core/enums/app_states.dart';
 import 'package:car_app/core/responsive/responsive_helper.dart';
 import 'package:car_app/core/utils/app_color.dart';
 import 'package:car_app/core/utils/app_text.dart';
-import 'package:car_app/features/home/presentaion/manger/hoem_state.dart';
+import 'package:car_app/features/home/presentaion/manger/home_state.dart';
 import 'package:car_app/features/home/presentaion/manger/home_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 
-class CustomListBrand extends StatelessWidget {
+class CustomListBrand extends StatefulWidget {
   const CustomListBrand({
     super.key,
     required this.res,
@@ -19,12 +18,24 @@ class CustomListBrand extends StatelessWidget {
   final ResponsiveHelper res;
 
   @override
+  State<CustomListBrand> createState() => _CustomListBrandState();
+}
+
+class _CustomListBrandState extends State<CustomListBrand> {
+  @override
+  void initState() {
+    super.initState();
+    context.read<HomeCubit>().refreshBrands();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return BlocBuilder<HomeCubit, HomeState>(
       builder: (context, state) {
-        // Loading state
-        if (state.status == AppStatus.loading) {
-          return _buildShimmerLoading(res);
+        // Loading or Initial state - Show shimmer
+        if (state.status == AppStatus.loading ||
+            state.status == AppStatus.initial) {
+          return _buildShimmerLoading(widget.res);
         }
 
         // Error state
@@ -32,21 +43,21 @@ class CustomListBrand extends StatelessWidget {
           return _buildErrorWidget(context, state.errorMessage);
         }
 
-        // Empty state
-        if (state.brands.isEmpty) {
+        // Empty state (only if success but no data)
+        if (state.status == AppStatus.success && state.brands.isEmpty) {
           return _buildEmptyWidget();
         }
 
-        // Success state
+        // Success state with data
         return Padding(
           padding: const EdgeInsets.symmetric(vertical: 10.0),
           child: SizedBox(
-            height: res.screenHeight * 0.125,
+            height: widget.res.screenHeight * 0.125,
             child: ListView.builder(
               scrollDirection: Axis.horizontal,
               itemCount: state.brands.length,
               itemBuilder: (context, index) {
-                final brand = state!.brands[index];
+                final brand = state.brands[index];
                 return Padding(
                   padding: const EdgeInsets.only(right: 20.0),
                   child: GestureDetector(
@@ -65,11 +76,8 @@ class CustomListBrand extends StatelessWidget {
                               fit: BoxFit.cover,
                               width: 60,
                               height: 60,
-                              placeholder: (context, url) => const Center(
-                                child: CircularProgressIndicator(
-                                  strokeWidth: 2,
-                                ),
-                              ),
+                              placeholder: (context, url) =>
+                                  _buildShimmerLoading(widget.res),
                               errorWidget: (context, url, error) =>
                                   const Icon(Icons.error),
                             ),
@@ -114,7 +122,7 @@ class CustomListBrand extends StatelessWidget {
               highlightColor: Colors.grey[100]!,
               child: Column(
                 children: [
-                  CircleAvatar(
+                  const CircleAvatar(
                     backgroundColor: Colors.white,
                     radius: 40,
                   ),
@@ -139,22 +147,25 @@ class CustomListBrand extends StatelessWidget {
   // Error Widget
   Widget _buildErrorWidget(BuildContext context, String? errorMessage) {
     return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          const Icon(Icons.error_outline, size: 48, color: Colors.red),
-          const SizedBox(height: 16),
-          Text(
-            errorMessage ?? 'حدث خطأ في تحميل البراندات',
-            style: AppTextStyles.labelSmall(),
-            textAlign: TextAlign.center,
-          ),
-          const SizedBox(height: 16),
-          ElevatedButton(
-            onPressed: () => context.read<HomeCubit>().refreshBrands(),
-            child: const Text('إعادة المحاولة'),
-          ),
-        ],
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const Icon(Icons.error_outline, size: 48, color: Colors.red),
+            const SizedBox(height: 16),
+            Text(
+              errorMessage ?? 'حدث خطأ في تحميل البراندات',
+              style: AppTextStyles.labelSmall(),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 16),
+            ElevatedButton(
+              onPressed: () => context.read<HomeCubit>().refreshBrands(),
+              child: const Text('إعادة المحاولة'),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -162,85 +173,20 @@ class CustomListBrand extends StatelessWidget {
   // Empty State Widget
   Widget _buildEmptyWidget() {
     return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          const Icon(Icons.inbox, size: 48, color: Colors.grey),
-          const SizedBox(height: 16),
-          Text(
-            'لا توجد براندات متاحة',
-            style: AppTextStyles.labelSmall(),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-// ====================
-// Alternative: Skeleton Loading (without package)
-// ====================
-class BrandSkeletonLoader extends StatelessWidget {
-  const BrandSkeletonLoader({super.key, required this.res});
-
-  final ResponsiveHelper res;
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 10.0),
-      child: SizedBox(
-        height: res.screenHeight * 0.125,
-        child: ListView.builder(
-          scrollDirection: Axis.horizontal,
-          itemCount: 5,
-          itemBuilder: (context, index) => Padding(
-            padding: const EdgeInsets.only(right: 20.0),
-            child: Column(
-              children: [
-                Container(
-                  width: 80,
-                  height: 80,
-                  decoration: BoxDecoration(
-                    color: Colors.grey[300],
-                    shape: BoxShape.circle,
-                  ),
-                ),
-                const SizedBox(height: 5),
-                Container(
-                  width: 60,
-                  height: 10,
-                  decoration: BoxDecoration(
-                    color: Colors.grey[300],
-                    borderRadius: BorderRadius.circular(4),
-                  ),
-                ),
-              ],
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const Icon(Icons.inbox, size: 48, color: Colors.grey),
+            const SizedBox(height: 16),
+            Text(
+              'لا توجد براندات متاحة',
+              style: AppTextStyles.labelSmall(),
             ),
-          ),
+          ],
         ),
       ),
     );
   }
 }
-
-// ====================
-// Usage in Home Page
-// ====================
-/*
-class HomePage extends StatelessWidget {
-  const HomePage({Key? key}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    final res = ResponsiveHelper(context);
-    
-    return Scaffold(
-      body: BlocProvider(
-        create: (context) => sl<BrandCubit>()..fetchBrands(),
-        child: CustomListBrand(res: res),
-      ),
-    );
-  }
-}
-*/

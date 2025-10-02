@@ -2,7 +2,7 @@ import 'package:car_app/core/enums/app_states.dart';
 import 'package:car_app/features/auth/domain/entities/auth_token_entity.dart';
 import 'package:car_app/features/auth/domain/entities/confirm_code_phone_entity.dart';
 import 'package:car_app/features/auth/domain/entities/confirm_password_entity.dart';
-import 'package:car_app/features/auth/domain/entities/location_entity.dart';
+import 'package:car_app/core/shared/location_entity.dart';
 import 'package:car_app/features/auth/domain/entities/response_verfiy_code_phone_entity.dart';
 import 'package:equatable/equatable.dart';
 

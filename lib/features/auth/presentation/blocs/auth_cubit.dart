@@ -4,7 +4,7 @@ import 'package:car_app/features/auth/data/models/reset_password_model.dart';
 import 'package:car_app/features/auth/domain/entities/auth_token_entity.dart';
 import 'package:car_app/features/auth/domain/entities/confirm_code_phone_entity.dart';
 import 'package:car_app/features/auth/domain/entities/forget_password_request_entity.dart';
-import 'package:car_app/features/auth/domain/entities/location_entity.dart';
+import 'package:car_app/core/shared/location_entity.dart';
 import 'package:car_app/features/auth/domain/entities/login_entity.dart';
 import 'package:car_app/features/auth/domain/entities/register_request_entity.dart';
 import 'package:car_app/features/auth/domain/entities/request_verify_code_entity.dart';

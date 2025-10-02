@@ -1,18 +1,19 @@
 import 'package:equatable/equatable.dart';
 
-class BrandEntity extends Equatable {
+class CarFeatureEntity extends Equatable {
   final int id;
   final String name;
+  final String value;
   final String image;
 
-  const BrandEntity({
+  const CarFeatureEntity({
     required this.id,
     required this.name,
+    required this.value,
     required this.image,
   });
-
+  
   @override
-  List<Object?> get props => [id, name, image];
-
-
+  // TODO: implement props
+  List<Object?> get props => [];
 }

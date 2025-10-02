@@ -5,7 +5,7 @@ import 'package:car_app/features/auth/presentation/pages/otp_confirm_password_sc
 import 'package:car_app/features/auth/presentation/pages/otp_phone_verify.dart';
 import 'package:car_app/features/auth/presentation/pages/reset_password_screen.dart';
 import 'package:car_app/features/auth/presentation/pages/sign_up_screen.dart';
-import 'package:car_app/features/home/presentaion/home_screen.dart';
+import 'package:car_app/features/home/presentaion/pages/home_screen.dart';
 import 'package:car_app/features/onboarding/presentation/pages/onbording_page_view_screen.dart';
 import 'package:car_app/features/splash/presention/splash_view.dart';
 import 'package:flutter/material.dart';

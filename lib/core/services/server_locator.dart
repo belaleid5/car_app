@@ -21,26 +21,31 @@ import 'package:car_app/features/auth/domain/use_cases/request_confirm_code_phon
 import 'package:car_app/features/auth/domain/use_cases/reset_password_usecase.dart';
 import 'package:car_app/features/auth/domain/use_cases/save_tokens_params.dart';
 import 'package:car_app/features/auth/presentation/blocs/auth_cubit.dart';
+import 'package:car_app/features/home/data/datasource/local_data_source_cars.dart';
 import 'package:car_app/features/home/data/datasource/remote_data_source.dart';
 import 'package:car_app/features/home/data/repo_imp.dart/home_repo_imp.dart';
 import 'package:car_app/features/home/domain/Repo/home_repo.dart';
+import 'package:car_app/features/home/domain/usecase/best_cars_usecase.dart';
 import 'package:car_app/features/home/domain/usecase/get_brands_usecase.dart';
 import 'package:car_app/features/home/presentaion/manger/home_cubit.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:get_it/get_it.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-
-
 final GetIt sl = GetIt.instance;
 
 Future<void> setupDependencyInjection() async {
-  /// External
   final sharedPreferences = await SharedPreferences.getInstance();
   sl.registerLazySingleton(() => sharedPreferences);
   sl.registerLazySingleton(() => DioClient.instance.dio);
   
-  /// Core
+
+  sl.registerLazySingleton<CarsLocalDataSource>(
+    () => CarsLocalDataSourceImpl(
+      sharedPreferences: sl(),
+    ),
+  );
+
   sl.registerLazySingleton(() => Connectivity());
   sl.registerLazySingleton<NetworkInfo>(() => NetworkInfoImpl(sl()));
   sl.registerLazySingleton<SharedPreferencesService>(
@@ -49,16 +54,17 @@ Future<void> setupDependencyInjection() async {
     ),
   );
 
-  /// Data Sources
+
+  
+  // Auth Data Sources
   sl.registerLazySingleton<AuthLocalDataSource>(
     () => AuthLocalDataSourceImpl(sl()),
   );
   sl.registerLazySingleton<AuthRemoteDataSource>(
-    // حقن Dio مباشرة
     () => AuthRemoteDataSourceImpl(dio: sl()),
   );
 
-  /// Repository
+  // Auth Repository
   sl.registerLazySingleton<AuthRepository>(
     () => AuthRepositoryImpl(
       remoteDataSource: sl(),
@@ -67,7 +73,7 @@ Future<void> setupDependencyInjection() async {
     ),
   );
 
-  /// UseCases
+  // Auth UseCases
   sl.registerLazySingleton(() => RegisterUseCase(sl()));
   sl.registerLazySingleton(() => LoginUseCase(sl()));
   sl.registerLazySingleton(() => CheckAuthUseCase(sl()));
@@ -78,37 +84,24 @@ Future<void> setupDependencyInjection() async {
   sl.registerLazySingleton(() => ForgetPasswordUseCase(sl()));
   sl.registerLazySingleton(() => ResetPasswordUseCase(sl()));
   sl.registerLazySingleton(() => RequestCodeVerifyPhoneUseCase(authRepository: sl()));
-  sl.registerLazySingleton(() => RequestConfirmCodePhoneUseCase( authRepo: sl()));
+  sl.registerLazySingleton(() => RequestConfirmCodePhoneUseCase(authRepo: sl()));
 
-  /// Data Sources
+  // Location Data Sources
   sl.registerLazySingleton<LocationsRemoteDataSource>(
-    // استخدام نفس نسخة Dio المسجلة
     () => LocationsRemoteDataSourceImpl(dio: sl()),
   );
 
-  /// Repository
+  // Location Repository
   sl.registerLazySingleton<LocationsRepository>(
     () => LocationsRepositoryImpl(
       remoteDataSource: sl(),
-      // networkInfo: sl(), 
     ),
   );
 
-  /// UseCases
+  // Location UseCases
   sl.registerLazySingleton(() => GetLocationsUseCase(sl()));
-   sl.registerLazySingleton(() => GetBrandsUseCase());
-sl.registerLazySingleton<HomeRepo>(
-    () => HomeRepositoryImpl(
-      remoteDataSource: sl(),
-    ),
-  );
 
-sl.registerLazySingleton<HomeRemoteDataSource>(
-    () => HomeRemoteDataSourceImpl(dioClient: sl(),
-    ),
-  );
-
-  /// AuthCubit
+  // Auth Cubit
   sl.registerFactory(
     () => AuthCubit(
       resetPasswordUseCase: sl(),
@@ -126,10 +119,25 @@ sl.registerLazySingleton<HomeRemoteDataSource>(
     ),
   );
 
-   sl.registerFactory(
+  sl.registerLazySingleton<HomeRemoteDataSource>(
+    () => HomeRemoteDataSourceImpl(dioClient: DioClient.instance),
+  );
+
+  sl.registerLazySingleton<HomeRepo>(
+    () => HomeRepositoryImpl(
+      remoteDataSource: sl<HomeRemoteDataSource>(), 
+      localDataSource: sl(), 
+      networkInfo: sl(),
+    ),
+  );
+
+  sl.registerLazySingleton(() => GetBrandsUseCase(homeRepo:  sl<HomeRepo>()));
+   sl.registerLazySingleton(() => GetBestCarsUseCase(sl()));
+
+  sl.registerFactory(
     () => HomeCubit(
-      getBrands: sl(),
-       
+      getBrands: sl<GetBrandsUseCase>(), 
+      getBestCars: sl<GetBestCarsUseCase>(),
     ),
   );
 }
