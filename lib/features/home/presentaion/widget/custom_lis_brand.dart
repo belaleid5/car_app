@@ -1,13 +1,13 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:car_app/core/enums/app_states.dart';
 import 'package:car_app/core/responsive/responsive_helper.dart';
 import 'package:car_app/core/utils/app_color.dart';
 import 'package:car_app/core/utils/app_text.dart';
-import 'package:car_app/features/home/presentaion/manger/home_state.dart';
 import 'package:car_app/features/home/presentaion/manger/home_cubit.dart';
+import 'package:car_app/features/home/presentaion/manger/home_state.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:shimmer/shimmer.dart';
-import 'package:cached_network_image/cached_network_image.dart';
 
 class CustomListBrand extends StatefulWidget {
   const CustomListBrand({
@@ -30,15 +30,14 @@ class _CustomListBrandState extends State<CustomListBrand> {
 
   @override
   Widget build(BuildContext context) {
+    final res = ResponsiveHelper(context);
     return BlocBuilder<HomeCubit, HomeState>(
       builder: (context, state) {
-        // Loading or Initial state - Show shimmer
         if (state.status == AppStatus.loading ||
             state.status == AppStatus.initial) {
           return _buildShimmerLoading(widget.res);
         }
 
-        // Error state
         if (state.status == AppStatus.failure) {
           return _buildErrorWidget(context, state.errorMessage);
         }
@@ -52,55 +51,55 @@ class _CustomListBrandState extends State<CustomListBrand> {
         return Padding(
           padding: const EdgeInsets.symmetric(vertical: 10.0),
           child: SizedBox(
-            height: widget.res.screenHeight * 0.125,
-            child: ListView.builder(
-              scrollDirection: Axis.horizontal,
-              itemCount: state.brands.length,
-              itemBuilder: (context, index) {
-                final brand = state.brands[index];
-                return Padding(
-                  padding: const EdgeInsets.only(right: 20.0),
-                  child: GestureDetector(
-                    onTap: () {
-                      // Navigate to brand details
-                      // Navigator.push(...)
-                    },
-                    child: Column(
-                      children: [
-                        CircleAvatar(
-                          backgroundColor: AppColors.neutral100,
-                          radius: 40,
-                          child: ClipOval(
-                            child: CachedNetworkImage(
-                              imageUrl: brand.image,
-                              fit: BoxFit.cover,
-                              width: 60,
-                              height: 60,
-                              placeholder: (context, url) =>
-                                  _buildShimmerLoading(widget.res),
-                              errorWidget: (context, url, error) =>
-                                  const Icon(Icons.error),
+              height: widget.res.screenHeight * 0.125,
+              child: SizedBox(
+                height: widget.res.screenHeight * 0.125,
+                child: ListView.separated(
+                  scrollDirection: Axis.horizontal,
+                  itemCount: state.brands.length,
+                  separatorBuilder: (context, index) =>
+                      SizedBox(width: res.wp(5)), // مسافة صغيرة زي shimmer
+                  itemBuilder: (context, index) {
+                    final brand = state.brands[index];
+                    return GestureDetector(
+                      onTap: () {
+                        // Navigate to brand details
+                      },
+                      child: Column(
+                        children: [
+                          CircleAvatar(
+                            backgroundColor: AppColors.neutral100,
+                            radius: 40, 
+                            child: ClipOval(
+                              child: CachedNetworkImage(
+                                imageUrl: brand.image,
+                                fit: BoxFit.cover,
+                                width: 60, // نفس مقاس shimmer
+                                height: 60,
+                                placeholder: (context, url) =>
+                                    _buildShimmerLoading(widget.res),
+                                errorWidget: (context, url, error) =>
+                                    const Icon(Icons.error),
+                              ),
                             ),
                           ),
-                        ),
-                        const SizedBox(height: 5),
-                        SizedBox(
-                          width: 80,
-                          child: Text(
-                            brand.name,
-                            style: AppTextStyles.labelSmall(),
-                            textAlign: TextAlign.center,
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
+                          const SizedBox(height: 5),
+                          SizedBox(
+                            width: 60, // زي shimmer بالظبط
+                            child: Text(
+                              brand.name,
+                              style: AppTextStyles.labelSmall(),
+                              textAlign: TextAlign.center,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
                           ),
-                        ),
-                      ],
-                    ),
-                  ),
-                );
-              },
-            ),
-          ),
+                        ],
+                      ),
+                    );
+                  },
+                ),
+              )),
         );
       },
     );

@@ -1,22 +1,25 @@
 // ignore_for_file: prefer_single_quotes
 class AppImages {
   AppImages._();
-  
-  static const String assetsBaground_img = "assets/Baground_img.svg";
-   static const String carSvg = "assets/icons/car-svg.svg";
 
- static const String assetsBaground_car = "assets/background_car.png";
+  static const String assetsBaground_img = "assets/Baground_img.svg";
+  static const String carSvg = "assets/icons/car-svg.svg";
+
+  static const String assetsBaground_car = "assets/background_car.png";
   static const String assetsBaground_car_tow = "assets/splash_tow.png";
-   static const String persion_image = "assets/person.png";
-      static const String brand_icon = "assets/icons/brand_icon.png";
-       static const String white_car = "assets/white-ferrari-ff-car.png";
-       static const String heartIcon = "assets/heartIcon.svg";
-     
+  static const String persion_image = "assets/person.png";
+  static const String brand_icon = "assets/icons/brand_icon.png";
+  static const String white_car = "assets/white-ferrari-ff-car.png";
+  static const String heartIcon = "assets/heartIcon.svg";
+  static const String iconBack = "assets/icons/iconsBack.svg";
+    static const String threeDotsIcon = "assets/threeDotsIcon.svg";
+
   /// Assets for assetsIconsAppleIcon
   /// assets/icons/apple_icon.svg
   static const String assetsIconsAppleIcon = "assets/icons/apple_icon.svg";
 
   static const String assetsSeatsIcon = "assets/seats.svg";
+
   /// Assets for assetsIconsCarIcon
   /// assets/icons/car_icon.svg
   static const String assetsIconsCarIcon = "assets/icons/car_icon.svg";
@@ -66,4 +69,3 @@ class AppImages {
   /// assets/splash_2.svg
   static const String assetsSplash2 = "assets/splash_2.svg";
 }
-

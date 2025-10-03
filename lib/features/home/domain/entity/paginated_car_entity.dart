@@ -30,3 +30,7 @@ class PaginationMetaEntity extends Equatable {
         total,
       ];
 }
+
+
+
+

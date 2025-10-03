@@ -12,8 +12,7 @@ class CarFeatureEntity extends Equatable {
     required this.value,
     required this.image,
   });
-  
+
   @override
-  // TODO: implement props
-  List<Object?> get props => [];
+  List<Object?> get props => [id, name, value, image];
 }

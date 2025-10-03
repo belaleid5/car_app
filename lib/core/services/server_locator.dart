@@ -136,8 +136,8 @@ Future<void> setupDependencyInjection() async {
 
   sl.registerFactory(
     () => HomeCubit(
-      getBrands: sl<GetBrandsUseCase>(), 
-      getBestCars: sl<GetBestCarsUseCase>(),
+      getBrandsUseCase: sl<GetBrandsUseCase>(), 
+      getBestCarsUseCase: sl<GetBestCarsUseCase>(), 
     ),
   );
 }

@@ -1,19 +1,19 @@
 // home_cubit.dart
 import 'package:car_app/features/home/domain/usecase/best_cars_usecase.dart';
+import 'package:car_app/features/home/domain/usecase/params/page_currenrt_params.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../core/enums/app_states.dart';
 import '../../domain/usecase/get_brands_usecase.dart';
 import 'home_state.dart';
 
 class HomeCubit extends Cubit<HomeState> {
-  final GetBrandsUseCase getBrands;
-  final GetBestCarsUseCase getBestCars;
+  final GetBrandsUseCase getBrandsUseCase;
+  final GetBestCarsUseCase getBestCarsUseCase;
 
   HomeCubit({
-    required this.getBrands,
-    required this.getBestCars,
+    required this.getBrandsUseCase,
+    required this.getBestCarsUseCase,
   }) : super(const HomeState());
-
 
 
   Future<void> fetchBrands({bool isRefresh = false}) async {
@@ -30,7 +30,7 @@ class HomeCubit extends Cubit<HomeState> {
       emit(state.copyWith(status: AppStatus.loadingMore));
     }
 
-    final result = await getBrands(BrandParams(page: state.currentPage));
+    final result = await getBrandsUseCase(PageCurrentCarsParams(page: state.currentPage));
 
     result.fold(
       (failure) {
@@ -62,67 +62,93 @@ class HomeCubit extends Cubit<HomeState> {
     }
   }
 
- 
 
-  Future<void> fetchBestCars({bool isRefresh = false}) async {
-    if (isRefresh) {
-      emit(state.copyWith(
-        status: AppStatus.loading,
-        bestCars: [],
-        currentPage: 1,
-        hasReachedMax: false,
-      ));
-    } else if (state.hasReachedMax) {
-      return;
-    } else {
-      emit(state.copyWith(status: AppStatus.loadingMore));
-    }
 
-    final result = await getBestCars(page: state.currentPage);
+  Future<void> fetchBestCars() async {
+    print('🔄 Fetching best cars...');
+    emit(state.copyWith(status: AppStatus.loading));
+
+    final result = await getBestCarsUseCase(const PageCurrentCarsParams(page: 1));
 
     result.fold(
       (failure) {
+        print('❌ ERROR: ${failure.message}');
         emit(state.copyWith(
           status: AppStatus.failure,
           errorMessage: failure.message,
         ));
       },
       (carsResponse) {
-        final hasReachedMax = 
-            carsResponse.meta.currentPage >= carsResponse.meta.lastPage;
+        print('✅ SUCCESS: ${carsResponse.cars.length} cars loaded');
+
+        // Debug each car
+        for (var car in carsResponse.cars) {
+          print('  🚗 ${car.name}');
+          print('     First Image: ${car.firstImage}');
+          print('     Images Count: ${car.images.length}');
+          print('     Main Image URL: ${car.mainImageUrl}');
+          print('     Location: ${car.location?.name ?? "null"}');
+          print('     Seats: ${car.seatingCapacity}');
+          print('     Daily Rent: ${car.dailyRent}');
+        }
 
         emit(state.copyWith(
           status: AppStatus.success,
-          bestCars: isRefresh 
-              ? carsResponse.cars 
-              : [...state.bestCars, ...carsResponse.cars],
-          carsMeta: carsResponse.meta,
-          currentPage: state.currentPage + 1,
-          hasReachedMax: hasReachedMax,
+          bestCars: carsResponse.cars,
+          hasReachedMax:
+              carsResponse.meta.currentPage >= carsResponse.meta.lastPage,
         ));
       },
     );
   }
 
-  Future<void> refreshBestCars() async {
-    await fetchBestCars(isRefresh: true);
+  Future<void> refreshBestCars() {
+    emit(state.copyWith(
+      bestCars: [],
+      hasReachedMax: false,
+    ));
+    return fetchBestCars();
   }
 
   Future<void> loadMoreBestCars() async {
-    if (state.status != AppStatus.loadingMore && !state.hasReachedMax) {
-      await fetchBestCars();
-    }
+    if (state.hasReachedMax || state.status == AppStatus.loading) return;
+
+    final currentPage = (state.bestCars.length ~/ 5) + 1;
+    print('📄 Loading page $currentPage...');
+
+    final result =
+        await getBestCarsUseCase(PageCurrentCarsParams(page: currentPage));
+
+    result.fold(
+      (failure) {
+        print('❌ Load more failed: ${failure.message}');
+      },
+      (carsResponse) {
+        print('✅ Loaded ${carsResponse.cars.length} more cars');
+
+        final updatedCars = [...state.bestCars, ...carsResponse.cars];
+
+        emit(state.copyWith(
+          status: AppStatus.success,
+          bestCars: updatedCars,
+          hasReachedMax:
+              carsResponse.meta.currentPage >= carsResponse.meta.lastPage,
+        ));
+      },
+    );
   }
+
 
 
   Future<void> fetchHomeData() async {
     emit(state.copyWith(status: AppStatus.loading));
 
     // Fetch brands
-    final brandsResult = await getBrands(BrandParams(page: 1));
-    
-    // Fetch best cars
-    final carsResult = await getBestCars(page: 1);
+    final brandsResult = await getBrandsUseCase(PageCurrentCarsParams(page: 1));
+
+    // ✅ FIX: Fetch best cars with params
+    final carsResult =
+        await getBestCarsUseCase(const PageCurrentCarsParams(page: 1));
 
     brandsResult.fold(
       (failure) {
@@ -145,9 +171,8 @@ class HomeCubit extends Cubit<HomeState> {
               status: AppStatus.success,
               brands: brands,
               bestCars: carsResponse.cars,
-              carsMeta: carsResponse.meta,
               currentPage: 2, // Next page
-              hasReachedMax: 
+              hasReachedMax:
                   carsResponse.meta.currentPage >= carsResponse.meta.lastPage,
             ));
           },

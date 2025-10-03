@@ -8,7 +8,6 @@ import 'package:car_app/core/widget/custom_title_secation.dart';
 import 'package:car_app/features/home/presentaion/manger/home_cubit.dart';
 import 'package:car_app/features/home/presentaion/widget/best_cars_section.dart';
 import 'package:car_app/features/home/presentaion/widget/custom_app_bar_home.dart';
-import 'package:car_app/features/home/presentaion/widget/custom_best_cars.dart';
 import 'package:car_app/features/home/presentaion/widget/custom_lis_brand.dart';
 import 'package:car_app/features/home/presentaion/widget/custom_search_form.dart';
 import 'package:car_app/features/home/presentaion/widget/custom_title_and_view_all.dart';
@@ -23,8 +22,6 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-
-
   @override
   Widget build(BuildContext context) {
     final res = ResponsiveHelper(context);
@@ -51,9 +48,10 @@ class _HomeScreenState extends State<HomeScreen> {
                         Expanded(child: CustomSearchForm()),
                         const SizedBox(width: 8),
                         FittedBox(
-                            child: CustomCircleImage(
-                          imagePath: AppImages.assetsIconsFilterIcon,
-                        )),
+                          child: CustomCircleImage(
+                            imagePath: AppImages.assetsIconsFilterIcon,
+                          ),
+                        ),
                       ],
                     ),
                   ),
@@ -69,8 +67,9 @@ class _HomeScreenState extends State<HomeScreen> {
                 SliverToBoxAdapter(
                   child: SizedBox(height: 20),
                 ),
+                // ✅ هنا الـ Best Cars Section
                 BestCarsSection(),
-                ],
+              ],
             ),
           ),
         ),
