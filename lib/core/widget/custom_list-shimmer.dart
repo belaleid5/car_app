@@ -9,7 +9,7 @@ class CustomListShimmer extends StatelessWidget {
   Widget build(BuildContext context) {
     final res = ResponsiveHelper(context);
     return SizedBox(
-      height: res.hp(250),
+      height: res.screenHeight * 0.35,
       child: ListView.builder(
         scrollDirection: Axis.horizontal,
         itemCount: 3,

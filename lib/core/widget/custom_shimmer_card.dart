@@ -1,63 +1,62 @@
- import 'package:car_app/core/responsive/responsive_helper.dart';
+import 'package:car_app/core/responsive/responsive_helper.dart';
+import 'package:car_app/core/utils/app_color.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
-import 'package:shimmer/shimmer.dart';
+import 'package:skeletonizer/skeletonizer.dart';
 
 class CustomShimmerCard extends StatelessWidget {
-   const CustomShimmerCard({super.key, required this.res});
- 
+  const CustomShimmerCard({super.key, required this.res});
 
- final ResponsiveHelper res;
-   @override
-   Widget build(BuildContext context) {
-     return Shimmer.fromColors(
-      baseColor: Colors.grey[300]!,
-      highlightColor: Colors.grey[100]!,
+  final ResponsiveHelper res;
+
+  @override
+  Widget build(BuildContext context) {
+    return Skeletonizer(
+      enabled: true,
       child: Container(
+        width: res.screenWidth * 0.75, // حجم مناسب للعرض الأفقي
+        margin: const EdgeInsets.only(right: 12), // مسافة بين الكروت
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(16),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.05),
-              blurRadius: 10,
-              offset: const Offset(0, 4),
+              color: AppColors.black.withOpacity(0.05),
+              blurRadius: 8,
+              offset: const Offset(0, 3),
             ),
           ],
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Container(
-              height: res.hp(100),
-              decoration: BoxDecoration(
-                color: Colors.grey[300],
-                borderRadius: const BorderRadius.vertical(
-                  top: Radius.circular(16),
+            // الحل 1: استخدم Expanded بدلاً من height ثابت
+            Expanded(
+              child: Container(
+                decoration: const BoxDecoration(
+                  color: AppColors.black,
+                  borderRadius: BorderRadius.vertical(
+                    top: Radius.circular(16),
+                  ),
                 ),
               ),
             ),
+
             Padding(
-              padding: const EdgeInsets.all(12),
+              padding: const EdgeInsets.all(10),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Container(
-                      height: res.hp(32),
-                      width: double.infinity,
-                      color: Colors.grey[300]),
-                  const SizedBox(height: 8),
-                  Container(height: 12, width: 60, color: Colors.grey[300]),
-                  const SizedBox(height: 8),
+                  _ShimmerTextLine(height: 14, width: 100),
+                  const SizedBox(height: 6),
+                  _ShimmerTextLine(height: 12, width: 80),
+                  const SizedBox(height: 10),
                   Row(
                     children: [
-                      Container(height: 10, width: 80, color: Colors.grey[300]),
+                      _ShimmerTextLine(height: 12, width: 60),
                       const Spacer(),
-                      Container(height: 10, width: 40, color: Colors.grey[300]),
+                      _ShimmerTextLine(height: 14, width: 40),
                     ],
                   ),
-                  const SizedBox(height: 8),
-                  Container(height: 14, width: 100, color: Colors.grey[300]),
                 ],
               ),
             ),
@@ -65,5 +64,16 @@ class CustomShimmerCard extends StatelessWidget {
         ),
       ),
     );
-   }
- }
+  }
+
+  Widget _ShimmerTextLine({required double height, required double width}) {
+    return Container(
+      height: height,
+      width: width,
+      decoration: BoxDecoration(
+        color: AppColors.black,
+        borderRadius: BorderRadius.circular(8),
+      ),
+    );
+  }
+}

@@ -10,12 +10,9 @@ class CustomTitleSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 20),
-      child: Text(
-        title,
-        style: AppTextStyles.bodyMedium().copyWith(fontWeight: FontWeight.bold),
-      ),
+    return Text(
+      title,
+      style: AppTextStyles.bodyMedium().copyWith(fontWeight: FontWeight.bold),
     );
   }
 }

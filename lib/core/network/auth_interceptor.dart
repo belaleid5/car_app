@@ -1,7 +1,7 @@
 import 'package:car_app/core/constants/api_constants.dart';
 import 'package:car_app/core/error/faliure.dart';
-import 'package:car_app/features/auth/data/data_sources/local_datasource.dart';
-import 'package:car_app/features/auth/data/models/auth_token_model.dart';
+import 'package:car_app/features/auth_feature/data/data_sources/local_datasource.dart';
+import 'package:car_app/features/auth_feature/data/models/auth_token_model.dart';
 import 'package:dio/dio.dart';
 import 'package:get_it/get_it.dart';
 

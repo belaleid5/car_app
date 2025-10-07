@@ -15,13 +15,13 @@ class ApiConstants {
       '$baseUrl/auth/phone/confirm_verify_code/';
   static const String brandsEndpoint = '$baseUrl/brands/';
   static const String bestCarsEndpoint = '$baseUrl/cars/best';
-
-///cars/best/
-
+  static const String nearestCarsEndpoint = '$baseUrl/cars/nearest';
+  static const String reviewsEndpoint = '$baseUrl/cars/1/reviews';
+  ///cars/best/
   static const String locations = '$baseUrl/public/register_locations/';
 
+  //cars/nearest
 
-  // Headers
   static const String contentType = 'Content-Type';
   static const String authorization = 'Authorization';
   static const String bearer = 'Bearer';
