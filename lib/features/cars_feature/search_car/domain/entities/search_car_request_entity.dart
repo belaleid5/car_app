@@ -1,20 +1,20 @@
 import 'package:equatable/equatable.dart';
 
 class SearchCarRequestEntity extends Equatable {
-  final String type;
-  final int brandId;
-  final int locationId;
-  final int colorId;
-  final int seatingCapacity;
-  final String fuelType;
+  final String ?type;
+  final int ?brandId;
+  final int ?locationId;
+  final int ?colorId;
+  final int ?seatingCapacity;
+  final String ?fuelType;
 
   const SearchCarRequestEntity({
-    required this.type,
-    required this.brandId,
-    required this.locationId,
-    required this.colorId,
-    required this.seatingCapacity,
-    required this.fuelType,
+     this.type,
+     this.brandId,
+     this.locationId,
+     this.colorId,
+     this.seatingCapacity,
+     this.fuelType,
   });
 
   @override

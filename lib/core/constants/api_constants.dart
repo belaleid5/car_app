@@ -19,7 +19,7 @@ class ApiConstants {
   static const String reviewsEndpoint = '$baseUrl/cars/1/reviews';
   ///cars/best/
   static const String locations = '$baseUrl/public/register_locations/';
-
+  static const String searchCar = '$baseUrl/cars/search';
   //cars/nearest
 
   static const String contentType = 'Content-Type';
