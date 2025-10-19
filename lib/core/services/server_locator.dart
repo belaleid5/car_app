@@ -23,12 +23,10 @@ import 'package:car_app/features/auth_feature/domain/use_cases/save_tokens_param
 import 'package:car_app/features/auth_feature/presentation/blocs/auth_cubit.dart';
 import 'package:car_app/features/cars_feature/car_details/data/remote_data_source/car_remote_data_source.dart';
 import 'package:car_app/features/cars_feature/car_details/data/repo_imp/car_imp.dart';
-import 'package:car_app/features/cars_feature/car_details/domain/repo/car_details_repo.dart';
-import 'package:car_app/features/cars_feature/car_details/domain/usecase/get_all_cars_usecase.dart';
-import 'package:car_app/features/cars_feature/car_details/domain/usecase/get_cars-by_id_usecase.dart';
-import 'package:car_app/features/cars_feature/car_details/domain/usecase/get_cars_brand_by_id_usecase.dart';
+import 'package:car_app/features/cars_feature/car_details/domain/repo/reviews_repo.dart';
+import 'package:car_app/features/cars_feature/car_details/domain/usecase/get_all_review_usecase.dart';
+import 'package:car_app/features/cars_feature/car_details/domain/usecase/get_car_by_id_usecase.dart';
 import 'package:car_app/features/cars_feature/car_details/domain/usecase/get_cars_review-usecase.dart';
-import 'package:car_app/features/cars_feature/car_details/domain/usecase/search_cars_usecase.dart';
 import 'package:car_app/features/cars_feature/car_details/presentaion/manger/car_details_cubit.dart';
 import 'package:car_app/features/cars_feature/home/data/datasource/local_data_source_cars.dart';
 import 'package:car_app/features/cars_feature/home/data/datasource/remote_data_source.dart';
@@ -160,31 +158,29 @@ Future<void> setupDependencyInjection() async {
 
   // ==================== Car Details ====================
   // Data Sources
-  sl.registerLazySingleton<CarRemoteDataSource>(
-    () => CarRemoteDataSourceImpl(
-      dio: sl(),
+  sl.registerLazySingleton<ReviewRemoteDataSource>(
+    () => ReviewRemoteDataSourceImpl(
     ),
   );
 
   // Repository
-  sl.registerLazySingleton<CarRepository>(
-    () => CarRepositoryImpl(sl()),
+  sl.registerLazySingleton<ReviewRepository>(
+    () => ReviewRepositoryImpl(remoteDataSource: sl()),
   );
 
   // Use Cases
   sl.registerLazySingleton(() => GetCarByIdUseCase(sl()));
-  sl.registerLazySingleton(() => SearchCarsUseCase(sl()));
-  sl.registerLazySingleton(() => GetCarsByBrandUseCase(sl()));
-  sl.registerLazySingleton(() => GetAllCarsUseCase(sl()));
-  sl.registerLazySingleton(() => GetCarsReviewUseCase(sl()));
+  sl.registerLazySingleton(() => GetReviewsByCarIdUseCase(sl()));
+   sl.registerLazySingleton(() => GetAllReviewsUseCase(sl()));
+
+  //GetReviewsByCarIdUseCase
 
   // Cubit
   sl.registerFactory(
-    () => CarCubit(
-      getCarByIdUseCase: sl(),
-      searchCarsUseCase: sl(),
-      getCarsByBrandUseCase: sl(),
-      getAllCarsUseCase: sl(), getCarsByReviewUseCase: sl(),
-    ),
+    () => ReviewsCubit(
+      getCarByIdUseCase: sl(), 
+      getReviewsByCarIdUseCase: sl(), 
+      getAllReviewsUseCase: sl(),
+   ),
   );
 }

@@ -1,4 +1,4 @@
-import 'package:car_app/features/cars_feature/home/domain/entity/car_features.dart';
+import 'package:car_app/core/shared/car_features.dart';
 
 class CarFeatureModel extends CarFeatureEntity {
   const CarFeatureModel({

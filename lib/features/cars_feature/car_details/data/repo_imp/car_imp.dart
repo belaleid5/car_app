@@ -1,33 +1,48 @@
-import 'package:car_app/core/error/faliure.dart';
+// data/repositories/review_repository_impl.dart
+import 'package:car_app/features/cars_feature/car_details/data/model/pagenated_reivw_model.dart';
 import 'package:car_app/features/cars_feature/car_details/data/remote_data_source/car_remote_data_source.dart';
-import 'package:car_app/features/cars_feature/car_details/domain/repo/car_details_repo.dart';
-import 'package:car_app/features/cars_feature/home/domain/entity/car_entity.dart';
-import 'package:car_app/features/cars_feature/home/domain/entity/review_entity.dart';
+import 'package:car_app/features/cars_feature/car_details/domain/entites/review_entity.dart';
+import 'package:car_app/features/cars_feature/car_details/domain/repo/reviews_repo.dart';
+import 'package:car_app/features/cars_feature/home/data/model/cars_model.dart';
 import 'package:dartz/dartz.dart';
+import 'package:car_app/core/error/faliure.dart';
+
+class ReviewRepositoryImpl implements ReviewRepository {
+  final ReviewRemoteDataSource remoteDataSource;
+
+  ReviewRepositoryImpl({required this.remoteDataSource});
 
 
-class CarRepositoryImpl implements CarRepository {
-  final CarRemoteDataSource remoteDataSource;
 
-  CarRepositoryImpl(this.remoteDataSource);
+
+
+
+
 
   @override
-  Future<Either<Failure, List<CarEntity>>> getAllCars({
-    required int page,
-    required int limit,
+  Future<Either<Failure, PaginatedReviewsEntity>> getReviewsByCarId({
+    required int carId,
+    int page = 1,
+    int perPage = 5,
   }) async {
     try {
-      final cars = await remoteDataSource.getAllCars(page: page, limit: limit);
-      return Right(cars);
+      final result = await remoteDataSource.getReviewsByCarId(
+        carId: carId,
+        page: page,
+        perPage: perPage,
+      );
+      return Right(result.toEntity());
     } on ServerException catch (e) {
       return Left(ServerFailure(e.message));
     } catch (e) {
       return Left(ServerFailure('حدث خطأ غير متوقع'));
     }
   }
+  
+
 
   @override
-  Future<Either<Failure, CarEntity>> getCarById(int carId) async {
+  Future<Either<Failure, CarModel>> getCarById(int carId) async {
     try {
       final car = await remoteDataSource.getCarById(carId);
       return Right(car);
@@ -39,38 +54,26 @@ class CarRepositoryImpl implements CarRepository {
   }
 
   @override
-  Future<Either<Failure, List<CarEntity>>> searchCars(String query) async {
+  Future<Either<Failure, PaginatedReviewsModel>> getUsersCarReviews(
+    int carId, // ✅ شيلت الـ ? (non-nullable)
+    {
+    int page = 1,
+  }) async {
     try {
-      final cars = await remoteDataSource.searchCars(query);
-      return Right(cars);
+      final result = await remoteDataSource.getUsersCarReviews(carId, page);
+      return Right(result.toEntity()); 
     } on ServerException catch (e) {
       return Left(ServerFailure(e.message));
+    } on NetworkException catch (e) {
+      return Left(NetworkFailure(e.message));
     } catch (e) {
-      return Left(ServerFailure('حدث خطأ غير متوقع'));
+      return Left(ServerFailure('حدث خطأ غير متوقع: $e'));
     }
   }
 
-  @override
-  Future<Either<Failure, List<CarEntity>>> getCarsByBrand(int brandId) async {
-    try {
-      final cars = await remoteDataSource.getCarsByBrand(brandId);
-      return Right(cars);
-    } on ServerException catch (e) {
-      return Left(ServerFailure(e.message));
-    } catch (e) {
-      return Left(ServerFailure('حدث خطأ غير متوقع'));
-    }
-  }
 
-  @override
-  Future<Either<Failure, ReviewEntity>> getCarsReview(int carId) async {
-    try {
-      final reviews = await remoteDataSource.getCarsReview(carId);
-      return Right(reviews);
-    } on ServerException catch (e) {
-      return Left(ServerFailure(e.message));
-    } catch (e) {
-      return Left(ServerFailure('حدث خطأ غير متوقع'));
-    }
-  }
+
+
+
+
 }

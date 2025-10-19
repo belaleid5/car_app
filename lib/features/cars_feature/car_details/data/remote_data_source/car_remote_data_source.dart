@@ -1,64 +1,61 @@
-
-import 'package:car_app/core/constants/api_constants.dart';
 import 'package:car_app/core/error/faliure.dart';
 import 'package:car_app/core/network/dio_client.dart';
+import 'package:car_app/core/services/server_locator.dart';
+import 'package:car_app/features/cars_feature/car_details/data/model/pagenated_reivw_model.dart';
 import 'package:car_app/features/cars_feature/home/data/model/cars_model.dart';
-import 'package:car_app/features/cars_feature/home/data/model/reivew_model.dart';
 import 'package:dio/dio.dart';
 
-abstract class CarRemoteDataSource {
-  Future<List<CarModel>> getAllCars({required int page, required int limit});
+abstract class ReviewRemoteDataSource {
+  Future<PaginatedReviewsModel> getReviewsByCarId({
+    required int carId,
+    int page = 1,
+    int perPage = 5,
+  });
   Future<CarModel> getCarById(int carId);
-  Future<List<CarModel>> searchCars(String query);
-  Future<List<CarModel>> getCarsByBrand(int brandId);
-  Future<ReviewModel> getCarsReview(int carId);
+  Future<PaginatedReviewsModel> getUsersCarReviews(int carId, int page);
 }
 
-
-
-
-
-class CarRemoteDataSourceImpl implements CarRemoteDataSource {
-  final DioClient dio;
-
-  CarRemoteDataSourceImpl({
-    required this.dio,
-  });
+class ReviewRemoteDataSourceImpl implements ReviewRemoteDataSource {
+  ReviewRemoteDataSourceImpl();
 
   @override
-  Future<List<CarModel>> getAllCars({
-    required int page,
-    required int limit,
+  Future<PaginatedReviewsModel> getReviewsByCarId({
+    required int carId,
+    int page = 1,
+    int perPage = 5,
   }) async {
     try {
-      final response = await dio.dio.get(
-                'https://qent.up.railway.app/api/cars',
+      final response = await sl<DioClient>().dio.get(
+        "https://qent.up.railway.app/api/cars/$carId/reviews",
         queryParameters: {
           'page': page,
-          'limit': limit,
+          'per_page': perPage,
         },
       );
 
       if (response.statusCode == 200) {
-        final List<dynamic> data = response.data['data'] ?? response.data;
-        return data.map((json) => CarModel.fromJson(json)).toList();
+        return PaginatedReviewsModel.fromJson(response.data);
       } else {
-        throw ServerException('فشل في تحميل السيارات');
+        throw ServerException('فشل في جلب التقييمات');
       }
     } on DioException catch (e) {
       throw ServerException(_handleDioError(e));
-    } catch (e) {
-      throw ServerException('حدث خطأ غير متوقع: $e');
     }
   }
 
   @override
   Future<CarModel> getCarById(int carId) async {
     try {
-      final response = await dio.dio.get('https://qent.up.railway.app/api/cars/$carId');
+      final response = await sl<DioClient>().dio.get(
+        'https://qent.up.railway.app/api/cars/$carId',
+      );
 
       if (response.statusCode == 200) {
-        return CarModel.fromJson(response.data['data'] ?? response.data);
+        final data = response.data;
+        final carJson = data is Map<String, dynamic> && data.containsKey('data')
+            ? data['data']
+            : data;
+        return CarModel.fromJson(carJson);
       } else {
         throw ServerException('فشل في تحميل تفاصيل السيارة');
       }
@@ -70,46 +67,28 @@ class CarRemoteDataSourceImpl implements CarRemoteDataSource {
   }
 
   @override
-  Future<List<CarModel>> searchCars(String query) async {
+  Future<PaginatedReviewsModel> getUsersCarReviews(int carId, int page) async {
     try {
-      final response = await dio.dio.get(
-        'https://qent.up.railway.app/api/cars/search',
-        queryParameters: {'q': query},
+      final response = await sl<DioClient>().dio.get(
+        'https://qent.up.railway.app/api/cars/$carId/reviews',
+        queryParameters: {'page': page},
       );
 
       if (response.statusCode == 200) {
-        final List<dynamic> data = response.data['data'] ?? response.data;
-        return data.map((json) => CarModel.fromJson(json)).toList();
+        return PaginatedReviewsModel.fromJson(
+          response.data as Map<String, dynamic>,
+        );
       } else {
-        throw ServerException('فشل في البحث');
+        throw ServerException(
+          'خطأ في السيرفر: رمز الحالة ${response.statusCode}',
+        );
       }
     } on DioException catch (e) {
-      throw ServerException(_handleDioError(e));
-    } catch (e) {
-      throw ServerException('حدث خطأ غير متوقع: $e');
+      throw _handleDioException(e);
     }
   }
 
-  @override
-  Future<List<CarModel>> getCarsByBrand(int brandId) async {
-    try {
-      final response = await dio.dio.get(
-        'https://qent.up.railway.app/api/brands/$brandId',
-      );
-
-      if (response.statusCode == 200) {
-        final List<dynamic> data = response.data['data'] ?? response.data;
-        return data.map((json) => CarModel.fromJson(json)).toList();
-      } else {
-        throw ServerException('فشل في تحميل سيارات البراند');
-      }
-    } on DioException catch (e) {
-      throw ServerException(_handleDioError(e));
-    } catch (e) {
-      throw ServerException('حدث خطأ غير متوقع: $e');
-    }
-  }
-
+  // 🧰 معالجة الأخطاء الموحدة
   String _handleDioError(DioException error) {
     switch (error.type) {
       case DioExceptionType.connectionTimeout:
@@ -126,25 +105,53 @@ class CarRemoteDataSourceImpl implements CarRemoteDataSource {
         return 'حدث خطأ غير متوقع';
     }
   }
-  
-  @override
-  Future<ReviewModel> getCarsReview(int carId) async {
-    try {
-      final response = await dio.dio.get(
-        ApiConstants.reviewsEndpoint,
-        queryParameters: {'carId': carId},
-      );
 
-      if (response.statusCode == 200) {
-        final  data = response.data['data'] ?? response.data;
-        return data.map((json) => ReviewModel.fromJson(json)).toList();
-      } else {
-        throw ServerException('فشل في تحميل المراجعات');
-      }
-    } on DioException catch (e) {
-      throw ServerException(_handleDioError(e));
-    } catch (e) {
-      throw ServerException('حدث خطأ غير متوقع: $e');
+  Exception _handleDioException(DioException e) {
+    switch (e.type) {
+      case DioExceptionType.connectionTimeout:
+        return NetworkException('انتهت مهلة الاتصال بالسيرفر');
+      case DioExceptionType.sendTimeout:
+        return NetworkException('انتهت مهلة إرسال البيانات');
+      case DioExceptionType.receiveTimeout:
+        return NetworkException('انتهت مهلة استقبال البيانات');
+      case DioExceptionType.badResponse:
+        return _handleBadResponse(e.response);
+      case DioExceptionType.cancel:
+        return NetworkException('تم إلغاء الطلب');
+      case DioExceptionType.connectionError:
+        return NetworkException('لا يوجد اتصال بالإنترنت');
+      case DioExceptionType.badCertificate:
+        return NetworkException('مشكلة في شهادة الأمان');
+      case DioExceptionType.unknown:
+        if (e.message?.contains('SocketException') ?? false) {
+          return NetworkException('لا يوجد اتصال بالإنترنت');
+        }
+        return ServerException('خطأ غير معروف: ${e.message}');
+    }
+  }
+
+  Exception _handleBadResponse(Response? response) {
+    if (response == null) {
+      return ServerException('لم يتم استلام رد من السيرفر');
+    }
+
+    switch (response.statusCode) {
+      case 400:
+        return ServerException('طلب غير صحيح');
+      case 401:
+        return ServerException('غير مصرح لك بالوصول');
+      case 403:
+        return ServerException('محظور الوصول');
+      case 404:
+        return ServerException('الصفحة المطلوبة غير موجودة');
+      case 500:
+        return ServerException('خطأ داخلي في السيرفر');
+      case 503:
+        return ServerException('الخدمة غير متاحة حالياً');
+      default:
+        return ServerException(
+          'خطأ في السيرفر: رمز الحالة ${response.statusCode}',
+        );
     }
   }
 }

@@ -1,227 +1,169 @@
-// lib/features/cars/presentation/bloc/car_cubit.dart
-import 'package:car_app/features/cars_feature/car_details/domain/usecase/get_all_cars_usecase.dart';
-import 'package:car_app/features/cars_feature/car_details/domain/usecase/get_cars-by_id_usecase.dart';
-import 'package:car_app/features/cars_feature/car_details/domain/usecase/get_cars_brand_by_id_usecase.dart';
+import 'package:car_app/core/enums/app_states.dart';
+import 'package:car_app/features/cars_feature/car_details/domain/usecase/get_all_review_usecase.dart';
+import 'package:car_app/features/cars_feature/car_details/domain/usecase/get_car_by_id_usecase.dart';
 import 'package:car_app/features/cars_feature/car_details/domain/usecase/get_cars_review-usecase.dart';
 import 'package:car_app/features/cars_feature/car_details/domain/usecase/params/car_id_params.dart';
-import 'package:car_app/features/cars_feature/car_details/domain/usecase/search_cars_usecase.dart';
 import 'package:car_app/features/cars_feature/car_details/presentaion/manger/car_details_state.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:car_app/core/enums/app_states.dart';
 
-
-class CarCubit extends Cubit<CarState> {
+class ReviewsCubit extends Cubit<ReviewsState> {
+  final GetReviewsByCarIdUseCase getReviewsByCarIdUseCase;
   final GetCarByIdUseCase getCarByIdUseCase;
-  final SearchCarsUseCase searchCarsUseCase;
-  final GetCarsByBrandUseCase getCarsByBrandUseCase;
-  final GetAllCarsUseCase getAllCarsUseCase;
-  final GetCarsReviewUseCase getCarsByReviewUseCase;
+  final GetAllReviewsUseCase getAllReviewsUseCase;
 
-  CarCubit({
+  ReviewsCubit({
+    required this.getAllReviewsUseCase,
+    required this.getReviewsByCarIdUseCase,
     required this.getCarByIdUseCase,
-    required this.searchCarsUseCase,
-    required this.getCarsByBrandUseCase,
-    required this.getAllCarsUseCase,
-    required this.getCarsByReviewUseCase,
-  }) : super(const CarState());
+  }) : super(const ReviewsState());
 
-  // ==================== Car Details ====================
-  /// Get car by ID
+  int _currentCarId = 0;
+
+Future<void> loadCarDetails(int carId) async {
+    _currentCarId = carId;
+    
+    // 1. جلب السيارة أولاً
+    await getCarById(carId);
+    
+    // 2. جلب المراجعة الأولى
+    await getFirstReview(carId);
+    
+    // 3. جلب كل المراجعات
+    await getAllReview(carId);
+  }
+
+
+  
   Future<void> getCarById(int carId) async {
     emit(state.copyWith(
-      carDetailsStatus: AppStatus.loading,
-      clearCarDetailsError: true,
+      status: AppStatus.loading,
     ));
 
     final result = await getCarByIdUseCase(CarIdParams(carId: carId));
 
     result.fold(
       (failure) => emit(state.copyWith(
-        carDetailsStatus: AppStatus.failure,
-        carDetailsError: failure.message,
+        status: AppStatus.failure,
+        errorMessage: failure.message,
       )),
       (car) => emit(state.copyWith(
-        carDetailsStatus: AppStatus.success,
+        status: AppStatus.success,
         selectedCar: car,
       )),
     );
   }
 
-
-
-
-
-    Future<void> getReviewCarById(int carId) async {
+  /// جلب أول مراجعة فقط
+  Future<void> getFirstReview(int carId) async {
     emit(state.copyWith(
-      carsByReviewStatus: AppStatus.loading,
-      clearSelectedReviewId: true,
-
+      status: AppStatus.loading,
+      reviews: null,
     ));
 
-    final result = await getCarsByReviewUseCase(CarIdParams(carId: carId));
+    _currentCarId = carId;
 
-    result.fold(
-      (failure) => emit(
-        state.copyWith(
-          carsByReviewStatus: AppStatus.failure,
-          carDetailsError: failure.message,
-        ),
+    final result = await getReviewsByCarIdUseCase(
+      GetReviewsByCarIdParams(
+        carId: carId,
+        page: 1,
+        perPage: 1, // نجيب واحدة بس
       ),
-      (review) => emit(state.copyWith(
-        carsByReviewStatus: AppStatus.success,
-        carsByReview: review,
-      )),
-    );
-  }
-
-  /// Clear selected car
-  void clearSelectedCar() {
-    emit(state.resetCarDetails());
-  }
-
-  // ==================== Car List (Pagination) ====================
-  /// Get all cars with pagination
-  Future<void> getAllCars({bool isRefresh = false}) async {
-    // Prevent multiple calls
-    if (state.hasReachedMax && !isRefresh) return;
-
-    // If refresh, reset pagination
-    if (isRefresh) {
-      emit(state.resetCarList());
-    }
-
-    emit(state.copyWith(
-      carListStatus: AppStatus.loading,
-      clearCarListError: true,
-    ));
-
-    final result = await getAllCarsUseCase(
-      PaginationParams(page: isRefresh ? 1 : state.currentPage),
     );
 
     result.fold(
-      (failure) => emit(state.copyWith(
-        carListStatus: AppStatus.failure,
-        carListError: failure.message,
-      )),
-      (newCars) {
-        final updatedCars = isRefresh 
-            ? newCars 
-            : [...state.cars, ...newCars];
-        
+      (failure) {
         emit(state.copyWith(
-          carListStatus: AppStatus.success,
-          cars: updatedCars,
-          currentPage: state.currentPage + 1,
-          hasReachedMax: newCars.isEmpty || newCars.length < 10, // Assuming 10 items per page
+          status: AppStatus.failure,
+          errorMessage: failure.message,
         ));
+      },
+      (data) {
+        if (data.reviews.isEmpty) {
+          emit(state.copyWith(
+            status: AppStatus.empty,
+            reviews: null,
+            meta: data.meta,
+          ));
+        } else {
+          // خد أول مراجعة من الليستة
+          emit(state.copyWith(
+            status: AppStatus.success,
+            reviews: data.reviews.first, // ✅ أول واحدة بس
+            meta: data.meta,
+          ));
+        }
       },
     );
   }
 
-  /// Load more cars
-  Future<void> loadMoreCars() async {
-    await getAllCars(isRefresh: false);
-  }
+Future<void> getAllReview(int carId) async {
+  print('🚗 getAllReview called with carId: $carId');
+  
+  emit(state.copyWith(
+    status: AppStatus.loading,
+    allReview: null,
+  ));
 
-  /// Refresh car list
-  Future<void> refreshCarList() async {
-    await getAllCars(isRefresh: true);
-  }
+  _currentCarId = carId;
 
-  // ==================== Search Cars ====================
-  /// Search cars by query
-  Future<void> searchCars(String query) async {
-    // Clear search if query is empty
-    if (query.trim().isEmpty) {
-      emit(state.resetSearch());
-      return;
-    }
+  final result = await getAllReviewsUseCase(
+    CarIdParams(
+      carId: carId,
+      page: 1,
+    )
+  );
 
-    emit(state.copyWith(
-      searchStatus: AppStatus.loading,
-      searchQuery: query,
-      clearSearchError: true,
-    ));
-
-    final result = await searchCarsUseCase(
-      SearchCarsParams(query: query),
-    );
-
-    result.fold(
-      (failure) => emit(state.copyWith(
-        searchStatus: AppStatus.failure,
-        searchError: failure.message,
-      )),
-      (cars) => emit(state.copyWith(
-        searchStatus: AppStatus.success,
-        searchResults: cars,
-      )),
-    );
-  }
-
-  /// Clear search
-  void clearSearch() {
-    emit(state.resetSearch());
-  }
-
-  /// Debounced search (call this from UI with debouncing)
-  void onSearchQueryChanged(String query) {
-    emit(state.copyWith(searchQuery: query));
-  }
-
-  // ==================== Cars By Brand ====================
-  /// Get cars by brand ID
-  Future<void> getCarsByBrand(int brandId) async {
-    emit(state.copyWith(
-      carsByBrandStatus: AppStatus.loading,
-      selectedBrandId: brandId,
-      clearCarsByBrandError: true,
-    ));
-
-    final result = await getCarsByBrandUseCase(
-      BrandIdParams(brandId: brandId),
-    );
-
-    result.fold(
-      (failure) => emit(state.copyWith(
-        carsByBrandStatus: AppStatus.failure,
-        carsByBrandError: failure.message,
-      )),
-      (cars) => emit(state.copyWith(
-        carsByBrandStatus: AppStatus.success,
-        carsByBrand: cars,
-      )),
-    );
-  }
-
-  /// Clear cars by brand
-  void clearCarsByBrand() {
-    emit(state.resetCarsByBrand());
-  }
-
-  // ==================== Reset All ====================
-  /// Reset all states
-  void resetAll() {
-    emit(const CarState());
-  }
-
-  // ==================== Utility Methods ====================
-  /// Check if any operation is loading
-  bool get isAnyLoading =>
-      state.isLoadingCarDetails ||
-      state.isLoadingCarList ||
-      state.isLoadingSearch ||
-      state.isLoadingCarsByBrand;
-
-  /// Get total cars count
-  int get totalCarsCount => state.cars.length;
-
-  /// Get search results count
-  int get searchResultsCount => state.searchResults.length;
-
-  /// Get cars by brand count
-  int get carsByBrandCount => state.carsByBrand.length;
+  result.fold(
+    (failure) {
+      print('❌ Failure: ${failure.message}');
+      emit(state.copyWith(
+        status: AppStatus.failure,
+        errorMessage: failure.message,
+      ));
+    },
+    (data) {
+      print('✅ Success! Got ${data.reviews.length} reviews');
+      
+      if (data.reviews.isEmpty) {
+        print('⚠️ Reviews list is empty');
+        emit(state.copyWith(
+          status: AppStatus.empty,
+          allReview: [],
+          meta: data.meta,
+        ));
+      } else {
+        print('📋 Emitting ${data.reviews.length} reviews');
+        emit(state.copyWith(
+          status: AppStatus.success,
+          allReview: data.reviews, // ✅ تأكد إن دي List<ReviewEntity>
+          meta: data.meta,
+        ));
+      }
+    },
+  );
 }
+
+
+  /// إعادة المحاولة
+  Future<void> retry() async {
+    await getFirstReview(_currentCarId);
+  }
+
+  /// تحديث المراجعة
+  Future<void> refreshReview() async {
+    await getFirstReview(_currentCarId);
+  }
+
+  /// إعادة تعيين الحالة
+  void reset() {
+    _currentCarId = 0;
+    emit(const ReviewsState());
+  }
+}
+
+
+
+
+
 
 

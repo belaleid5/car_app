@@ -1,5 +1,5 @@
 
-import 'package:car_app/features/cars_feature/home/domain/entity/car_image_entity.dart';
+import 'package:car_app/core/shared/car_image_entity.dart';
 
 class CarImageModel extends CarImageEntity {
   const CarImageModel({

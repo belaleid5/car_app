@@ -1,0 +1,179 @@
+[33mcommit ea192a87465cf8fb04e4606082841dfc164f27cb[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmaster[m[33m, [m[1;31morigin/master[m[33m, [m[1;31morigin/HEAD[m[33m)[m
+Author: belaleid5 <belaleid788@gmail.com>
+Date:   Sun Oct 12 19:07:34 2025 +0300
+
+    refactor
+
+[1mdiff --git a/ios/Flutter/Generated.xcconfig b/ios/Flutter/Generated.xcconfig[m
+[1mnew file mode 100644[m
+[1mindex 0000000..06acd35[m
+[1m--- /dev/null[m
+[1m+++ b/ios/Flutter/Generated.xcconfig[m
+[36m@@ -0,0 +1,14 @@[m
+[32m+[m[32m// This is a generated file; do not edit or check into version control.[m
+[32m+[m[32mFLUTTER_ROOT=C:\src\flutter[m
+[32m+[m[32mFLUTTER_APPLICATION_PATH=D:\project_clean_arch\car_app[m
+[32m+[m[32mCOCOAPODS_PARALLEL_CODE_SIGN=true[m
+[32m+[m[32mFLUTTER_TARGET=lib\main.dart[m
+[32m+[m[32mFLUTTER_BUILD_DIR=build[m
+[32m+[m[32mFLUTTER_BUILD_NAME=1.0.0[m
+[32m+[m[32mFLUTTER_BUILD_NUMBER=1[m
+[32m+[m[32mEXCLUDED_ARCHS[sdk=iphonesimulator*]=i386[m
+[32m+[m[32mEXCLUDED_ARCHS[sdk=iphoneos*]=armv7[m
+[32m+[m[32mDART_OBFUSCATION=false[m
+[32m+[m[32mTRACK_WIDGET_CREATION=true[m
+[32m+[m[32mTREE_SHAKE_ICONS=false[m
+[32m+[m[32mPACKAGE_CONFIG=.dart_tool/package_config.json[m
+[1mdiff --git a/ios/Flutter/ephemeral/flutter_lldb_helper.py b/ios/Flutter/ephemeral/flutter_lldb_helper.py[m
+[1mnew file mode 100644[m
+[1mindex 0000000..a88caf9[m
+[1m--- /dev/null[m
+[1m+++ b/ios/Flutter/ephemeral/flutter_lldb_helper.py[m
+[36m@@ -0,0 +1,32 @@[m
+[32m+[m[32m#[m
+[32m+[m[32m# Generated file, do not edit.[m
+[32m+[m[32m#[m
+[32m+[m
+[32m+[m[32mimport lldb[m
+[32m+[m
+[32m+[m[32mdef handle_new_rx_page(frame: lldb.SBFrame, bp_loc, extra_args, intern_dict):[m
+[32m+[m[32m    """Intercept NOTIFY_DEBUGGER_ABOUT_RX_PAGES and touch the pages."""[m
+[32m+[m[32m    base = frame.register["x0"].GetValueAsAddress()[m
+[32m+[m[32m    page_len = frame.register["x1"].GetValueAsUnsigned()[m
+[32m+[m
+[32m+[m[32m    # Note: NOTIFY_DEBUGGER_ABOUT_RX_PAGES will check contents of the[m
+[32m+[m[32m    # first page to see if handled it correctly. This makes diagnosing[m
+[32m+[m[32m    # misconfiguration (e.g. missing breakpoint) easier.[m
+[32m+[m[32m    data = bytearray(page_len)[m
+[32m+[m[32m    data[0:8] = b'IHELPED!'[m
+[32m+[m
+[32m+[m[32m    error = lldb.SBError()[m
+[32m+[m[32m    frame.GetThread().GetProcess().WriteMemory(base, data, error)[m
+[32m+[m[32m    if not error.Success():[m
+[32m+[m[32m        print(f'Failed to write into {base}[+{page_len}]', error)[m
+[32m+[m[32m        return[m
+[32m+[m
+[32m+[m[32mdef __lldb_init_module(debugger: lldb.SBDebugger, _):[m
+[32m+[m[32m    target = debugger.GetDummyTarget()[m
+[32m+[m[32m    # Caveat: must use BreakpointCreateByRegEx here and not[m
+[32m+[m[32m    # BreakpointCreateByName. For some reasons callback function does not[m
+[32m+[m[32m    # get carried over from dummy target for the later.[m
+[32m+[m[32m    bp = target.BreakpointCreateByRegex("^NOTIFY_DEBUGGER_ABOUT_RX_PAGES$")[m
+[32m+[m[32m    bp.SetScriptCallbackFunction('{}.handle_new_rx_page'.format(__name__))[m
+[32m+[m[32m    bp.SetAutoContinue(True)[m
+[32m+[m[32m    print("-- LLDB integration loaded --")[m
+[1mdiff --git a/ios/Flutter/ephemeral/flutter_lldbinit b/ios/Flutter/ephemeral/flutter_lldbinit[m
+[1mnew file mode 100644[m
+[1mindex 0000000..e3ba6fb[m
+[1m--- /dev/null[m
+[1m+++ b/ios/Flutter/ephemeral/flutter_lldbinit[m
+[36m@@ -0,0 +1,5 @@[m
+[32m+[m[32m#[m
+[32m+[m[32m# Generated file, do not edit.[m
+[32m+[m[32m#[m
+[32m+[m
+[32m+[m[32mcommand script import --relative-to-command-file flutter_lldb_helper.py[m
+[1mdiff --git a/ios/Flutter/flutter_export_environment.sh b/ios/Flutter/flutter_export_environment.sh[m
+[1mnew file mode 100644[m
+[1mindex 0000000..32e23d3[m
+[1m--- /dev/null[m
+[1m+++ b/ios/Flutter/flutter_export_environment.sh[m
+[36m@@ -0,0 +1,13 @@[m
+[32m+[m[32m#!/bin/sh[m
+[32m+[m[32m# This is a generated file; do not edit or check into version control.[m
+[32m+[m[32mexport "FLUTTER_ROOT=C:\src\flutter"[m
+[32m+[m[32mexport "FLUTTER_APPLICATION_PATH=D:\project_clean_arch\car_app"[m
+[32m+[m[32mexport "COCOAPODS_PARALLEL_CODE_SIGN=true"[m
+[32m+[m[32mexport "FLUTTER_TARGET=lib\main.dart"[m
+[32m+[m[32mexport "FLUTTER_BUILD_DIR=build"[m
+[32m+[m[32mexport "FLUTTER_BUILD_NAME=1.0.0"[m
+[32m+[m[32mexport "FLUTTER_BUILD_NUMBER=1"[m
+[32m+[m[32mexport "DART_OBFUSCATION=false"[m
+[32m+[m[32mexport "TRACK_WIDGET_CREATION=true"[m
+[32m+[m[32mexport "TREE_SHAKE_ICONS=false"[m
+[32m+[m[32mexport "PACKAGE_CONFIG=.dart_tool/package_config.json"[m
+[1mdiff --git a/ios/Runner/GeneratedPluginRegistrant.h b/ios/Runner/GeneratedPluginRegistrant.h[m
+[1mnew file mode 100644[m
+[1mindex 0000000..7a89092[m
+[1m--- /dev/null[m
+[1m+++ b/ios/Runner/GeneratedPluginRegistrant.h[m
+[36m@@ -0,0 +1,19 @@[m
+[32m+[m[32m//[m
+[32m+[m[32m//  Generated file. Do not edit.[m
+[32m+[m[32m//[m
+[32m+[m
+[32m+[m[32m// clang-format off[m
+[32m+[m
+[32m+[m[32m#ifndef GeneratedPluginRegistrant_h[m
+[32m+[m[32m#define GeneratedPluginRegistrant_h[m
+[32m+[m
+[32m+[m[32m#import <Flutter/Flutter.h>[m
+[32m+[m
+[32m+[m[32mNS_ASSUME_NONNULL_BEGIN[m
+[32m+[m
+[32m+[m[32m@interface GeneratedPluginRegistrant : NSObject[m
+[32m+[m[32m+ (void)registerWithRegistry:(NSObject<FlutterPluginRegistry>*)registry;[m
+[32m+[m[32m@end[m
+[32m+[m
+[32m+[m[32mNS_ASSUME_NONNULL_END[m
+[32m+[m[32m#endif /* GeneratedPluginRegistrant_h */[m
+[1mdiff --git a/ios/Runner/GeneratedPluginRegistrant.m b/ios/Runner/GeneratedPluginRegistrant.m[m
+[1mnew file mode 100644[m
+[1mindex 0000000..4de49a6[m
+[1m--- /dev/null[m
+[1m+++ b/ios/Runner/GeneratedPluginRegistrant.m[m
+[36m@@ -0,0 +1,63 @@[m
+[32m+[m[32m//[m
+[32m+[m[32m//  Generated file. Do not edit.[m
+[32m+[m[32m//[m
+[32m+[m
+[32m+[m[32m// clang-format off[m
+[32m+[m
+[32m+[m[32m#import "GeneratedPluginRegistrant.h"[m
+[32m+[m
+[32m+[m[32m#if __has_include(<connectivity_plus/ConnectivityPlusPlugin.h>)[m
+[32m+[m[32m#import <connectivity_plus/ConnectivityPlusPlugin.h>[m
+[32m+[m[32m#else[m
+[32m+[m[32m@import connectivity_plus;[m
+[32m+[m[32m#endif[m
+[32m+[m
+[32m+[m[32m#if __has_include(<flutter_native_splash/FlutterNativeSplashPlugin.h>)[m
+[32m+[m[32m#import <flutter_native_splash/FlutterNativeSplashPlugin.h>[m
+[32m+[m[32m#else[m
+[32m+[m[32m@import flutter_native_splash;[m
+[32m+[m[32m#endif[m
+[32m+[m
+[32m+[m[32m#if __has_include(<flutter_secure_storage/FlutterSecureStoragePlugin.h>)[m
+[32m+[m[32m#import <flutter_secure_storage/FlutterSecureStoragePlugin.h>[m
+[32m+[m[32m#else[m
+[32m+[m[32m@import flutter_secure_storage;[m
+[32m+[m[32m#endif[m
+[32m+[m
+[32m+[m[32m#if __has_include(<fluttertoast/FluttertoastPlugin.h>)[m
+[32m+[m[32m#import <fluttertoast/FluttertoastPlugin.h>[m
+[32m+[m[32m#else[m
+[32m+[m[32m@import fluttertoast;[m
+[32m+[m[32m#endif[m
+[32m+[m
+[32m+[m[32m#if __has_include(<path_provider_foundation/PathProviderPlugin.h>)[m
+[32m+[m[32m#import <path_provider_foundation/PathProviderPlugin.h>[m
+[32m+[m[32m#else[m
+[32m+[m[32m@import path_provider_foundation;[m
+[32m+[m[32m#endif[m
+[32m+[m
+[32m+[m[32m#if __has_include(<shared_preferences_foundation/SharedPreferencesPlugin.h>)[m
+[32m+[m[32m#import <shared_preferences_foundation/SharedPreferencesPlugin.h>[m
+[32m+[m[32m#else[m
+[32m+[m[32m@import shared_preferences_foundation;[m
+[32m+[m[32m#endif[m
+[32m+[m
+[32m+[m[32m#if __has_include(<sqflite_darwin/SqflitePlugin.h>)[m
+[32m+[m[32m#import <sqflite_darwin/SqflitePlugin.h>[m
+[32m+[m[32m#else[m
+[32m+[m[32m@import sqflite_darwin;[m
+[32m+[m[32m#endif[m
+[32m+[m
+[32m+[m[32m@implementation GeneratedPluginRegistrant[m
+[32m+[m
+[32m+[m[32m+ (void)registerWithRegistry:(NSObject<FlutterPluginRegistry>*)registry {[m
+[32m+[m[32m  [ConnectivityPlusPlugin registerWithRegistrar:[registry registrarForPlugin:@"ConnectivityPlusPlugin"]]
