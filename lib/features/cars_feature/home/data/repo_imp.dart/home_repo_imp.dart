@@ -32,7 +32,7 @@ class HomeRepositoryImpl implements HomeRepo {
   }
 
   @override
-  Future<Either<Failure, CarsResponseEntity>> getBestCars(
+  Future<Either<Failure, CarsSearchResponseEntity>> getBestCars(
       {int page = 1}) async {
     if (await networkInfo.isConnected) {
       try {

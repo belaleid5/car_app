@@ -4,7 +4,7 @@ import 'package:car_app/features/cars_feature/home/domain/entity/cars_reponse_en
 
 import 'pagination_meta_model.dart';
 
-class CarsResponseModel extends CarsResponseEntity {
+class CarsResponseModel extends CarsSearchResponseEntity {
   const CarsResponseModel({
     required super.cars,
     required super.meta,

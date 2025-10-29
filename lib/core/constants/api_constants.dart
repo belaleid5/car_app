@@ -17,8 +17,10 @@ class ApiConstants {
   static const String bestCarsEndpoint = '$baseUrl/cars/best';
   static const String nearestCarsEndpoint = '$baseUrl/cars/nearest';
   static const String reviewsEndpoint = '$baseUrl/cars/1/reviews';
+
   ///cars/best/
   static const String locations = '$baseUrl/public/register_locations/';
+  static const String search = "$baseUrl/cars/search";
 
   //cars/nearest
 

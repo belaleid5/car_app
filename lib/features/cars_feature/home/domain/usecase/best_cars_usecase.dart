@@ -5,14 +5,15 @@ import 'package:car_app/features/cars_feature/home/domain/entity/cars_reponse_en
 import 'package:car_app/features/cars_feature/home/domain/usecase/params/page_currenrt_params.dart';
 import 'package:dartz/dartz.dart';
 
-
-class GetBestCarsUseCase implements BaseUseCase<CarsResponseEntity, PageCurrentCarsParams> {
+class GetBestCarsUseCase
+    implements BaseUseCase<CarsSearchResponseEntity, PageCurrentCarsParams> {
   final HomeRepo repository;
 
   GetBestCarsUseCase(this.repository);
 
   @override
-  Future<Either<Failure, CarsResponseEntity>> call(PageCurrentCarsParams params) async {
+  Future<Either<Failure, CarsSearchResponseEntity>> call(
+      PageCurrentCarsParams params) async {
     return await repository.getBestCars(page: params.page);
   }
 }

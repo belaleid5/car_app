@@ -5,10 +5,10 @@ import 'package:dartz/dartz.dart';
 
 abstract class HomeRepo {
   Future<Either<Failure, List<BrandEntity>>> getBrands({int page = 1});
-   Future<Either<Failure, CarsResponseEntity>> getBestCars({int page = 1});
+  Future<Either<Failure, CarsSearchResponseEntity>> getBestCars({int page = 1});
 
   // NEW: Nearest cars
-  Future<Either<Failure, CarsResponseEntity>> getNearestCars({
+  Future<Either<Failure, CarsSearchResponseEntity>> getNearestCars({
     required int locationId,
     int page = 1,
   });

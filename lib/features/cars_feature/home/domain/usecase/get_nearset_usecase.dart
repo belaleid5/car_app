@@ -6,13 +6,13 @@ import 'package:dartz/dartz.dart';
 import 'package:equatable/equatable.dart';
 
 class GetNearestCarsUseCase
-    implements BaseUseCase<CarsResponseEntity, GetNearestCarsParams> {
+    implements BaseUseCase<CarsSearchResponseEntity, GetNearestCarsParams> {
   final HomeRepo repository;
 
   GetNearestCarsUseCase(this.repository);
 
   @override
-  Future<Either<Failure, CarsResponseEntity>> call(
+  Future<Either<Failure, CarsSearchResponseEntity>> call(
       GetNearestCarsParams params) async {
     return await repository.getNearestCars(
       locationId: params.locationId,

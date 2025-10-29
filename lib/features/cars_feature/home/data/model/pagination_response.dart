@@ -1,4 +1,4 @@
-import 'package:car_app/features/cars_feature/home/data/mapping/meta_pagination.dart';
+import 'package:car_app/features/cars_feature/home/data/mapping/pagination_meta.dart';
 
 class PaginatedResponse<T> {
   final List<T> data;
