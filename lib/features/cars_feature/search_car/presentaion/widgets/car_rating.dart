@@ -19,7 +19,7 @@ class RatingWidget extends StatelessWidget {
       child: Row(
         children: [
           SvgPicture.asset(
-            AppImages.starIcon,
+            AppImages.starIcons,
             width: 14,
             height: 14,
             color: AppColors.warning500,

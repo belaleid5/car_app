@@ -4,6 +4,7 @@ class AppImages {
 
   static const String assetsBaground_img = "assets/Baground_img.svg";
   static const String carSvg = "assets/icons/car-svg.svg";
+  static const String starIcons = "assets/icons/starIcons.svg";
 
   static const String assetsBaground_car = "assets/background_car.png";
   static const String assetsBaground_car_tow = "assets/splash_tow.png";
@@ -12,7 +13,7 @@ class AppImages {
   static const String white_car = "assets/white-ferrari-ff-car.png";
   static const String heartIcon = "assets/heartIcon.svg";
   static const String iconBack = "assets/icons/iconsBack.svg";
-    static const String threeDotsIcon = "assets/threeDotsIcon.svg";
+  static const String threeDotsIcon = "assets/threeDotsIcon.svg";
 
   /// Assets for assetsIconsAppleIcon
   /// assets/icons/apple_icon.svg

@@ -1,5 +1,3 @@
-
-
 import 'package:car_app/features/auth_feature/presentation/pages/login_screen.dart';
 import 'package:car_app/features/auth_feature/presentation/pages/otp_confirm_password_screen.dart';
 import 'package:car_app/features/auth_feature/presentation/pages/otp_phone_verify.dart';
@@ -7,6 +5,7 @@ import 'package:car_app/features/auth_feature/presentation/pages/reset_password_
 import 'package:car_app/features/auth_feature/presentation/pages/sign_up_screen.dart';
 import 'package:car_app/features/cars_feature/car_details/presentaion/pages/car_details_screen.dart';
 import 'package:car_app/features/cars_feature/home/presentaion/pages/home_screen.dart';
+import 'package:car_app/features/cars_feature/search_car/presentaion/screens/search_screen.dart';
 import 'package:car_app/features/onboarding/presentation/pages/onbording_page_view_screen.dart';
 import 'package:car_app/features/splash/presention/splash_view.dart';
 import 'package:flutter/material.dart';
@@ -17,7 +16,7 @@ class AppRouter {
   static const signUpRoute = '/signin';
   static const forgetPasswordRoute = "/forgetPassword";
   static const mainRoute = "/mainRoute";
-   static const homeRoute = "/homeRoute";
+  static const homeRoute = "/homeRoute";
 
   static const searchRoute = "/search";
   static const filterSearchRoute = "/filterSearch";
@@ -25,15 +24,13 @@ class AppRouter {
   static const verifyConfirmPasswordRoute = "/veriyConfirmPasswordRoute";
   static const otpRoute = "/otp";
   static const onBoarding = "/onBoard";
-   static const carDetilesHomeRoute = "/carDetilesHomeRoute";
-
-
+  static const carDetilesHomeRoute = "/carDetilesHomeRoute";
 
   static Route<dynamic> onGenerateRoute(RouteSettings settings) {
     switch (settings.name) {
       case splashRoute:
         return MaterialPageRoute(builder: (_) => SplashScreen());
-      
+
       case onBoarding:
         return MaterialPageRoute(builder: (_) => OnBoardingPageView());
 
@@ -45,11 +42,11 @@ class AppRouter {
 
       case verifyPhoneRoute:
         final verifyToken = settings.arguments as String?;
-        print('Router - verifyToken: $verifyToken'); 
-        
+        print('Router - verifyToken: $verifyToken');
+
         return MaterialPageRoute(
           builder: (_) => OtpVerifyCodePhoneScreen(),
-          settings: settings, 
+          settings: settings,
         );
 
       case otpRoute:
@@ -69,16 +66,14 @@ class AppRouter {
       case forgetPasswordRoute:
         return MaterialPageRoute(builder: (_) => const ResetPassword());
 
-
-     case homeRoute:
-        return MaterialPageRoute(builder: (_) =>  HomeScreen());
-        
-        case carDetilesHomeRoute:
+      case homeRoute:
+        return MaterialPageRoute(builder: (_) => HomeScreen());
+      case searchRoute:
+        return MaterialPageRoute(builder: (_) => SearchScreen());
+      case carDetilesHomeRoute:
         return MaterialPageRoute(
-          builder: (_) => const CarDetailsScreen(),
-          settings: settings);
-      
-      
+            builder: (_) => const CarDetailsScreen(), settings: settings);
+
       default:
         return MaterialPageRoute(
           builder: (_) =>

@@ -1,5 +1,5 @@
 import 'package:car_app/core/enums/app_states.dart';
-import 'package:car_app/features/cars_feature/search_car/domain/entities/search_car_request_entity.dart';
+import 'package:car_app/features/cars_feature/search_car/domain/entities/searh_car_request_entity.dart';
 import 'package:car_app/features/cars_feature/search_car/presentaion/manger/search_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -338,11 +338,8 @@ class _CarFiltersScreenState extends State<CarFiltersScreen> {
           );
         }
 
-        final brands = state.allCars!
-            .expand((page) => page.cars)
-            .map((car) => car.brand)
-            .toSet()
-            .toList();
+        final allCars = state.allCars!;
+        final brands = allCars.map((car) => car.brand).toSet().toList();
 
         if (brands.isEmpty) {
           return const Text('No brands available');

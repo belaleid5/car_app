@@ -22,7 +22,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
              debugShowCheckedModeBanner: false,
              onGenerateRoute: AppRouter.onGenerateRoute,
-             initialRoute: AppRouter.homeRoute,
+             initialRoute: AppRouter.searchRoute,
             
     );
   }

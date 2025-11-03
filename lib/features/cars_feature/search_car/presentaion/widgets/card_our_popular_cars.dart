@@ -60,7 +60,7 @@ class CardOurPopularCars extends StatelessWidget {
                 ),
               ),
               const SizedBox(width: 12),
-              
+
               // Car Info
               Expanded(
                 child: Column(
@@ -79,7 +79,7 @@ class CardOurPopularCars extends StatelessWidget {
                     Row(
                       children: [
                         SvgPicture.asset(
-                          AppImages.starIcon,
+                          AppImages.starIcons,
                           width: 14,
                           height: 14,
                           color: AppColors.warning500,
@@ -132,4 +132,3 @@ class CardOurPopularCars extends StatelessWidget {
     );
   }
 }
-

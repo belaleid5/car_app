@@ -4,7 +4,7 @@ import 'package:car_app/features/cars_feature/home/data/model/car_feature_model.
 import 'package:car_app/features/cars_feature/home/data/model/car_image_model.dart';
 import 'package:car_app/features/cars_feature/home/data/model/colors_model.dart';
 import 'package:car_app/features/cars_feature/home/data/model/reivew_model.dart';
-import 'package:car_app/features/cars_feature/search_car/domain/entities/pagination_repsone_search_entity.dart';
+import 'package:car_app/features/cars_feature/search_car/domain/entities/car_repsone_search_entity.dart';
 
 class CarSearchResponseModel extends CarSearchEntityResponse {
   const CarSearchResponseModel({

@@ -38,6 +38,11 @@ import 'package:car_app/features/cars_feature/home/domain/usecase/best_cars_usec
 import 'package:car_app/features/cars_feature/home/domain/usecase/get_brands_usecase.dart';
 import 'package:car_app/features/cars_feature/home/domain/usecase/get_nearset_usecase.dart';
 import 'package:car_app/features/cars_feature/home/presentaion/manger/home_cubit.dart';
+import 'package:car_app/features/cars_feature/search_car/data/data_source/remote_datasource.dart';
+import 'package:car_app/features/cars_feature/search_car/data/repo_imp/repo_imp.dart';
+import 'package:car_app/features/cars_feature/search_car/domain/repo/search_cars_repo.dart';
+import 'package:car_app/features/cars_feature/search_car/domain/usecases/request_search_usecase.dart';
+import 'package:car_app/features/cars_feature/search_car/presentaion/manger/search_cubit.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:get_it/get_it.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -187,4 +192,23 @@ Future<void> setupDependencyInjection() async {
       getAllCarsUseCase: sl(), getCarsByReviewUseCase: sl(),
     ),
   );
+
+
+
+sl.registerFactory(() => SearchCubit(sl(), sl()));
+
+  // ✅ UseCase
+  sl.registerLazySingleton(() => RequestSearchUseCase(sl()));
+
+  // ✅ Repository
+  sl.registerLazySingleton<SearchCarRepository>(
+    () => SearchCarRepoImpl( sl()),
+  );    
+
+  // ✅ Data Source
+  sl.registerLazySingleton<SearchRemoteDataSource>(
+    () => SearchRemoteDataSourceImpl(),
+  );
+
+
 }

@@ -1,325 +1,585 @@
-import 'package:car_app/core/enums/app_states.dart';
-import 'package:car_app/core/responsive/responsive_helper.dart';
-import 'package:car_app/core/utils/app_color.dart';
-import 'package:car_app/core/utils/app_images.dart';
-import 'package:car_app/core/utils/app_text.dart';
-import 'package:car_app/core/widget/cusom_scircular_image_svg.dart';
-import 'package:car_app/features/cars_feature/home/presentaion/widget/custom_search_form.dart';
-import 'package:car_app/features/cars_feature/home/presentaion/widget/custom_title_and_view_all.dart';
+
+import 'package:car_app/core/constants/filter_constants.dart';
+import 'package:car_app/core/shared/location_entity.dart';
+import 'package:car_app/features/cars_feature/home/domain/entity/color_entity.dart';
+import 'package:car_app/features/cars_feature/search_car/domain/entities/car_filter.dart';
+import 'package:car_app/features/cars_feature/search_car/domain/entities/price_entity.dart';
 import 'package:car_app/features/cars_feature/search_car/presentaion/manger/search_cubit.dart';
-import 'package:car_app/features/cars_feature/search_car/presentaion/widgets/card_our_popular_cars.dart';
-import 'package:car_app/features/cars_feature/search_car/presentaion/widgets/card_rental_car.dart';
-import 'package:car_app/features/cars_feature/search_car/presentaion/widgets/custom_list_brand.dart';
-import 'package:car_app/features/cars_feature/search_car/presentaion/widgets/filter_search_card.dart';
-import 'package:car_app/features/cars_feature/search_car/presentaion/widgets/search_result_card.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-class SearchScreenContent extends StatelessWidget {
-  const SearchScreenContent({super.key});
+
+
+
+
+
+
+
+
+
+
+
+
+
+class CarFilterScreen extends StatefulWidget {
+  final CarFilterEntity? initialFilter;
+  final Function(CarFilterEntity) onApplyFilter;
+
+  const CarFilterScreen({
+    super.key,
+    this.initialFilter,
+    required this.onApplyFilter,
+  });
+
+  @override
+  State<CarFilterScreen> createState() => _CarFilterScreenState();
+}
+
+class _CarFilterScreenState extends State<CarFilterScreen> {
+  late CarFilterEntity _currentFilter;
+
+  @override
+  void initState() {
+    super.initState();
+    _currentFilter = widget.initialFilter ?? const CarFilterEntity();
+  }
+
+  void _updateFilter(CarFilterEntity newFilter) {
+    setState(() => _currentFilter = newFilter);
+  }
 
   @override
   Widget build(BuildContext context) {
-    return  CustomScrollView(
-        slivers: [
-          // AppBar
-          SliverAppBar(
-            pinned: true,
-            backgroundColor: AppColors.white,
-            leading: CustomCircleImage(
-              radius: 15,
-              imagePath: AppImages.iconBack,
-              height: 15,
-            ),
-            centerTitle: true,
-            title: Text(
-              'Search',
-              style: AppTextStyles.h6(
-                color:AppColors.black,
-              ),
-            ),
-            actions: [
-              CustomCircleImage(
-                imagePath: AppImages.threeDotsIcon,
-                radius: 25,
-              ),
-            ],
-          ),
-
-          // Divider
-          SliverToBoxAdapter(
-            child: Divider(
-              color: AppColors.neutral200,
-              height: 1,
-            ),
-          ),
-
-          // Search Bar & Filter Button
-          SliverToBoxAdapter(
-            child: Padding(
-              padding:
-                  const EdgeInsets.symmetric(horizontal: 15.0, vertical: 15),
-              child: Row(
+    return Container(
+      height: MediaQuery.of(context).size.height * FilterConstants.filterBottomSheetHeight,
+      decoration: const BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.vertical(top: Radius.circular(25)),
+      ),
+      child: Column(
+        children: [
+          _buildHeader(),
+          Expanded(
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.all(20),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Expanded(
-                    child: CustomSearchForm(
-                      onTap: () {},
-                    ),
-                  ),
-                  const SizedBox(width: 8),
-                  GestureDetector(
-                    onTap: () {
-                      showModalBottomSheet(
-                        context: context,
-                        isScrollControlled: true,
-                        backgroundColor: Colors.transparent,
-                        builder: (bottomSheetContext) => BlocProvider.value(
-                          value: context.read<SearchCubit>(),
-                          child: SizedBox(
-                            height: MediaQuery.of(context).size.height * 0.85,
-                            child: const CarFiltersScreen(),
-                          ),
-                        ),
-                      );
-                    },
-                    child: Container(
-                      padding: const EdgeInsets.all(12),
-                      decoration: BoxDecoration(
-                        color: AppColors.black,
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: const Icon(
-                        Icons.tune,
-                        color: AppColors.white,
-                        size: 24,
-                      ),
-                    ),
-                  ),
+                  _buildCarTypeSection(),
+                  const SizedBox(height: 24),
+                  _buildPriceRangeSection(),
+                  const SizedBox(height: 24),
+                  _buildRentalTimeSection(),
+                  const SizedBox(height: 24),
+                  _buildDatePickerSection(),
+                  const SizedBox(height: 24),
+                  _buildLocationSection(),
+                  const SizedBox(height: 24),
+                  _buildColorSection(),
+                  const SizedBox(height: 24),
+                  _buildSeatingCapacitySection(),
+                  const SizedBox(height: 24),
+                  _buildFuelTypeSection(),
+                  const SizedBox(height: 100),
                 ],
               ),
             ),
           ),
+          _buildActionButtons(),
+        ],
+      ),
+    );
+  }
 
-          // Brand List
-          const SliverToBoxAdapter(
-            child: CustomListBrand(),
+  Widget _buildHeader() {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        border: Border(bottom: BorderSide(color: Colors.grey.shade200)),
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          IconButton(
+            icon: const Icon(Icons.close),
+            onPressed: () => Navigator.pop(context),
           ),
-          const SliverToBoxAdapter(
-            child: SizedBox(height: 20),
+          const Text('Filters', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+          const SizedBox(width: 48),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildCarTypeSection() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Text('Type of Cars', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+        const SizedBox(height: 12),
+        Wrap(
+          spacing: 12,
+          runSpacing: 12,
+          children: FilterConstants.carTypes.map((type) {
+            final isSelected = _currentFilter.carType == type ||
+                (_currentFilter.carType == null && type == 'All Cars');
+            return _buildChip(
+              label: type,
+              isSelected: isSelected,
+              onTap: () => _updateFilter(
+                _currentFilter.copyWith(carType: type == 'All Cars' ? null : type),
+              ),
+            );
+          }).toList(),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildPriceRangeSection() {
+    final currentMin = _currentFilter.priceRange?.min ?? FilterConstants.minPrice;
+    final currentMax = _currentFilter.priceRange?.max ?? FilterConstants.maxPrice;
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Text('Price range', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+        const SizedBox(height: 16),
+        RangeSlider(
+          values: RangeValues(currentMin, currentMax),
+          min: FilterConstants.minPrice,
+          max: FilterConstants.maxPrice,
+          divisions: 50,
+          activeColor: Colors.black,
+          inactiveColor: Colors.grey.shade300,
+          onChanged: (values) {
+            _updateFilter(
+              _currentFilter.copyWith(
+                priceRange: PriceRangeEntity(min: values.start, max: values.end),
+              ),
+            );
+          },
+        ),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              _buildPriceLabel('Minimum', currentMin.toInt()),
+              _buildPriceLabel('Maximum', currentMax.toInt()),
+            ],
           ),
+        ),
+      ],
+    );
+  }
 
-          // Results Section
-          BlocBuilder<SearchCubit, SearchState>(
-            builder: (context, state) {
-              // Loading State
-              if (state.appStatus == AppStatus.loading) {
-                return const SliverFillRemaining(
-                  child: Center(
-                    child: CircularProgressIndicator(),
+  Widget _buildPriceLabel(String label, int price) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(label, style: TextStyle(fontSize: 12, color: Colors.grey.shade600)),
+        const SizedBox(height: 4),
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+          decoration: BoxDecoration(
+            border: Border.all(color: Colors.grey.shade300),
+            borderRadius: BorderRadius.circular(20),
+          ),
+          child: Text(
+            price >= FilterConstants.maxPrice ? '\$${price}+' : '\$$price',
+            style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildRentalTimeSection() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Text('Rental Time', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+        const SizedBox(height: 12),
+        Wrap(
+          spacing: 12,
+          runSpacing: 12,
+          children: FilterConstants.rentalTimes.map((time) {
+            final isSelected = _currentFilter.rentalTime == time;
+            return _buildChip(
+              label: time,
+              isSelected: isSelected,
+              onTap: () => _updateFilter(
+                _currentFilter.copyWith(rentalTime: isSelected ? null : time),
+              ),
+            );
+          }).toList(),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildDatePickerSection() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Text('Pick up and Drop Date', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+        const SizedBox(height: 12),
+        InkWell(
+          onTap: () async {
+            final picked = await showDatePicker(
+              context: context,
+              initialDate: _currentFilter.pickupDate ?? DateTime.now(),
+              firstDate: DateTime.now(),
+              lastDate: DateTime.now().add(const Duration(days: 365)),
+            );
+            if (picked != null) {
+              _updateFilter(_currentFilter.copyWith(pickupDate: picked));
+            }
+          },
+          child: Container(
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              border: Border.all(color: Colors.grey.shade300),
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Row(
+                  children: [
+                    Icon(Icons.calendar_today, size: 20, color: Colors.grey.shade600),
+                    const SizedBox(width: 12),
+                    Text(
+                      _currentFilter.pickupDate != null
+                          ? _formatDate(_currentFilter.pickupDate!)
+                          : 'Select Date',
+                    ),
+                  ],
+                ),
+                Icon(Icons.arrow_drop_down, color: Colors.grey.shade600),
+              ],
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildLocationSection() {
+    return BlocBuilder<SearchCubit, SearchState>(
+      builder: (context, state) {
+        if (state.allCars == null || state.allCars!.isEmpty) {
+          return const SizedBox.shrink();
+        }
+
+        final locations = <int, LocationEntity>{};
+        for (var car in state.allCars!) {
+          if (car.location != null) {
+            locations[car.location!.id] = car.location!;
+          }
+        }
+
+        if (locations.isEmpty) return const SizedBox.shrink();
+
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text('Car Location', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+            const SizedBox(height: 12),
+            DropdownButtonFormField<int>(
+              value: _currentFilter.locationId,
+              hint: const Text('Select Location'),
+              decoration: InputDecoration(
+                prefixIcon: Icon(Icons.location_on_outlined, color: Colors.grey.shade600),
+                border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+              ),
+              items: locations.values.map((loc) {
+                return DropdownMenuItem(value: loc.id, child: Text(loc.name));
+              }).toList(),
+              onChanged: (value) {
+                _updateFilter(_currentFilter.copyWith(locationId: value));
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  Widget _buildColorSection() {
+    return BlocBuilder<SearchCubit, SearchState>(
+      builder: (context, state) {
+        if (state.allCars == null || state.allCars!.isEmpty) {
+          return const SizedBox.shrink();
+        }
+
+        final colors = <int, ColorEntity>{};
+        for (var car in state.allCars!) {
+          colors[car.color.id] = car.color;
+        }
+
+        if (colors.isEmpty) return const SizedBox.shrink();
+
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text('Colors', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+            const SizedBox(height: 12),
+            Wrap(
+              spacing: 16,
+              runSpacing: 16,
+              children: colors.values.map((color) {
+                final isSelected = _currentFilter.colorId == color.id;
+                return GestureDetector(
+                  onTap: () => _updateFilter(
+                    _currentFilter.copyWith(colorId: isSelected ? null : color.id),
+                  ),
+                  child: Column(
+                    children: [
+                      Container(
+                        width: 48,
+                        height: 48,
+                        decoration: BoxDecoration(
+                          color: _parseColor(color.name),
+                          shape: BoxShape.circle,
+                          border: Border.all(
+                            color: isSelected ? Colors.black : Colors.grey.shade300,
+                            width: isSelected ? 3 : 1,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        color.name,
+                        style: TextStyle(
+                          fontSize: 12,
+                          fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
+                        ),
+                      ),
+                    ],
                   ),
                 );
-              }
+              }).toList(),
+            ),
+          ],
+        );
+      },
+    );
+  }
 
-              // Error State
-              if (state.appStatus == AppStatus.failure) {
-                return SliverFillRemaining(
-                  child: Center(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        const Icon(
-                          Icons.error_outline,
-                          size: 60,
-                          color: AppColors.error600,
-                        ),
-                        const SizedBox(height: 16),
-                        Text(
-                          state.message ?? 'Something went wrong',
-                          style: const TextStyle(fontSize: 16),
-                        ),
-                        const SizedBox(height: 16),
-                        ElevatedButton(
-                          onPressed: () {
-                            context.read<SearchCubit>().getAllCars();
-                          },
-                          child: const Text('Retry'),
-                        ),
-                      ],
-                    ),
-                  ),
-                );
-              }
+  Widget _buildSeatingCapacitySection() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Text('Sitting Capacity', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+        const SizedBox(height: 12),
+        Wrap(
+          spacing: 12,
+          runSpacing: 12,
+          children: FilterConstants.seatingCapacities.map((capacity) {
+            final isSelected = _currentFilter.seatingCapacity?.toString() == capacity;
+            return _buildChip(
+              label: capacity,
+              isSelected: isSelected,
+              onTap: () => _updateFilter(
+                _currentFilter.copyWith(
+                  seatingCapacity: isSelected ? null : int.parse(capacity),
+                ),
+              ),
+            );
+          }).toList(),
+        ),
+      ],
+    );
+  }
 
-              // عرض نتائج البحث إذا كانت موجودة
-              if (state.responsePaginationSearchCars != null) {
-                final cars = state.responsePaginationSearchCars!.cars;
+  Widget _buildFuelTypeSection() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Text('Fuel Type', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+        const SizedBox(height: 12),
+        Wrap(
+          spacing: 12,
+          runSpacing: 12,
+          children: FilterConstants.fuelTypes.map((fuel) {
+            final isSelected = _currentFilter.fuelType == fuel;
+            return _buildChip(
+              label: fuel,
+              isSelected: isSelected,
+              onTap: () => _updateFilter(
+                _currentFilter.copyWith(fuelType: isSelected ? null : fuel),
+              ),
+            );
+          }).toList(),
+        ),
+      ],
+    );
+  }
 
-                if (cars.isEmpty) {
-                  return SliverFillRemaining(
-                    child: Center(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Icon(
-                            Icons.search_off,
-                            size: 80,
-                            color: Colors.grey,
-                          ),
-                          SizedBox(height: 16),
-                          Text(
-                            'No cars found',
-                            style: TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                          SizedBox(height: 8),
-                          Text(
-                            'Try adjusting your filters',
-                            style: TextStyle(color: Colors.grey),
-                          ),
-                        ],
-                      ),
-                    ),
-                  );
-                }
+  Widget _buildChip({
+    required String label,
+    required bool isSelected,
+    required VoidCallback onTap,
+  }) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+        decoration: BoxDecoration(
+          color: isSelected ? Colors.black : Colors.white,
+          borderRadius: BorderRadius.circular(25),
+          border: Border.all(
+            color: isSelected ? Colors.black : Colors.grey.shade300,
+          ),
+        ),
+        child: Text(
+          label,
+          style: TextStyle(
+            color: isSelected ? Colors.white : Colors.black,
+            fontWeight: FontWeight.w600,
+            fontSize: 14,
+          ),
+        ),
+      ),
+    );
+  }
 
-                return SliverPadding(
-                  padding: const EdgeInsets.symmetric(horizontal: 15),
-                  sliver: SliverList(
-                    delegate: SliverChildBuilderDelegate(
-                      (context, index) {
-                        if (index == 0) {
-                          return Padding(
-                            padding: const EdgeInsets.only(bottom: 10),
-                            child: Text(
-                              'Found ${cars.length} cars',
-                              style: const TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
-                          );
-                        }
-
-                        final car = cars[index - 1];
-                        return Padding(
-                          padding: const EdgeInsets.only(bottom: 12),
-                          child: SearchResultCard(
-                            carName: car.name,
-                            brand: car.brand.name,
-                            rating: car.reviewsAvg,
-                            location: car.location.name,
-                            pricePerDay: car.dailyRent != null
-                                ? int.tryParse(car.dailyRent!) ?? 0
-                                : (car.price != null
-                                    ? int.tryParse(car.price!) ?? 0
-                                    : 0),
-                            imageUrl: car.firstImage,
-                            color: car.color.name,
-                            seatingCapacity:
-                                int.tryParse(car.seatingCapacity) ?? 4,
-                            fuelType: car.carType,
-                          ),
-                        );
-                      },
-                      childCount: cars.length + 1,
-                    ),
-                  ),
-                );
-              }
-
-              // عرض جميع السيارات (الحالة الافتراضية)
-              if (state.allCars != null) {
-                final allCars =
-                    state.allCars!.expand((page) => page.cars).toList();
-
-                return SliverList(
-                  delegate: SliverChildListDelegate([
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 15.0),
-                      child: CustomTitleAndViewAll(title: "Recommend For You"),
-                    ),
-                    const SizedBox(height: 10),
-                    SizedBox(
-                      height: ResponsiveHelper(context).heightPercent(35),
-                      child: GridView.builder(
-                        padding: const EdgeInsets.symmetric(horizontal: 10),
-                        gridDelegate:
-                            const SliverGridDelegateWithFixedCrossAxisCount(
-                          crossAxisCount: 2,
-                          mainAxisSpacing: 8,
-                          crossAxisSpacing: 8,
-                          childAspectRatio: 0.75,
-                        ),
-                        itemCount: allCars.length > 6 ? 6 : allCars.length,
-                        itemBuilder: (context, index) {
-                          final car = allCars[index];
-                          return CarRentalCard(
-                            carModel: car.name,
-                            rating: car.reviewsAvg,
-                            location: car.location.name,
-                            pricePerDay: car.dailyRent != null
-                                ? int.tryParse(car.dailyRent!) ?? 0
-                                : (car.price != null
-                                    ? int.tryParse(car.price!) ?? 0
-                                    : 0),
-                            imageUrl: car.firstImage,
-                          );
-                        },
-                      ),
-                    ),
-                    const SizedBox(height: 20),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 15.0),
-                      child: CustomTitleAndViewAll(title: "Our Popular Cars"),
-                    ),
-                    const SizedBox(height: 10),
-                    SizedBox(
-                      height: ResponsiveHelper(context).heightPercent(15),
-                      child: ListView.builder(
-                        scrollDirection: Axis.horizontal,
-                        padding: const EdgeInsets.only(left: 15),
-                        itemCount: allCars.length > 5 ? 5 : allCars.length,
-                        itemBuilder: (context, index) {
-                          final car = allCars[index];
-                          return Padding(
-                            padding: const EdgeInsets.only(right: 12.0),
-                            child: CardOurPopularCars(
-                              carName: car.name,
-                              rating: car.reviewsAvg,
-                              location: car.location.name,
-                              pricePerDay: car.dailyRent != null
-                                  ? int.tryParse(car.dailyRent!) ?? 0
-                                  : (car.price != null
-                                      ? int.tryParse(car.price!) ?? 0
-                                      : 0),
-                              imageUrl: car.firstImage,
-                            ),
-                          );
-                        },
-                      ),
-                    ),
-                    const SizedBox(height: 20),
-                  ]),
-                );
-              }
-
-              return const SliverFillRemaining(
-                child: Center(child: Text('No data available')),
-              );
-            },
+  Widget _buildActionButtons() {
+    return Container(
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.05),
+            blurRadius: 10,
+            offset: const Offset(0, -5),
           ),
         ],
-    
+      ),
+      child: Row(
+        children: [
+          Expanded(
+            child: OutlinedButton(
+              onPressed: _currentFilter.hasActiveFilters
+                  ? () {
+                      setState(() => _currentFilter = _currentFilter.clear());
+                    }
+                  : null,
+              style: OutlinedButton.styleFrom(
+                padding: const EdgeInsets.symmetric(vertical: 16),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                side: BorderSide(
+                  color: _currentFilter.hasActiveFilters ? Colors.black : Colors.grey.shade300,
+                ),
+              ),
+              child: Text(
+                'Clear All',
+                style: TextStyle(
+                  color: _currentFilter.hasActiveFilters ? Colors.black : Colors.grey,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            flex: 2,
+            child: ElevatedButton(
+              onPressed: () {
+                widget.onApplyFilter(_currentFilter);
+                Navigator.pop(context);
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.black,
+                padding: const EdgeInsets.symmetric(vertical: 16),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+              ),
+              child: const Text(
+                'Show Results',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.w600,
+                  fontSize: 16,
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
     );
+  }
+
+  String _formatDate(DateTime date) {
+    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 
+                    'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    return '${date.day}.${months[date.month - 1]}.${date.year}';
+  }
+
+  Color _parseColor(String name) {
+    switch (name.toLowerCase()) {
+      case 'white': return Colors.white;
+      case 'gray':
+      case 'grey': return Colors.grey;
+      case 'blue': return Colors.blue;
+      case 'black': return Colors.black;
+      case 'red': return Colors.red;
+      case 'green': return Colors.green;
+      case 'yellow': return Colors.yellow;
+      case 'orange': return Colors.orange;
+      default: return Colors.grey;
+    }
   }
 }
 
+// ====================================================================================
+// FILE 6: تحديث search_screen.dart - أضف في أول SearchScreen
+// ====================================================================================
 
+/*
+في search_screen.dart، غيّر الزر بتاع الفلتر:
 
+GestureDetector(
+  onTap: () {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) => CarFilterScreen(
+        initialFilter: context.read<SearchCubit>().state.currentFilter,
+        onApplyFilter: (filter) {
+          context.read<SearchCubit>().applyFilter(filter);
+        },
+      ),
+    );
+  },
+  child: Container(
+    padding: const EdgeInsets.all(12),
+    decoration: BoxDecoration(
+      color: AppColors.black,
+      borderRadius: BorderRadius.circular(12),
+    ),
+    child: const Icon(Icons.tune, color: Colors.white, size: 24),
+  ),
+),
 
+وفي CustomListBrand عند الضغط على البراند:
 
+GestureDetector(
+  onTap: () {
+    setState(() => selectedIndex = isSelected ? null : index);
+    if (isSelected) {
+      context.read<SearchCubit>().clearFilter();
+    } else {
+      context.read<SearchCubit>().filterByBrand(brand.id);
+    }
+  },
+  child: // ... باقي الكود
+)
 
+وفي BlocBuilder بتاع عرض السيارات:
 
-
+final cars = state.responseSearchCars ?? state.allCars ?? [];
+*/

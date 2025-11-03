@@ -43,7 +43,7 @@ class _CustomListBrandState extends State<CustomListBrand> {
                 behavior: HitTestBehavior.opaque,
                 onTap: () {
                   setState(() => selectedIndex = index);
-                  context.read<HomeCubit>().getBrands();
+                  context.read<HomeCubit>().fetchBrands();
                 },
                 child: AnimatedContainer(
                   duration: const Duration(milliseconds: 250),
