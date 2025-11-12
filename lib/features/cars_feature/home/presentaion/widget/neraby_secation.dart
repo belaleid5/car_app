@@ -7,7 +7,6 @@ import 'package:car_app/features/cars_feature/home/presentaion/manger/home_state
 import 'package:car_app/features/cars_feature/home/presentaion/widget/custom_title_and_view_all.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:skeletonizer/skeletonizer.dart';
 
 class NearbyCarsSection extends StatefulWidget {
   const NearbyCarsSection({super.key});
@@ -37,14 +36,10 @@ class _NearbyCarsSectionState extends State<NearbyCarsSection> {
                 const CustomTitleAndViewAll(title: "Nearby"),
                 if (state.status == AppStatus.failure)
                   _buildErrorState(res)
-                else if (state.status == AppStatus.success && state.nearestCars.isEmpty)
+                else if (state.nearestCars.isEmpty)
                   _buildEmptyState(res)
                 else
-                  _buildCarCard(
-                    state.status == AppStatus.loading ? _getDummyCar() : state.nearestCars.first,
-                    state.status == AppStatus.loading,
-                    res,
-                  ),
+                  _buildCarCard(state.nearestCars.first, res),
               ],
             ),
           );
@@ -53,66 +48,60 @@ class _NearbyCarsSectionState extends State<NearbyCarsSection> {
     );
   }
 
-  Widget _buildCarCard(dynamic car, bool isLoading, ResponsiveHelper res) {
+  Widget _buildCarCard(dynamic car, ResponsiveHelper res) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 10),
-      child: Skeletonizer(
-        enabled: isLoading,
-        child: Stack(
-          children: [
-            Container(
-              margin: const EdgeInsets.symmetric(vertical: 20),
-              height: res.screenHeight * 0.2,
-              width: double.infinity,
+      child: Stack(
+        children: [
+          Container(
+            margin: const EdgeInsets.symmetric(vertical: 20),
+            height: res.screenHeight * 0.2,
+            width: double.infinity,
+            decoration: BoxDecoration(
+              color: AppColors.neutral200,
+              borderRadius: BorderRadius.circular(16),
+            ),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(16),
+              child: Image.network(
+                car.mainImageUrl ?? '',
+                width: res.screenWidth * 0.334,
+                fit: BoxFit.fill,
+                errorBuilder: (context, error, stackTrace) {
+                  return Image.asset(
+                    car.images.isNotEmpty
+                        ? car.images.first as String
+                        : AppImages.white_car,
+                    width: res.screenWidth * 0.334,
+                    fit: BoxFit.fill,
+                  );
+                },
+              ),
+            ),
+          ),
+          Positioned(
+            top: 32,
+            right: 12,
+            child: Container(
+              padding: const EdgeInsets.all(8),
               decoration: BoxDecoration(
-                color: AppColors.neutral200,
-                borderRadius: BorderRadius.circular(16),
+                color: Colors.white,
+                shape: BoxShape.circle,
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.1),
+                    blurRadius: 8,
+                    offset: const Offset(0, 2),
+                  ),
+                ],
               ),
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(16),
-                child: isLoading
-                    ? Container(color: Colors.grey[300])
-                    : Image.network(
-                        car.mainImageUrl,
-                        width: res.screenWidth * 0.334,
-                        fit: BoxFit.fill,
-                        errorBuilder: (context, error, stackTrace) {
-                          return Image.asset(
-                            car.images.isNotEmpty ? car.images.first as String : AppImages.white_car,
-                            width: res.screenWidth * 0.334,
-                            fit: BoxFit.fill,
-                          );
-                        },
-                      ),
-              ),
+              child: const Icon(Icons.favorite_border,
+                  color: Colors.black, size: 20),
             ),
-            Positioned(
-              top: 32,
-              right: 12,
-              child: Container(
-                padding: const EdgeInsets.all(8),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  shape: BoxShape.circle,
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withOpacity(0.1),
-                      blurRadius: 8,
-                      offset: const Offset(0, 2),
-                    ),
-                  ],
-                ),
-                child: const Icon(Icons.favorite_border, color: Colors.black, size: 20),
-              ),
-            ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
-  }
-
-  dynamic _getDummyCar() {
-    return _DummyNearbyCar(mainImageUrl: 'https://via.placeholder.com/300');
   }
 
   Widget _buildErrorState(ResponsiveHelper res) {
@@ -127,12 +116,12 @@ class _NearbyCarsSectionState extends State<NearbyCarsSection> {
       child: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(Icons.error_outline, size: 40, color: Colors.grey[600]),
-            const SizedBox(height: 8),
+          children: const [
+            Icon(Icons.error_outline, size: 40, color: Colors.grey),
+            SizedBox(height: 8),
             Text(
               'Failed to load nearby cars',
-              style: TextStyle(color: Colors.grey[600], fontSize: 14),
+              style: TextStyle(color: Colors.grey, fontSize: 14),
             ),
           ],
         ),
@@ -152,21 +141,16 @@ class _NearbyCarsSectionState extends State<NearbyCarsSection> {
       child: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(Icons.directions_car_outlined, size: 40, color: Colors.grey[600]),
-            const SizedBox(height: 8),
+          children: const [
+            Icon(Icons.directions_car_outlined, size: 40, color: Colors.grey),
+            SizedBox(height: 8),
             Text(
               'No nearby cars available',
-              style: TextStyle(color: Colors.grey[600], fontSize: 14),
+              style: TextStyle(color: Colors.grey, fontSize: 14),
             ),
           ],
         ),
       ),
     );
   }
-}
-
-class _DummyNearbyCar {
-  final String mainImageUrl;
-  _DummyNearbyCar({required this.mainImageUrl});
 }

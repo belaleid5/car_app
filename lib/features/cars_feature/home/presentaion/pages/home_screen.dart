@@ -14,17 +14,16 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class HomeScreen extends StatelessWidget {
- // optional
- final String? imagePath;  // optional
-  final String? idImage; 
-  
+  // optional
+  final String? imagePath; // optional
+  final String? idImage;
+
   const HomeScreen({
     super.key,
-    this.imagePath,  // ✅ مش required
-    this.idImage,    // ✅ مش required
+    this.imagePath, // ✅ مش required
+    this.idImage, // ✅ مش required
   });
 
-  
   @override
   Widget build(BuildContext context) {
     final res = ResponsiveHelper(context);
@@ -72,15 +71,13 @@ class HomeScreen extends StatelessWidget {
                 SliverToBoxAdapter(
                   child: Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 15.0),
-                    child: CustomListBrand(res: res),
+                    child: CustomSectionHomeBrands(res: res),
                   ),
                 ),
                 SliverToBoxAdapter(
                   child: SizedBox(height: 15),
                 ),
-                BestCarsSection(
-                 
-                ),
+                BestCarsSection(),
                 SliverToBoxAdapter(
                   child: NearbyCarsSection(),
                 ),
