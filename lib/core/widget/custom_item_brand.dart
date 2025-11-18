@@ -1,5 +1,5 @@
+import 'package:car_app/core/shared/brands_entity.dart';
 import 'package:car_app/core/utils/app_color.dart';
-import 'package:car_app/features/cars_feature/home/domain/entity/brands_entity.dart';
 import 'package:flutter/material.dart';
 
 class CustomItemBrand extends StatelessWidget {

@@ -1,10 +1,10 @@
 
 import 'package:car_app/core/shared/location_entity.dart';
-import 'package:car_app/features/cars_feature/home/domain/entity/brands_entity.dart';
-import 'package:car_app/features/cars_feature/home/domain/entity/car_features.dart';
-import 'package:car_app/features/cars_feature/home/domain/entity/car_image_entity.dart';
-import 'package:car_app/features/cars_feature/home/domain/entity/color_entity.dart';
-import 'package:car_app/features/cars_feature/home/domain/entity/review_entity.dart';
+import 'package:car_app/core/shared/brands_entity.dart';
+import 'package:car_app/core/shared/car_features.dart';
+import 'package:car_app/core/shared/car_image_entity.dart';
+import 'package:car_app/core/shared/color_entity.dart';
+import 'package:car_app/core/shared/review_entity.dart';
 import 'package:equatable/equatable.dart';
 
 class CarEntity extends Equatable {

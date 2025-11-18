@@ -21,15 +21,12 @@ import 'package:car_app/features/auth_feature/domain/use_cases/request_confirm_c
 import 'package:car_app/features/auth_feature/domain/use_cases/reset_password_usecase.dart';
 import 'package:car_app/features/auth_feature/domain/use_cases/save_tokens_params.dart';
 import 'package:car_app/features/auth_feature/presentation/blocs/auth_cubit.dart';
-import 'package:car_app/features/cars_feature/car_details/data/remote_data_source/car_remote_data_source.dart';
-import 'package:car_app/features/cars_feature/car_details/data/repo_imp/car_imp.dart';
-import 'package:car_app/features/cars_feature/car_details/domain/repo/car_details_repo.dart';
-import 'package:car_app/features/cars_feature/car_details/domain/usecase/get_all_cars_usecase.dart';
-import 'package:car_app/features/cars_feature/car_details/domain/usecase/get_cars-by_id_usecase.dart';
-import 'package:car_app/features/cars_feature/car_details/domain/usecase/get_cars_brand_by_id_usecase.dart';
-import 'package:car_app/features/cars_feature/car_details/domain/usecase/get_cars_review-usecase.dart';
-import 'package:car_app/features/cars_feature/car_details/domain/usecase/search_cars_usecase.dart';
-import 'package:car_app/features/cars_feature/car_details/presentaion/manger/car_details_cubit.dart';
+import 'package:car_app/features/cars_feature/car_details/data/remote_data_source/remote_details_datasource.dart';
+import 'package:car_app/features/cars_feature/car_details/data/repo_imp/repo_imp_details.dart';
+import 'package:car_app/features/cars_feature/car_details/domain/repo/details_review_repo.dart';
+import 'package:car_app/features/cars_feature/car_details/domain/usecase/get_car_deatils_car_by_id_usecase.dart';
+import 'package:car_app/features/cars_feature/car_details/domain/usecase/get_review_car_by_id_car.dart';
+import 'package:car_app/features/cars_feature/car_details/presentaion/manger/dateils_cubit.dart';
 import 'package:car_app/features/cars_feature/home/data/datasource/local_data_source_cars.dart';
 import 'package:car_app/features/cars_feature/home/data/datasource/remote_data_source.dart';
 import 'package:car_app/features/cars_feature/home/data/repo_imp.dart/home_repo_imp.dart';
@@ -165,37 +162,33 @@ Future<void> setupDependencyInjection() async {
 
   // ==================== Car Details ====================
   // Data Sources
-  sl.registerLazySingleton<CarRemoteDataSource>(
-    () => CarRemoteDataSourceImpl(
-      dio: sl(),
+  sl.registerLazySingleton<ReviewRemoteDataSource>(
+    () => ReviewRemoteDataSourceImpl(
     ),
   );
 
   // Repository
-  sl.registerLazySingleton<CarRepository>(
-    () => CarRepositoryImpl(sl()),
+  sl.registerLazySingleton<DetailsReviewRepository>(
+    () => DetailsReviewRepositoryImp(remoteDataSource: sl()),
   );
 
   // Use Cases
   sl.registerLazySingleton(() => GetCarByIdUseCase(sl()));
-  sl.registerLazySingleton(() => SearchCarsUseCase(sl()));
-  sl.registerLazySingleton(() => GetCarsByBrandUseCase(sl()));
-  sl.registerLazySingleton(() => GetAllCarsUseCase(sl()));
-  sl.registerLazySingleton(() => GetCarsReviewUseCase(sl()));
+  sl.registerLazySingleton(() => GetReviewsByCarIdUseCase(sl()));
+
+  //GetReviewsByCarIdUseCase
 
   // Cubit
   sl.registerFactory(
-    () => CarCubit(
-      getCarByIdUseCase: sl(),
-      searchCarsUseCase: sl(),
-      getCarsByBrandUseCase: sl(),
-      getAllCarsUseCase: sl(), getCarsByReviewUseCase: sl(),
-    ),
+    () => DetailsCubit(
+      getCarByIdUseCase: sl(), 
+      getReviewsByCarIdUseCase: sl(), 
+   ),
   );
 
 
 
-sl.registerFactory(() => SearchCubit(sl(), sl()));
+sl.registerFactory(() => SearchCubit(sl(), ));
 
   // ✅ UseCase
   sl.registerLazySingleton(() => RequestSearchUseCase(sl()));

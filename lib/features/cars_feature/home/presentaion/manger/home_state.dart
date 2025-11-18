@@ -1,5 +1,5 @@
-import 'package:car_app/features/cars_feature/home/domain/entity/brands_entity.dart';
-import 'package:car_app/features/cars_feature/home/domain/entity/car_entity.dart';
+import 'package:car_app/core/shared/brands_entity.dart';
+import 'package:car_app/core/shared/car_entity.dart';
 import 'package:car_app/features/cars_feature/home/domain/entity/paginated_car_entity.dart';
 import 'package:equatable/equatable.dart';
 import '../../../../../core/enums/app_states.dart';

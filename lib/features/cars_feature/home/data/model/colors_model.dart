@@ -1,4 +1,4 @@
-import 'package:car_app/features/cars_feature/home/domain/entity/color_entity.dart';
+import 'package:car_app/core/shared/color_entity.dart';
 
 class ColorModel extends ColorEntity {
   ColorModel({

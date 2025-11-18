@@ -44,7 +44,7 @@ class _SearchScreenState extends State<SearchScreen> {
     return MultiBlocProvider(
       providers: [
         BlocProvider<SearchCubit>(
-          create: (context) => sl<SearchCubit>()..getAllCars(),
+          create: (context) => sl<SearchCubit>(),
         ),
         BlocProvider<HomeCubit>(
           create: (context) => sl<HomeCubit>(),
@@ -142,9 +142,7 @@ class _SearchScreenState extends State<SearchScreen> {
                               Text(state.message ?? 'Failed to load cars'),
                               const SizedBox(height: 16),
                               ElevatedButton(
-                                onPressed: () => context
-                                    .read<SearchCubit>()
-                                    .getAllCars(isRefresh: true),
+                                onPressed: () {},
                                 style: ElevatedButton.styleFrom(
                                     backgroundColor: Colors.black),
                                 child: const Text('Retry',

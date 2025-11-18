@@ -72,7 +72,7 @@ class AppRouter {
         return MaterialPageRoute(builder: (_) => SearchScreen());
       case carDetilesHomeRoute:
         return MaterialPageRoute(
-            builder: (_) => const CarDetailsScreen(), settings: settings);
+            builder: (_) =>  CarDetailsPage(carId: 1,), settings: settings);
 
       default:
         return MaterialPageRoute(

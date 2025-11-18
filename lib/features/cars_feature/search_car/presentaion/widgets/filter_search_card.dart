@@ -63,8 +63,6 @@ class _CarFiltersScreenState extends State<CarFiltersScreen> {
       selectedFuelType = 'Electric';
     });
 
-    // استدعاء getAllCars للرجوع للحالة الأولية
-    context.read<SearchCubit>().getAllCars();
   }
 
   @override

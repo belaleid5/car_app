@@ -27,7 +27,7 @@ class RecommendationSection extends StatelessWidget {
           return SliverFillRemaining(
             child: CustomErrorWidget(
               message: state.message ?? 'Failed to load cars',
-              onRetry: () => context.read<SearchCubit>().getAllCars(isRefresh: true),
+              onRetry: (){} ,
             ),
           );
         }

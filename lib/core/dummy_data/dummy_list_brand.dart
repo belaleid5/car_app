@@ -1,8 +1,8 @@
+import 'package:car_app/core/shared/brands_entity.dart';
+import 'package:car_app/core/shared/car_entity.dart';
+import 'package:car_app/core/shared/color_entity.dart';
 import 'package:car_app/core/shared/location_entity.dart';
 import 'package:car_app/core/utils/app_images.dart';
-import 'package:car_app/features/cars_feature/home/domain/entity/brands_entity.dart';
-import 'package:car_app/features/cars_feature/home/domain/entity/car_entity.dart';
-import 'package:car_app/features/cars_feature/home/domain/entity/color_entity.dart';
 
 class DummiesData {
   List<BrandEntity> dummyBrandItem() {

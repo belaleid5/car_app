@@ -1,6 +1,6 @@
 import 'package:car_app/core/responsive/responsive_helper.dart';
 import 'package:car_app/core/routing/app_router.dart';
-import 'package:car_app/features/cars_feature/home/domain/entity/car_entity.dart';
+import 'package:car_app/core/shared/car_entity.dart';
 import 'package:car_app/features/cars_feature/home/presentaion/widget/custom_best_cars.dart';
 import 'package:flutter/material.dart';
 

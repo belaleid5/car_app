@@ -1,4 +1,3 @@
-// ignore_for_file: prefer_single_quotes
 class AppImages {
   AppImages._();
 
@@ -14,8 +13,14 @@ class AppImages {
   static const String heartIcon = "assets/heartIcon.svg";
   static const String iconBack = "assets/icons/iconsBack.svg";
   static const String threeDotsIcon = "assets/threeDotsIcon.svg";
+ 
 
-  /// Assets for assetsIconsAppleIcon
+
+    static const String starIcon = "assets/icons/starIcons.svg";
+    static const String blueMarkIcon = "assets/icons/blueMark.svg";
+    static const String messageIcon = "assets/icons/messageIcon.png";
+    static const String callIcon = "assets/icons/callIcon.svg";
+  /// assets/icons/blueMark.png
   /// assets/icons/apple_icon.svg
   static const String assetsIconsAppleIcon = "assets/icons/apple_icon.svg";
 

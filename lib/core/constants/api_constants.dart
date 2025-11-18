@@ -22,6 +22,7 @@ class ApiConstants {
   static const String locations = '$baseUrl/public/register_locations/';
   static const String search = "$baseUrl/cars/search";
 
+  static const String searchCar = '$baseUrl/cars/search';
   //cars/nearest
 
   static const String contentType = 'Content-Type';

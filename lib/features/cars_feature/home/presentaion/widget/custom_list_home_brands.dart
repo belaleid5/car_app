@@ -1,5 +1,5 @@
 import 'package:car_app/core/responsive/responsive_helper.dart';
-import 'package:car_app/features/cars_feature/home/domain/entity/brands_entity.dart';
+import 'package:car_app/core/shared/brands_entity.dart';
 import 'package:car_app/features/cars_feature/home/presentaion/manger/home_state.dart';
 import 'package:car_app/features/cars_feature/home/presentaion/widget/custom_item_brand_home.dart';
 import 'package:flutter/material.dart';
